@@ -1,6 +1,6 @@
 local log = require("log")
 
-local OPENROUTER_API_TOKEN = os.getenv("OPENROUTER_API_TOKEN")
+local OPENROUTER_API_TOKEN = os.getenv("OPENROUTER_API_TOKEN") or ""
 
 local Openrouter = {}
 
