@@ -1,0 +1,7 @@
+# test gitignore file
+.cache
+.luarocks
+
+.nvim
+test/xdg
+
