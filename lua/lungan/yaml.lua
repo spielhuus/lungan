@@ -9,9 +9,37 @@ function Yaml:_parse(lines, indent, line)
 		if #(act_indent or "") < indent then
 			return tree, i - 1
 		end
+
 		local key, val = string.match(lines[i], "^%s*([%w|_]+): ?(.+)$")
 		local key_only = string.match(lines[i], "^%s*([%w|_]+): *$")
 		local text = string.match(lines[i], "^%s*([%w|_]+): *|$")
+		local list = string.match(lines[i], "^%s*-%s*([%w|_]+)$")
+		local list_map, map = string.match(lines[i], "^%s*-%s*([%w|_]+): ([%w|_]+)$")
+
+		if list_map then
+			local body = {}
+			body[list_map] = tonumber(map) or map
+			i = i + 1
+			while i <= #lines do
+				local next_indent = string.match(lines[i], "( *)")
+				if #(next_indent or "") <= #(act_indent or "") then
+					i = i - 1
+					goto endtext
+				end
+				local list_key, list_val = string.match(lines[i], "^%s*([%w|_]+): ?(.+)$")
+				body[list_key] = tonumber(list_val) or list_val
+				i = i + 1
+			end
+			::endtext::
+			table.insert(tree, body)
+			goto next
+		end
+
+		if list then
+			table.insert(tree, list)
+			goto next
+		end
+
 		if text then
 			local body = {}
 			i = i + 1
@@ -37,6 +65,7 @@ function Yaml:_parse(lines, indent, line)
 			end
 			goto next
 		end
+
 		if key_only then
 			local next_indent = #(string.match(lines[i + 1], "( *)") or "")
 			local node
