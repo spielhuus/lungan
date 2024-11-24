@@ -118,7 +118,6 @@ plt.show()
 			end
 			ipython:send({ line = #content, text = "elektron.plots()" })
 			ipython:wait()
-			print(require("lungan.str").to_string(received))
 			assert.are.Equal(640, received.images[1].width)
 			assert.are.Equal(480, received.images[1].height)
 			assert.are.Equal(21996, #received.images[1].base64)

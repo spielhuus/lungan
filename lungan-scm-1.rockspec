@@ -12,6 +12,7 @@ test_dependencies = {
 	"lua >= 5.1",
 	"nlua",
 	"luacheck",
+	"luassert",
 	"busted",
 }
 
