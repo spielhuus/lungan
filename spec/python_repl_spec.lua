@@ -97,7 +97,7 @@ describe("Test the IPython repl", function()
 			for i, c in ipairs(content) do
 				ipython:send(c)
 			end
-			vim.wait(50)
+			ipython:wait()
 			assert.Same({ [1] = 1, line = 1, out = { "69" } }, received)
 		end)
 		it("should return plot the image", function()
@@ -117,7 +117,7 @@ plt.show()
 				ipython:send({ line = i, text = c })
 			end
 			ipython:send({ line = #content, text = "elektron.plots()" })
-			vim.wait(100)
+			ipython:wait()
 			assert.are.Equal(640, received.images[1].width)
 			assert.are.Equal(480, received.images[1].height)
 			assert.are.Equal(21996, #received.images[1].base64)

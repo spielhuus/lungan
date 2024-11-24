@@ -1,7 +1,7 @@
 ---
 provider:
-  model: meta/meta-llama-3-8b-instruct
-  name: Replicate
+  model: llama3.2:3b-instruct-q4_K_M
+  name: Ollama
 name: GitCommit
 stream: true
 icon:
