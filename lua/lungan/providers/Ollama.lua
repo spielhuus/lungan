@@ -58,7 +58,6 @@ end
 function Ollama:chat(opts, prompt, stdout, stderr, exit)
 	local request = {
 		url = self.options.url .. "/api/chat",
-		-- body = vim.fn.shellescape(vim.json.encode(self:__parse_prompt(opts, prompt))),
 		body = json.encode(self:__parse_prompt(opts, prompt)),
 	}
 
@@ -75,7 +74,6 @@ function Ollama:chat(opts, prompt, stdout, stderr, exit)
 	end
 
 	local status, _ = self:post(request, on_exit, function(_, data, _)
-		-- TODO: log.trace(vim.inspect(data))
 		if data then
 			local clean_table = str.clean_table(data)
 			if #clean_table > 0 then
@@ -83,7 +81,6 @@ function Ollama:chat(opts, prompt, stdout, stderr, exit)
 			end
 		end
 	end, function(_, data, _)
-		-- log.error("<<< ", vim.inspect(data))
 		if stderr then
 			stderr(data)
 		end

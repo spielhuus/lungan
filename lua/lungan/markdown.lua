@@ -96,7 +96,9 @@ function Markdown:_parse(lines)
 			local node = { type = Markdown.types.CODE, from = i, lang = code }
 			-- get params
 			local function params(body)
+				print("body" .. body)
 				local lang, rest = body:match("^{(%w+)%s+(.*)}$")
+				print("PARSE:" .. rest)
 				local tokens = str.spaces(rest)
 				local sparams = str.params(tokens)
 				node.lang = lang

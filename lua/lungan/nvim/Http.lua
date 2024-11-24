@@ -90,6 +90,7 @@ function Http:post(request, on_exit, on_stdout, on_stderr)
 	log.debug("POST" .. table.concat(args, " "))
 	self.job_id = vim.fn.jobstart(table.concat(args, " "), {
 		on_stdout = on_stdout or function(_, data, _)
+			log.trace("<<<", data)
 			if data then
 				local clean_table = str.clean_table(data)
 				if #clean_table > 0 then

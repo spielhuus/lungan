@@ -23,20 +23,22 @@ function Openrouter:new(o, opts)
 end
 
 function Openrouter:__parse_prompt(_, prompt)
-	log.trace("Prompt: " .. vim.inspect(prompt))
 	local output = {
 		model = prompt.provider.model,
 		messages = { { role = "system", content = prompt.system_prompt } },
 		stream = prompt.stream,
 	}
 
-	for key, val in pairs(prompt.options) do
-		output[key] = val
+	if prompt.options then
+		for key, val in pairs(prompt.options) do
+			output[key] = val
+		end
 	end
 
 	for _, line in ipairs(prompt.messages) do
 		table.insert(output.messages, { role = line.role, content = line.content })
 	end
+	log.trace("Prompt: ", output)
 	return output
 end
 
@@ -94,7 +96,7 @@ function Openrouter:chat(opts, session, stdout, stderr, exit)
 			' -H "Authorization: Bearer ' .. OPENROUTER_API_TOKEN .. '"',
 			' -H "Content-Type: application/json"',
 		},
-		body = vim.fn.shellescape(vim.json.encode(self:__parse_prompt(opts, session))),
+		body = vim.json.encode(self:__parse_prompt(opts, session)),
 	}
 	local status, _ = self:post(request, function(_, b)
 		if b ~= 0 then
@@ -120,7 +122,7 @@ function Openrouter:chat(opts, session, stdout, stderr, exit)
 					end
 
 					if #message > 0 then
-						log.trace("RESPONSE:'" .. vim.inspect(message) .. "'")
+						log.debug(message)
 						stdout(self:__parse_response(vim.json.decode(message)))
 					end
 				end
