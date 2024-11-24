@@ -11,8 +11,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
-    env:
-      PYTHONPATH: "./python"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,11 +35,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ipython
+          pip install ipython matplotlib
         
       - name: Install nlua using luarocks make
         run: luarocks make --local
 
       - name: Run tests
         run: |
-          luarocks test --local
+          PYTHONPATH=./python luarocks test --local
