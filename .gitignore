@@ -5,3 +5,5 @@
 .wget-hsts
 test/xdg
 .venv
+chroma_data/
+chroma.log
