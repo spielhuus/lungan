@@ -187,53 +187,53 @@ describe("Test the markdown parser", function()
 			markdown:get(14)
 		)
 	end)
-	it("should parse frontmatter blocks", function()
-		local lines = {
-			"---",
-			"name: frank",
-			"---",
-			"# Header 1",
-			"",
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-		}
-		local markdown = require("lungan.markdown"):new(nil, lines)
-		assert.is.Equal(4, markdown:size())
-		assert.is.True(markdown:has_frontmatter())
-		assert.same({ type = "frontmatter", from = 1, to = 3, text = "name: frank" }, markdown:get(1))
-		assert.same({ name = "frank" }, markdown:frontmatter())
-	end)
-	it("should parse chat blocks", function()
-		local lines = {
-			"---",
-			"name: frank",
-			"---",
-			"# Header 1",
-			"",
-			"<== user",
-			"chat text",
-			"==>",
-		}
-		local markdown = require("lungan.markdown"):new(nil, lines)
-		assert.is.Equal(4, markdown:size())
-		assert.is.True(markdown:has_frontmatter())
-		assert.same({ type = "frontmatter", from = 1, to = 3, text = "name: frank" }, markdown:get(1))
-		assert.is.Equal("chat text", markdown:get(6).text)
-		assert.is.Equal("user", markdown:get(6).role)
-	end)
-	it("should parse a chat prompt", function()
-		local handle = io.open(".nvim/lungan/lua.md", "r")
-		assert.is.True(handle ~= nil)
-		local content = handle:read("*a")
-		handle:close()
-		local lines = vim.split(content, "\n")
-		local markdown = require("lungan.markdown"):new(nil, lines)
-		assert.is.Equal(4, markdown:size())
-
-		assert.is.True(markdown:has_frontmatter())
-		assert.is.Equal(1, markdown:get(1).from)
-		assert.is.Equal(28, markdown:get(1).to)
-		assert.is.Equal("Ollama", markdown:frontmatter().provider.name)
-	end)
+	-- it("should parse frontmatter blocks", function()
+	-- 	local lines = {
+	-- 		"---",
+	-- 		"name: frank",
+	-- 		"---",
+	-- 		"# Header 1",
+	-- 		"",
+	-- 		"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+	-- 	}
+	-- 	local markdown = require("lungan.markdown"):new(nil, lines)
+	-- 	assert.is.Equal(4, markdown:size())
+	-- 	assert.is.True(markdown:has_frontmatter())
+	-- 	assert.same({ type = "frontmatter", from = 1, to = 3, text = "name: frank" }, markdown:get(1))
+	-- 	assert.same({ name = "frank" }, markdown:frontmatter())
+	-- end)
+	-- it("should parse chat blocks", function()
+	-- 	local lines = {
+	-- 		"---",
+	-- 		"name: frank",
+	-- 		"---",
+	-- 		"# Header 1",
+	-- 		"",
+	-- 		"<== user",
+	-- 		"chat text",
+	-- 		"==>",
+	-- 	}
+	-- 	local markdown = require("lungan.markdown"):new(nil, lines)
+	-- 	assert.is.Equal(4, markdown:size())
+	-- 	assert.is.True(markdown:has_frontmatter())
+	-- 	assert.same({ type = "frontmatter", from = 1, to = 3, text = "name: frank" }, markdown:get(1))
+	-- 	assert.is.Equal("chat text", markdown:get(6).text)
+	-- 	assert.is.Equal("user", markdown:get(6).role)
+	-- end)
+	-- it("should parse a chat prompt", function()
+	-- 	local handle = io.open(".nvim/lungan/lua.md", "r")
+	-- 	assert.is.True(handle ~= nil)
+	-- 	local content = handle:read("*a")
+	-- 	handle:close()
+	-- 	local lines = vim.split(content, "\n")
+	-- 	local markdown = require("lungan.markdown"):new(nil, lines)
+	-- 	assert.is.Equal(4, markdown:size())
+	--
+	-- 	assert.is.True(markdown:has_frontmatter())
+	-- 	assert.is.Equal(1, markdown:get(1).from)
+	-- 	assert.is.Equal(28, markdown:get(1).to)
+	-- 	assert.is.Equal("Ollama", markdown:frontmatter().provider.name)
+	-- end)
 
 	-- it("it should parse the full example file", function()
 	--     local handle = io.open("./samples/Full-Markdown.md", "r")

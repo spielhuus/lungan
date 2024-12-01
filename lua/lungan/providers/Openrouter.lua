@@ -1,4 +1,4 @@
-local log = require("log")
+local log = require("lungan.log")
 
 local OPENROUTER_API_TOKEN = os.getenv("OPENROUTER_API_TOKEN") or ""
 

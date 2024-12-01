@@ -27,7 +27,6 @@ function Source:complete(params, callback)
 			local llm = require("lungan.llm"):new(opts)
 			-- opts.providers[provider.name]:models(opts, name, function(content)
 			llm:models(session, function(status, content)
-				print("content:" .. status .. ":" .. vim.inspect(content))
 				for _, model in ipairs(content) do
 					table.insert(items, {
 						label = model.name,

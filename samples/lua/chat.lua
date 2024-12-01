@@ -2,7 +2,7 @@ local Http = require("lungan.lua.Http")
 local Ollama = require("lungan.providers.Ollama")
 local str = require("lungan.str")
 
-require("log").level = "info"
+require("lungan.log").level = "info"
 
 -- create a new ollama binding
 local http = Http:new()

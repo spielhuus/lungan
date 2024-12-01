@@ -1,4 +1,4 @@
-local log = require("log")
+local log = require("lungan.log")
 local str = require("lungan.str")
 local textwrap = require("lungan.textwrap")
 
@@ -11,12 +11,8 @@ function LLM:new(opts)
 	return o
 end
 
-function LLM:stop()
-	print("STOP" .. vim.inspect(self.JobId))
-	if self.JobId ~= nil then
-		self.JobId:stop()
-		self.JobId = nil
-	end
+function LLM:stop(session)
+	self.options.providers[session.data:frontmatter().provider.name]:stop()
 end
 
 function LLM:models(session, callback)
@@ -24,10 +20,27 @@ function LLM:models(session, callback)
 end
 
 function LLM:chat(chat)
-	local buffer = chat.args.buffer
 	local provider = chat.data:frontmatter().provider
 	local role = ""
 	local wrap = textwrap:new(nil, self.options, chat)
+
+	-- get the last user message
+	local messages = {}
+	for _, line in ipairs(chat:get().messages) do
+		table.insert(messages, { role = line.role, content = line.content })
+	end
+
+	-- execute te RAG chain
+	if chat:get()["system_context"] then
+		local system_context = chat:get()["system_context"]
+		local func, err = load(system_context)
+		if not func then
+			error(err)
+		end
+		local res = func()(messages[#messages].content)
+		print("context:" .. res)
+	end
+
 	self.JobId = self.options.providers[provider.name]:chat(self.options, chat:get(), function(data)
 		if data["error"] then
 			vim.notify(data["error"], vim.log.levels.ERROR, { title = provider.name .. " Error" })
@@ -37,7 +50,7 @@ function LLM:chat(chat)
 				wrap:push({ "\n\n", "<== " .. token_role, "\n" })
 				role = token_role
 			end
-			if data["message"]["content"] then
+			if data["message"]["content"] and #data["message"]["content"] > 0 then
 				local token = data["message"]["content"]
 				-- draw the text
 				if type(token) == "table" then
@@ -57,6 +70,9 @@ function LLM:chat(chat)
 				--         func()(self.options, session, token)
 				--     end
 				-- end
+			elseif data["message"]["tool_calls"] then
+				-- draw the tool call
+				chat:append({ str.to_string(data["message"]["tool_calls"]) })
 			else
 				log.warn("unknown message format: " .. vim.inspect(data))
 			end

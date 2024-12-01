@@ -1,4 +1,4 @@
-local log = require("log")
+local log = require("lungan.log")
 local M = {}
 
 local namespace = vim.api.nvim_create_namespace("lungan.images")

@@ -1,78 +1,98 @@
-local log = require("log")
+local log = require("lungan.log")
 local str = require("lungan.str")
 
 local Http = {}
 Http.__index = Http
 
---- Executes a GET request to the specified URL using `curl`.
+---HTTP client using curl
+function Http:new()
+	local o = {}
+	setmetatable(o, self)
+	o.stdout = {}
+	o.stderr = {}
+	return o
+end
+
+local function handle_output(self, data, handler)
+	if data then
+		log.trace(handler(data))
+		local clean_table = str.clean_table(data)
+		if #clean_table > 0 then
+			for _, token in ipairs(clean_table) do
+				table.insert(self.stdout, token)
+			end
+		end
+	end
+end
+
+local function handle_exit(self, code, on_exit)
+	self.job_id = nil
+	if on_exit then
+		on_exit(code, self:response())
+	else
+		return code, self:response()
+	end
+end
+
+---Sends an HTTP GET request to the specified URL.
 ---
----This function initiates an HTTP GET request via `curl`, capturing the output and errors in separate buffers. It supports custom callback functions for handling standard output (`on_stdout`), standard error (`on_stderr`), and exit status (`on_exit`). If no `on_exit` is provided, the function waits for the job to complete and returns the response.
+---If `on_exit` is `nil`, the method will not wait for the job to
+---complete before returning; instead, it will return immediately with
+---an exit status indicating the job's completion.
 ---
----@param url string The URL to which the GET request will be sent.
----@param on_exit function (optional) A callback function called upon completion of the HTTP request. This function receives the exit code as its first argument and a table containing the response data as its second argument.
----@param on_stdout function (optional) A callback function for handling standard output from `curl`. The default behavior is to log the output at trace level.
----@param on_stderr function (optional) A callback function for handling standard error from `curl`. The default behavior is to log the error at trace level.
----@return
----- If no `on_exit` callback is provided, returns a tuple containing:
----  - An integer representing the exit status of the curl command.
----  - A table containing the response data obtained from the server.
----- Otherwise, does not return anything and relies on the custom `on_exit` function to handle completion logic.
+---When on_stdout and on_stderr are not set the responses will be collected
+---and can then be accessed with Http:response()
 ---
----@usage
----local http = require('your_module')
----http:get("http://example.com", function(code, response)
----  if code == 0 then
----    print(vim.inspect(response))
----  else
----    print("Failed with exit code: " .. code)
----  end
----end)
+--- @param url string The URL to send the GET request to.
+--- @param on_exit function|nil An optional callback function to be called when the job exits.
+--- @param on_stdout function|nil An optional callback function to handle standard output data.
+--- @param on_stderr function|nil An optional callback function to handle standard error data.
+--- @return nil If an exit callback is provided, returns immediately. Otherwise,
+---                waits for job completion and returns the response.
 function Http:get(url, on_exit, on_stdout, on_stderr)
-	self.stdout = {} -- clean previous session
+	self.stdout = {}
 	self.stderr = {}
 	local status = -1
-	local args = { "curl", "--silent", "--no-buffer", "-X", "GET" }
-	table.insert(args, url)
-	log.debug("GET" .. table.concat(args, " "))
+	local args = { "curl", "--silent", "--no-buffer", "-X", "GET", url }
+	log.debug("GET:" .. table.concat(args, " "))
 	self.job_id = vim.fn.jobstart(table.concat(args, " "), {
 		on_stdout = on_stdout or function(_, data, _)
-			if data then
-				log.trace("STDOUT: " .. vim.inspect(data))
-				local clean_table = str.clean_table(data)
-				if #clean_table > 0 then
-					for _, token in ipairs(clean_table) do
-						table.insert(self.stdout, token)
-					end
-				end
-			end
+			handle_output(self, data, log.trace)
 		end,
 		on_stderr = on_stderr or function(_, data, _)
-			if data then
-				local clean_table = str.clean_table(data)
-				if #clean_table > 0 then
-					for _, token in ipairs(clean_table) do
-						table.insert(self.stderr, token)
-					end
-				end
-			end
+			handle_output(self, data, print)
 		end,
 		on_exit = on_exit or function(_, code)
-			status = code
-			if on_exit then
-				print("call on_exit")
-				on_exit(code, self:response())
-			end
+			return handle_exit(self, code, on_exit)
 		end,
 	})
 	if not on_exit then
 		vim.fn.jobwait({ self.job_id }, -1)
-		self.job_id = nil
-		return status, self:response()
+		return handle_exit(self, status, nil)
 	end
 end
 
+--- Sends a POST request using `curl`.
+--
+---If `on_exit` is `nil`, the method will not wait for the job to
+---complete before returning; instead, it will return immediately with
+---an exit status indicating the job's completion.
+---
+---When on_stdout and on_stderr are not set the responses will be collected
+---and can then be accessed with Http:response()
+---
+-- @param self The instance of the Http class.
+-- @param request A table containing the request details:
+--   - `url` (string): The URL to send the POST request to.
+--   - `headers` (table, optional): A list of headers to include in the request.
+--   - `body` (string, optional): Data to be sent in the body of the request.
+--- @param on_exit function|nil An optional callback function to be called when the job exits.
+--- @param on_stdout function|nil An optional callback function to handle standard output data.
+--- @param on_stderr function|nil An optional callback function to handle standard error data.
+--- @return nil If an exit callback is provided, returns immediately. Otherwise,
+---                waits for job completion and returns the response.
 function Http:post(request, on_exit, on_stdout, on_stderr)
-	self.stdout = {} -- clean previous session
+	self.stdout = {}
 	self.stderr = {}
 	local status = -1
 	local args = { "curl", "--silent", "--no-buffer", "-X", "POST" }
@@ -86,56 +106,43 @@ function Http:post(request, on_exit, on_stdout, on_stderr)
 		table.insert(args, "-d")
 		table.insert(args, vim.fn.shellescape(request.body))
 	end
-	table.insert(args, request.url)
+	table.insert(args, "'" .. request.url .. "'")
 	log.debug("POST" .. table.concat(args, " "))
+
 	self.job_id = vim.fn.jobstart(table.concat(args, " "), {
 		on_stdout = on_stdout or function(_, data, _)
-			log.trace("<<<", data)
-			if data then
-				local clean_table = str.clean_table(data)
-				if #clean_table > 0 then
-					for _, token in ipairs(clean_table) do
-						table.insert(self.stdout, token)
-					end
-				end
-			end
+			handle_output(self, data, log.trace)
 		end,
 		on_stderr = on_stderr or function(_, data, _)
-			if data then
-				local clean_table = str.clean_table(data)
-				if #clean_table > 0 then
-					for _, token in ipairs(clean_table) do
-						table.insert(self.stderr, token)
-					end
-				end
-			end
+			handle_output(self, data, print)
 		end,
 		on_exit = on_exit or function(_, code)
-			status = code
-			if on_exit then
-				print("call on_exit")
-				on_exit(code, self:response())
-			end
+			return handle_exit(self, code, on_exit)
 		end,
 	})
 	if not on_exit then
-		print("wait for job")
 		vim.fn.jobwait({ self.job_id }, -1)
-		self.jobid = nil
-		return status, self:response()
+		return handle_exit(self, status, nil)
 	end
 end
 
-function Http:response()
-	return table.concat(self.stdout, "")
+--- Cancels the current HTTP request by stopping the associated job.
+--- @return integer|nil, string Returns the job id and an error message if cancelling fails
+function Http:cancel()
+	if self.job_id ~= nil then
+		local result = vim.fn.jobstop(self.job_id)
+		if result == 0 then
+			return self.job_id, "failed to stop job: " .. self.job_id
+		end
+		self.job_id = nil
+	end
+	return nil, ""
 end
 
-function Http:new()
-	local o = {}
-	setmetatable(o, self)
-	o.stdout = {}
-	o.stderr = {}
-	return o
+---Return the retrieved body
+---@return string the body
+function Http:response()
+	return table.concat(self.stdout, "")
 end
 
 return Http

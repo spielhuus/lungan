@@ -39,10 +39,10 @@ local tostring = function(...)
 	local t = {}
 	for i = 1, select("#", ...) do
 		local x = select(i, ...)
-		if type(x) == "number" then
-			x = round(x, 0.01)
-		end
-		t[#t + 1] = _tostring(x)
+		-- if type(x) == "number" then
+		-- 	x = round(x, 0.01)
+		-- end
+		t[#t + 1] = _tostring(require("lungan.str").to_string(x))
 	end
 	return table.concat(t, " ")
 end

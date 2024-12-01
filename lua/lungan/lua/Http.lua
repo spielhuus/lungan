@@ -1,5 +1,5 @@
 local uv = require("luv")
-local log = require("log")
+local log = require("lungan.log")
 local str = require("lungan.str")
 
 local Http = {}
@@ -68,16 +68,23 @@ function Http:post(request, on_exit, on_stdout, on_stderr)
 	end
 	table.insert(args, request.url)
 
+	log.trace("curl " .. table.concat(args, " "))
+
 	local stdout = uv.new_pipe()
 	local stderr = uv.new_pipe()
 
-	local handle, pid = uv.spawn("curl", {
+	local handle, pid
+	handle, pid = uv.spawn("curl", {
 		args = args,
 		stdio = { nil, stdout, stderr },
 	}, function(code)
+		log.debug("EXIT: " .. code)
 		if on_exit then
 			on_exit(code, self:response())
 		end
+		uv.close(stdout)
+		uv.close(stderr)
+		uv.close(handle)
 	end)
 	log.trace("process opened", handle, pid)
 
@@ -100,11 +107,8 @@ function Http:post(request, on_exit, on_stdout, on_stderr)
 			return log.error("STDOUT: " .. err)
 		end
 		if data then
-			local clean_table = str.clean_table({ data })
-			for _, token in ipairs(clean_table) do
-				table.insert(self.stdout, token)
-				on_stdout(err, { data })
-			end
+			table.insert(self.stdout, data)
+			on_stdout(err, { data })
 		end
 	end)
 

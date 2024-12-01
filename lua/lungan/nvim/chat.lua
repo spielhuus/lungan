@@ -1,8 +1,11 @@
+local LLM = require("lungan.llm")
+
 ---@class Chat
 ---@field options global options
 ---@field args table the session args
 ---@field data table the parsed Markdown data
 ---@field prompt Prompt the chat prompt
+---@field llm LLM the chat prompt
 local Chat = {}
 
 local get_win_opts = function()
@@ -72,7 +75,7 @@ function Chat:open()
 			vim.api.nvim_del_augroup_by_id(self._group)
 			-- require("lungan.diff").clear_marks(M.options, M.sessions[self.buffer])
 			-- M.sessions[args.buffer] = nil
-			require("lungan.llm"):stop()
+			self.llm:stop(self)
 		end,
 	})
 	vim.api.nvim_create_autocmd({ "BufWinEnter", "TextChanged", "TextChangedI" }, {
@@ -105,7 +108,7 @@ function Chat:open()
 		buffer = self.buffer,
 	})
 	vim.keymap.set("n", "<C-c>", function()
-		self.llm:stop()
+		self.llm:stop(self)
 	end, {
 		nowait = true,
 		noremap = true,

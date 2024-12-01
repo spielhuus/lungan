@@ -1,7 +1,7 @@
 ---
 provider:
   name: Ollama
-  model: llama3.2:3b-instruct-q4_K_M
+  model: hf.co/bartowski/Qwen2.5.1-Coder-7B-Instruct-GGUF:Q8_0
 name: LuaDocumentation
 icon:
   character: 󱂛
@@ -22,7 +22,6 @@ system_prompt: |
        -- code
     end
     ```
-
     output:
     ```lua
     ---Load a local or remote manifest describing a repository.
@@ -35,9 +34,15 @@ system_prompt: |
     '''
 context: |
   return function(buf, line1, line2)
-          return {
-                  code = require("lungan.utils").GetCodeBlock(buf, line1),
-          }
+    if line2 > line1 then
+      return { 
+          code = require("lungan.utils").GetBlock(buf, line1, line2)
+      }
+    else
+      return {
+        code = require("lungan.utils").GetCodeBlock(buf, line1),
+      }
+    end
   end
 ---
 

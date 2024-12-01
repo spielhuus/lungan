@@ -14,7 +14,7 @@ local HttpMock = {
 
 describe("Ollama", function()
 	before_each(function()
-		require("log").level = "info"
+		require("lungan.log").level = "info"
 	end)
 	it("should initialize with default options", function()
 		local ollama = Ollama:new(HttpMock)

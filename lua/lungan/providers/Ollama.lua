@@ -1,12 +1,5 @@
-local log = require("log")
+local json = require("lungan.json")
 local str = require("lungan.str")
-
-local json
-if vim ~= nil then
-	json = vim.json
-else
-	json = require("rapidjson")
-end
 
 local Ollama = {}
 
@@ -28,7 +21,7 @@ function Ollama:new(o, opts)
 	local in_opts = opts or {}
 	local options = defaults
 	for k, v in pairs(in_opts) do
-		defaults[k] = v
+		options[k] = v
 	end
 	instance.options = options
 	return instance
@@ -40,11 +33,17 @@ function Ollama:__parse_prompt(_, prompt)
 		messages = { { role = "system", content = prompt.system_prompt } },
 		options = prompt.options,
 		stream = prompt.stream,
+		tools = prompt.tools,
 	}
 	for _, line in ipairs(prompt.messages) do
 		table.insert(output.messages, { role = line.role, content = line.content })
 	end
 	return output
+end
+
+---Stop a running request
+function Ollama:stop()
+	self:cancel()
 end
 
 function Ollama:models(callback)
@@ -65,10 +64,7 @@ function Ollama:chat(opts, prompt, stdout, stderr, exit)
 	if exit ~= nil then
 		on_exit = function(_, b)
 			if b ~= 0 then
-				log.trace("Exit: " .. b)
-				if exit then
-					exit(b)
-				end
+				exit(b)
 			end
 		end
 	end
@@ -85,40 +81,7 @@ function Ollama:chat(opts, prompt, stdout, stderr, exit)
 			stderr(data)
 		end
 	end)
-	-- return client
 end
-
--- local complete = function(opts, session, stdout, stderr, exit)
--- 	local job_id = http.post(
--- 		opts.providers[opts.provider].host, -- TODO get the provider frmo the session
--- 		opts.providers[opts.provider].port,
--- 		"/api/generate",
--- 		{
--- 			model = session.model,
--- 			prompt = session.prompt,
--- 			stream = false,
--- 		},
--- 		-- parse_prompt(opts, session),
--- 		function(_, data, _)
--- 			stdout(vim.json.decode(data))
--- 		end,
--- 		function(_, data, _)
--- 			log.error("<<< ", vim.inspect(data))
--- 			if stderr then
--- 				stderr(data)
--- 			end
--- 		end,
--- 		function(_, b)
--- 			if b ~= 0 then
--- 				log.trace("Exit: " .. b)
--- 				if exit then
--- 					exit(b)
--- 				end
--- 			end
--- 		end
--- 	)
--- 	return job_id
--- end
 
 --- get embeddings
 --- example request
@@ -126,7 +89,6 @@ end
 ---   "model": "nomic-embed-text",
 ---   "prompt": "The sky is blue because of Rayleigh scattering"
 --- }'
-
 function Ollama:embeddings(opts, request, stdout, stderr, exit)
 	local request = {
 		url = self.options.url .. "/api/embeddings",
@@ -137,29 +99,23 @@ function Ollama:embeddings(opts, request, stdout, stderr, exit)
 	if exit ~= nil then
 		on_exit = function(_, b)
 			if b ~= 0 then
-				log.trace("Exit: " .. b)
-				if exit then
-					exit(b)
-				end
+				exit(b)
 			end
 		end
 	end
 
 	local status, _ = self:post(request, on_exit, function(_, data, _)
-		log.trace(str.to_string(data))
 		if data then
 			local clean_table = str.clean_table(data)
 			if #clean_table > 0 then
-				stdout(json.decode(table.concat(data, "")))
+				stdout(clean_table)
 			end
 		end
 	end, function(_, data, _)
-		log.error("<<< ", str.to_string(data))
 		if stderr then
 			stderr(data)
 		end
 	end)
-	-- return client
 end
 
 return Ollama

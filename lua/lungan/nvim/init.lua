@@ -38,7 +38,7 @@ M.run = function(args)
 end
 
 M.setup = function(opts)
-	require("log").outfile = "log.txt"
+	require("lungan.log").outfile = "log.txt"
 	vim.tbl_deep_extend("force", opts, M.options)
 	-- set the highligh groups
 	for _, hl in ipairs(M.options.theme.hl) do

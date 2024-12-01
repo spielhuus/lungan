@@ -6,6 +6,7 @@ local M = {
 	default_prompts = true,
 	prompt_path = {
 		vim.env.HOME .. "/.config/lungan",
+		"samples/prompts",
 		".nvim/lungan",
 	},
 	provider = "Ollama",
