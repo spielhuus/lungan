@@ -1,12 +1,6 @@
 local log = require("lungan.log")
 local str = require("lungan.str")
-
-local json
-if vim ~= nil then
-	json = vim.json
-else
-	json = require("rapidjson")
-end
+local json = require("lungan.json")
 
 local Chroma = {}
 

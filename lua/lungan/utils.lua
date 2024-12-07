@@ -50,7 +50,7 @@ end
 M.TemplateVars = function(dict, text)
 	-- Use a pattern to find all occurrences of {VAR} in the text
 	local res = (
-		string.gsub(text, "{{(%w+)}}", function(var)
+		string.gsub(text, "{{([%w|_]+)}}", function(var)
 			-- Replace each occurrence with the corresponding value from the dictionary
 			local substitude = dict[var]
 			if substitude and type(substitude) == "table" then

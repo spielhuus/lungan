@@ -28,47 +28,40 @@ function Markdown:_parse(lines)
 			local node = { type = Markdown.types.FRONTMATTER, from = i }
 			local yaml = {}
 			i = i + 1
-			while i <= #lines do
+			local break_matter = false
+			while i <= #lines and break_matter == false do
 				frontmatter = string.match(lines[i], "^---[%s]*$")
 				if frontmatter then
-					goto endmatter
+					break_matter = true
+				else
+					table.insert(yaml, lines[i])
+					i = i + 1
 				end
-				table.insert(yaml, lines[i])
-				i = i + 1
 			end
-			::endmatter::
 			node.to = i
 			node.text = table.concat(yaml, "\n")
 			table.insert(tree, node)
 			self.fm = require("lungan.yaml"):new(nil, yaml)
-			goto next
-		end
-
-		if chat then
+		elseif chat then
 			local node = { type = Markdown.types.CHAT, role = chat, from = i }
 			local chat_text = {}
 			i = i + 1
-			while i <= #lines do
+			local endchat = false
+			while i <= #lines and endchat == false do
 				local chat_fin = string.match(lines[i], "^==>$")
 				if chat_fin then
-					goto endchat
+					endchat = true
+				else
+					table.insert(chat_text, lines[i])
+					i = i + 1
 				end
-				table.insert(chat_text, lines[i])
-				i = i + 1
 			end
-			::endchat::
 			node.to = i
 			node.text = table.concat(chat_text, "\n")
 			table.insert(tree, node)
-			goto next
-		end
-
-		if heading then
+		elseif heading then
 			table.insert(tree, { type = Markdown.types.HEADER, heading = #heading, text = text, from = i, to = i })
-			goto next
-		end
-
-		if list_level and list_item then
+		elseif list_level and list_item then
 			table.insert(tree, {
 				type = Markdown.types.LIST,
 				char = list_item,
@@ -77,10 +70,7 @@ function Markdown:_parse(lines)
 				from = i,
 				to = i,
 			})
-			goto next
-		end
-
-		if num_list_level and num_list_item then
+		elseif num_list_level and num_list_item then
 			table.insert(tree, {
 				type = Markdown.types.LIST,
 				char = num_list_item,
@@ -89,10 +79,7 @@ function Markdown:_parse(lines)
 				from = i,
 				to = i,
 			})
-			goto next
-		end
-
-		if code then
+		elseif code then
 			local node = { type = Markdown.types.CODE, from = i, lang = code }
 			-- get params
 			local function params(body)
@@ -106,35 +93,35 @@ function Markdown:_parse(lines)
 				end
 				node.params = tparams
 			end
+			local endcode = false
 			-- parse the first line
 			if string.match(code, "{(.*)}```") then -- single line params
 				params(code:sub(1, -4))
 				node.to = i
 				table.insert(tree, node)
-				goto next
+				endcode = true
 			elseif string.match(code, "{(.*)}") then -- multiline
 				params(code)
 			end
 			-- collect the lines
 			local source = {}
-			i = i + 1
-			while i <= #lines do
-				if lines[i] == "```" then
-					goto endcode
-				end
-				table.insert(source, lines[i])
+			if endcode == false then
 				i = i + 1
+				while i <= #lines and endcode == false do
+					if lines[i] == "```" then
+						endcode = true
+					else
+						table.insert(source, lines[i])
+						i = i + 1
+					end
+				end
+				node.text = table.concat(source, "\n")
 			end
-			::endcode::
 			node.to = i
-			node.text = table.concat(source, "\n")
 			table.insert(tree, node)
-			goto next
+		else
+			table.insert(tree, { type = Markdown.types.PARAGRAPH, text = line, from = i, to = i })
 		end
-
-		table.insert(tree, { type = Markdown.types.PARAGRAPH, text = line, from = i, to = i })
-
-		::next::
 		i = i + 1
 	end
 	return tree

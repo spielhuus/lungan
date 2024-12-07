@@ -43,6 +43,21 @@ describe("Test the YAML parser", function()
 		local yaml = require("lungan.yaml"):new(nil, lines)
 		assert.same({ provider = { model = "llama3.2:3b", name = "Ollama" }, name = "Llama" }, yaml.tree)
 	end)
+	it("should parse maps with special characters", function()
+		local lines = {
+			"provider:",
+			"  model: llama3.2:3b",
+			"  name: Ollama",
+			"  stream: true",
+			"name: Llama",
+			"icon: ",
+		}
+		local yaml = require("lungan.yaml"):new(nil, lines)
+		assert.same(
+			{ provider = { model = "llama3.2:3b", name = "Ollama", stream = true }, name = "Llama", icon = "" },
+			yaml.tree
+		)
+	end)
 	it("should parse maps with boolean value", function()
 		local lines = {
 			"provider:",

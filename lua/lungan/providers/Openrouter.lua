@@ -22,7 +22,7 @@ function Openrouter:new(o, opts)
 	return instance
 end
 
-function Openrouter:__parse_prompt(_, prompt)
+function Openrouter:__parse_prompt(prompt)
 	local output = {
 		model = prompt.provider.model,
 		messages = { { role = "system", content = prompt.system_prompt } },
@@ -67,36 +67,37 @@ end
 
 function Openrouter:models(callback)
 	local status, response = self:get(self.options.url .. "/api/v1/models")
-	if status ~= 0 then
-		print("ERROR in get")
-		vim.notify("Error: " .. vim.inspect(status) .. "\n" .. vim.inspect(response), vim.log.levels.ERROR)
-		return nil -- TODO return error
-	else
-		if #response > 0 then
-			local t_result = vim.json.decode(response)
-			local result = {}
-			for _, model in ipairs(t_result.data) do
-				table.insert(result, {
-					description = model.description,
-					model = model.id,
-					name = model.name,
-					context_length = model.context_length,
-					pricing = model.pricing,
-				})
-			end
-			callback(status, result)
+	-- TODO error handling
+	-- if status ~= 0 then
+	-- 	print("ERROR in get")
+	-- 	vim.notify("Error: " .. vim.inspect(status) .. "\n" .. vim.inspect(response), vim.log.levels.ERROR)
+	-- 	return nil -- TODO return error
+	-- else
+	if #response > 0 then
+		local t_result = vim.json.decode(response)
+		local result = {}
+		for _, model in ipairs(t_result.data) do
+			table.insert(result, {
+				description = model.description,
+				model = model.id,
+				name = model.name,
+				context_length = model.context_length,
+				pricing = model.pricing,
+			})
 		end
+		callback(status, result)
 	end
+	-- end
 end
 
-function Openrouter:chat(opts, session, stdout, stderr, exit)
+function Openrouter:chat(session, stdout, stderr, exit)
 	local request = {
 		url = self.options.url .. "/api/v1/chat/completions",
 		headers = {
 			' -H "Authorization: Bearer ' .. OPENROUTER_API_TOKEN .. '"',
 			' -H "Content-Type: application/json"',
 		},
-		body = vim.json.encode(self:__parse_prompt(opts, session)),
+		body = vim.json.encode(self:__parse_prompt(session)),
 	}
 	local status, _ = self:post(request, function(_, b)
 		if b ~= 0 then
@@ -137,37 +138,5 @@ function Openrouter:chat(opts, session, stdout, stderr, exit)
 	end)
 	-- return client
 end
-
--- local complete = function(opts, session, stdout, stderr, exit)
---     local job_id = http.post(
---         opts.providrs[opts.provider].host, -- TODO get the provider frmo the session
---         opts.providers[opts.provider].port,
---         "/api/generate",
---         {
---             model = session.model,
---             prompt = session.prompt,
---             stream = false,
---         },
---         -- __parse_prompt(opts, session),
---         function(_, data, _)
---             stdout(vim.json.decode(data))
---         end,
---         function(_, data, _)
---             log.error("<<< ", vim.inspect(data))
---             if stderr then
---                 stderr(data)
---             end
---         end,
---         function(_, b)
---             if b ~= 0 then
---                 log.trace("Exit: " .. b)
---                 if exit then
---                     exit(b)
---                 end
---             end
---         end
---     )
---     return job_id
--- end
 
 return Openrouter

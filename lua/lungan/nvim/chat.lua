@@ -1,7 +1,5 @@
-local LLM = require("lungan.llm")
-
 ---@class Chat
----@field options global options
+---@field options table options
 ---@field args table the session args
 ---@field data table the parsed Markdown data
 ---@field prompt Prompt the chat prompt

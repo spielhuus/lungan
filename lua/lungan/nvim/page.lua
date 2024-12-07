@@ -1,5 +1,3 @@
--- local log = require("lungan.utils.log")
-
 local Page = {}
 
 function Page:open()
@@ -31,7 +29,7 @@ function Page:attach(win, buffer)
 	self.buffer = buffer
 	local group = vim.api.nvim_create_augroup("LunganRedraw", { clear = true })
 	-- TODO add close
-	vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+	vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "WinScrolled" }, {
 		buffer = buffer,
 		group = group,
 		callback = function()

@@ -1,3 +1,6 @@
+local Ollama = require("lungan.providers.Ollama")
+
+-- TODO move to another place
 local context = {}
 local str = require("lungan.str")
 
@@ -11,7 +14,7 @@ end
 function context.search(collection, text)
 	print("Query: " .. text)
 	local http = require("lungan.nvim.Http"):new()
-	local ollama = require("lungan.providers.Ollama"):new(http, {})
+	local ollama = Ollama:new(http, {})
 	local chroma = require("lungan.db.chroma"):new(http, {})
 
 	local uuid
@@ -22,7 +25,7 @@ function context.search(collection, text)
 	end, nil)
 
 	local res = ""
-	ollama:embeddings({}, {
+	ollama:embeddings({
 		model = "nomic-embed-text:latest",
 		prompt = text,
 	}, function(out)

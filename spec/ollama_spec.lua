@@ -55,7 +55,7 @@ describe("Ollama", function()
 			},
 			system_prompt = "You are Susi",
 		}
-		local parsed = Ollama:__parse_prompt(nil, input)
+		local parsed = Ollama:__parse_prompt(input)
 		assert.are.equal("some/nice-roleplay:latest", parsed.model)
 		assert.are.equal(3, #parsed.messages)
 		assert.are.equal("system", parsed.messages[1].role)
@@ -113,7 +113,7 @@ describe("Ollama", function()
 		}
 		local ollama = Ollama:new(HttpMock, {})
 		local out, ret
-		ollama:chat({}, input, function(stdout)
+		ollama:chat(input, function(stdout)
 			out = stdout
 		end, function(stderr)
 			print("ERR:" .. vim.inspect(stderr))

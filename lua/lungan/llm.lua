@@ -4,6 +4,10 @@ local textwrap = require("lungan.textwrap")
 
 local LLM = {}
 
+---@class LLM
+---Represents an instance of a large language model.
+---@param opts table A table containing configuration options for the LLM.
+---@return LLM A new instance of the LLM with the specified options.
 function LLM:new(opts)
 	local o = {}
 	setmetatable(o, { __index = self, __name = "LLM" })
@@ -11,6 +15,8 @@ function LLM:new(opts)
 	return o
 end
 
+---Stops a language model provider session.
+---@param session chat The session object
 function LLM:stop(session)
 	self.options.providers[session.data:frontmatter().provider.name]:stop()
 end
@@ -24,9 +30,11 @@ function LLM:chat(chat)
 	local role = ""
 	local wrap = textwrap:new(nil, self.options, chat)
 
+	local prompt = chat:get()
+
 	-- get the last user message
 	local messages = {}
-	for _, line in ipairs(chat:get().messages) do
+	for _, line in ipairs(prompt.messages) do
 		table.insert(messages, { role = line.role, content = line.content })
 	end
 
@@ -38,12 +46,14 @@ function LLM:chat(chat)
 			error(err)
 		end
 		local res = func()(messages[#messages].content)
-		print("context:" .. res)
+		local sres = table.concat(res[1], "\n")
+		prompt.system_prompt =
+			table.concat(require("lungan.utils").TemplateVars({ system_context = sres }, prompt.system_prompt), "\n")
 	end
 
-	self.JobId = self.options.providers[provider.name]:chat(self.options, chat:get(), function(data)
+	self.JobId = self.options.providers[provider.name]:chat(prompt, function(data)
 		if data["error"] then
-			vim.notify(data["error"], vim.log.levels.ERROR, { title = provider.name .. " Error" })
+			log.error(data["error"], vim.log.levels.ERROR, { title = provider.name .. " Error" })
 		elseif data["message"] then
 			local token_role = data["message"]["role"]
 			if token_role ~= role then
@@ -73,10 +83,7 @@ function LLM:chat(chat)
 			elseif data["message"]["tool_calls"] then
 				-- draw the tool call
 				chat:append({ str.to_string(data["message"]["tool_calls"]) })
-			else
-				log.warn("unknown message format: " .. vim.inspect(data))
-			end
-			if data["done"] then
+			elseif data["done"] then
 				wrap:push({ "\n", "==>", "\n" })
 				wrap:flush()
 
@@ -95,14 +102,20 @@ function LLM:chat(chat)
 				--     end
 				--     func()(opts, session)
 				-- end
+			else
+				log.warn("unknown message format: " .. vim.inspect(data))
 			end
 		else
 			log.warn("Unknown response: " .. vim.inspect(data))
 		end
 	end, function(_, data, _)
-		print("ERR: " .. str.to_string(data))
+		if data then
+			print("LLM:ERR: " .. str.to_string(data))
+		end
 	end, function(_, data, _)
-		print("END: " .. str.to_string(data))
+		if data then
+			print("LLM:END: " .. str.to_string(data))
+		end
 	end)
 end
 

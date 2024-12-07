@@ -34,12 +34,22 @@ M.prompts = function()
 end
 
 M.run = function(args)
+	error("this is really called") -- TODO
 	llm.chat(M.options, M.sessions[args.source_buf])
 end
 
 M.setup = function(opts)
-	require("lungan.log").outfile = "log.txt"
 	vim.tbl_deep_extend("force", opts, M.options)
+	-- setup the logger
+	require("lungan.log").level = M.options.loglevel or "info"
+	require("lungan.log").outfile =
+		string.format("%s/%s.log", vim.api.nvim_call_function("stdpath", { "log" }), "lungan")
+	require("lungan.log").error = function(err)
+		vim.notify("lungan: " .. vim.inspect(err), vim.log.levels.ERROR)
+	end
+	require("lungan.log").warn = function(err)
+		vim.notify("lungan: " .. vim.inspect(err), vim.log.levels.WARN)
+	end
 	-- set the highligh groups
 	for _, hl in ipairs(M.options.theme.hl) do
 		vim.api.nvim_set_hl(0, hl[1], hl[2])
@@ -66,7 +76,7 @@ M.setup = function(opts)
 				M.attach()
 			end)
 		else
-			print("Unknown command: " .. arg.args) -- TODO use notify
+			vim.notify("Lungan: Unknown command '" .. arg.args .. "'", vim.log.levels.ERROR)
 		end
 	end, {
 		range = true,

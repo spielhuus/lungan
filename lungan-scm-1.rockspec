@@ -14,6 +14,7 @@ test_dependencies = {
 	"luacheck",
 	"luassert",
 	"busted",
+	"lbase64",
 }
 
 source = {

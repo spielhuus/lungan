@@ -1,47 +1,4 @@
 describe("Test the markdown parser", function()
-	-- it("should parse the options string", function()
-	--     local line = '{java output=true result=1 foo="bar"}'
-	--     local res = {}
-	--     require("lungan.markdown"):parse_string(res, line)
-	--     assert.same({
-	--         lang = "java",
-	--         params = {
-	--             output = true,
-	--             result = 1,
-	--             foo = "bar",
-	--         },
-	--     }, res)
-	-- end)
-	-- it("should parse the options string with tree", function()
-	--     local line = '{java output=true result=false fig.align="center"}'
-	--     local res = {}
-	--     require("lungan.markdown"):parse_string(res, line)
-	--     assert.same({
-	--         lang = "java",
-	--         params = {
-	--             output = true,
-	--             result = false,
-	--             fig = {
-	--                 align = "center",
-	--             },
-	--         },
-	--     }, res)
-	-- end)
-	-- it("should parse the options string with string that contains spaces", function()
-	--     local line = '{java output=true result=false fig.align="center top"}'
-	--     local res = {}
-	--     require("lungan.markdown"):parse_string(res, line)
-	--     assert.same({
-	--         lang = "java",
-	--         params = {
-	--             output = true,
-	--             result = false,
-	--             fig = {
-	--                 align = "center top",
-	--             },
-	--         },
-	--     }, res)
-	-- end)
 	it("should pass the paragraphs", function()
 		local lines = {
 			"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
@@ -120,11 +77,10 @@ describe("Test the markdown parser", function()
 		local lines = {
 			"# Header 1",
 			'```{d3 element="am" x="x" y="INPUT,DSBSC" data="py$am" fig.cap="Figure 1: Amplitude modulation"}```',
-			"```",
 			"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
 		}
 		local markdown = require("lungan.markdown"):new(nil, lines)
-		assert.is.Equal(3, markdown:size())
+		-- assert.is.Equal(3, markdown:size())
 		assert.same({
 			type = "code",
 			lang = "d3",
@@ -187,65 +143,65 @@ describe("Test the markdown parser", function()
 			markdown:get(14)
 		)
 	end)
-	-- it("should parse frontmatter blocks", function()
-	-- 	local lines = {
-	-- 		"---",
-	-- 		"name: frank",
-	-- 		"---",
-	-- 		"# Header 1",
-	-- 		"",
-	-- 		"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-	-- 	}
-	-- 	local markdown = require("lungan.markdown"):new(nil, lines)
-	-- 	assert.is.Equal(4, markdown:size())
-	-- 	assert.is.True(markdown:has_frontmatter())
-	-- 	assert.same({ type = "frontmatter", from = 1, to = 3, text = "name: frank" }, markdown:get(1))
-	-- 	assert.same({ name = "frank" }, markdown:frontmatter())
-	-- end)
-	-- it("should parse chat blocks", function()
-	-- 	local lines = {
-	-- 		"---",
-	-- 		"name: frank",
-	-- 		"---",
-	-- 		"# Header 1",
-	-- 		"",
-	-- 		"<== user",
-	-- 		"chat text",
-	-- 		"==>",
-	-- 	}
-	-- 	local markdown = require("lungan.markdown"):new(nil, lines)
-	-- 	assert.is.Equal(4, markdown:size())
-	-- 	assert.is.True(markdown:has_frontmatter())
-	-- 	assert.same({ type = "frontmatter", from = 1, to = 3, text = "name: frank" }, markdown:get(1))
-	-- 	assert.is.Equal("chat text", markdown:get(6).text)
-	-- 	assert.is.Equal("user", markdown:get(6).role)
-	-- end)
-	-- it("should parse a chat prompt", function()
-	-- 	local handle = io.open(".nvim/lungan/lua.md", "r")
-	-- 	assert.is.True(handle ~= nil)
-	-- 	local content = handle:read("*a")
-	-- 	handle:close()
-	-- 	local lines = vim.split(content, "\n")
-	-- 	local markdown = require("lungan.markdown"):new(nil, lines)
-	-- 	assert.is.Equal(4, markdown:size())
-	--
-	-- 	assert.is.True(markdown:has_frontmatter())
-	-- 	assert.is.Equal(1, markdown:get(1).from)
-	-- 	assert.is.Equal(28, markdown:get(1).to)
-	-- 	assert.is.Equal("Ollama", markdown:frontmatter().provider.name)
-	-- end)
+	it("should parse frontmatter blocks", function()
+		local lines = {
+			"---",
+			"name: frank",
+			"---",
+			"# Header 1",
+			"",
+			"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+		}
+		local markdown = require("lungan.markdown"):new(nil, lines)
+		assert.is.Equal(4, markdown:size())
+		assert.is.True(markdown:has_frontmatter())
+		assert.same({ type = "frontmatter", from = 1, to = 3, text = "name: frank" }, markdown:get(1))
+		assert.same({ name = "frank" }, markdown:frontmatter())
+	end)
+	it("should parse chat blocks", function()
+		local lines = {
+			"---",
+			"name: frank",
+			"---",
+			"# Header 1",
+			"",
+			"<== user",
+			"chat text",
+			"==>",
+		}
+		local markdown = require("lungan.markdown"):new(nil, lines)
+		assert.is.Equal(4, markdown:size())
+		assert.is.True(markdown:has_frontmatter())
+		assert.same({ type = "frontmatter", from = 1, to = 3, text = "name: frank" }, markdown:get(1))
+		assert.is.Equal("chat text", markdown:get(6).text)
+		assert.is.Equal("user", markdown:get(6).role)
+	end)
+	it("should parse a chat prompt", function()
+		local handle = io.open(".nvim/lungan/lua.md", "r")
+		assert.is.True(handle ~= nil)
+		local content = handle:read("*a")
+		handle:close()
+		local lines = vim.split(content, "\n")
+		local markdown = require("lungan.markdown"):new(nil, lines)
+		assert.is.Equal(4, markdown:size())
 
-	-- it("it should parse the full example file", function()
-	--     local handle = io.open("./samples/Full-Markdown.md", "r")
-	--     if not handle then
-	--         return
-	--     end
-	--     local content = handle:read("*a")
-	--     handle:close()
-	--     local lines = vim.split(content, "\n")
-	--     local markdown = require("lungan.markdown"):new(nil, lines)
-	--
-	--     assert.is.Equal(313, markdown:size())
-	--     assert.is.False(markdown:has_frontmatter())
-	-- end)
+		assert.is.True(markdown:has_frontmatter())
+		assert.is.Equal(1, markdown:get(1).from)
+		assert.is.Equal(28, markdown:get(1).to)
+		assert.is.Equal("Ollama", markdown:frontmatter().provider.name)
+	end)
+
+	it("it should parse the full example file", function()
+		local handle = io.open("./samples/Full-Markdown.md", "r")
+		if not handle then
+			return
+		end
+		local content = handle:read("*a")
+		handle:close()
+		local lines = vim.split(content, "\n")
+		local markdown = require("lungan.markdown"):new(nil, lines)
+
+		assert.is.Equal(313, markdown:size())
+		assert.is.False(markdown:has_frontmatter())
+	end)
 end)

@@ -2,11 +2,35 @@ local commands = {
 	convert = {
 		help = "convert a markdown file",
 		fn = function(args)
-			print(table.concat(args, ", "))
+			print("convert" .. args["--input"] .. " -> " .. args["--output"])
 			if rawget(args, "--input") == nil or rawget(args, "--output") == nil then
 				print("ERROR: input and output file must be provided.")
 			end
-			print("covert")
+
+			local file = io.open(args["--input"], "r")
+			if not file then
+				return nil
+			end
+
+			local lines = {}
+			for line in file:lines() do
+				table.insert(lines, line)
+			end
+
+			file:close()
+
+			-- write the result
+			local outfile = io.open(args["--output"], "w")
+			if not outfile then
+				return nil
+			end
+			local md = require("lungan.markdown"):new({}, lines)
+			local result = require("lungan.lua.notebook").convert(md)
+			for _, line in ipairs(result) do
+				outfile:write(line)
+				outfile:write("\n")
+			end
+			outfile:close()
 		end,
 	},
 }
@@ -21,6 +45,7 @@ end
 
 local function dispatch(args)
 	if #args == 0 then
+		print("ARGS not found")
 		print_usage()
 	else
 		local command = args[1]
@@ -28,9 +53,9 @@ local function dispatch(args)
 		local i = 2
 		while i <= #args do
 			if args[i] == "--input" then
-				args[args[i]] = args[i + 1]
+				parsed_args[args[i]] = args[i + 1]
 			elseif args[i] == "--output" then
-				args[args[i]] = args[i + 1]
+				parsed_args[args[i]] = args[i + 1]
 			end
 			i = i + 1
 		end

@@ -61,7 +61,7 @@ describe("Openrouter", function()
 			},
 			system_prompt = "You are Susi",
 		}
-		local parsed = Openrouter:__parse_prompt(nil, input)
+		local parsed = Openrouter:__parse_prompt(input)
 		assert.are.equal("some/nice-roleplay:latest", parsed.model)
 		assert.are.equal(true, parsed.stream)
 		assert.are.equal(3, #parsed.messages)
@@ -119,9 +119,9 @@ describe("Openrouter", function()
 			},
 			system_prompt = "You are Susi",
 		}
-		local ollama = Openrouter:new(HttpMock, {})
+		local openrouter = Openrouter:new(HttpMock, {})
 		local out
-		ollama:chat({}, input, function(stdout)
+		openrouter:chat(input, function(stdout)
 			out = stdout
 		end, function(stderr)
 			print("ERR:" .. vim.inspect(stderr))

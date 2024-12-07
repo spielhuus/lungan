@@ -3,7 +3,6 @@ local log = require("lungan.log")
 local str = require("lungan.str")
 
 local Http = {}
-Http.__index = Http
 
 function Http:get(url, on_exit, on_stdout, on_stderr)
 	self.stdout = {}
@@ -68,7 +67,7 @@ function Http:post(request, on_exit, on_stdout, on_stderr)
 	end
 	table.insert(args, request.url)
 
-	log.trace("curl " .. table.concat(args, " "))
+	log.trace("curl ", args)
 
 	local stdout = uv.new_pipe()
 	local stderr = uv.new_pipe()
@@ -124,7 +123,7 @@ end
 
 function Http:new()
 	local o = {}
-	setmetatable(o, self)
+	setmetatable(o, { __index = self })
 	o.stdout = {}
 	o.stderr = {}
 	return o

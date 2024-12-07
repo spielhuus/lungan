@@ -30,6 +30,8 @@ function textwrap:__push_nl()
 	self.line_width = 0
 end
 
+---Pushes a token into the text wrapping context.
+---@param token table[string] A list of strings to be processed and wrapped.
 function textwrap:push(token)
 	for _, item in ipairs(token) do
 		for i = 1, #item do
@@ -47,15 +49,16 @@ function textwrap:push(token)
 	end
 end
 
+---Drain the buffer
 function textwrap:flush()
 	self:__push_word(self.act_word)
 end
 
---- Creates a new textwrap instance.
--- @param o (table) The object to initialize. If nil, a new table is created.
--- @param options (table) Configuration options for the text wrap.
--- @param chat (table) Chat buffer to write the text to
--- @return table A new textwrap instance with initialized properties and methods.
+---Creates a new textwrap instance.
+---@param o table The object to initialize. If nil, a new table is created.
+---@param options table Configuration options for the text wrap.
+---@param chat Chat Chat buffer to write the text to
+---@return table A new textwrap instance with initialized properties and methods.
 function textwrap:new(o, options, chat)
 	o = o or {}
 	setmetatable(o, { __index = self })
@@ -63,7 +66,7 @@ function textwrap:new(o, options, chat)
 	o.chat = chat
 	o.act_word = ""
 	o.line_width = 0
-	o.max_width = 70
+	o.max_width = options.linewidth or 70
 	o.is_code = false
 	return o
 end

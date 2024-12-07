@@ -2,7 +2,7 @@ local Http = require("lungan.lua.Http")
 local Ollama = require("lungan.providers.Ollama")
 local str = require("lungan.str")
 
-require("lungan.log").level = "info"
+require("lungan.log").level = "trace"
 
 -- create a new ollama binding
 local http = Http:new()
@@ -15,9 +15,9 @@ ollama:models(function(status, data)
 end)
 
 print("chat with ollama")
-ollama:chat({}, {
+ollama:chat({
 	provider = {
-		model = "llama3.2:1b",
+		model = ";;llama3.2:1b",
 		name = "Ollama",
 	},
 	messages = {

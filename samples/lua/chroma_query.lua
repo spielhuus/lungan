@@ -23,7 +23,7 @@ end
 
 local function embed(text)
 	local res
-	ollama:embeddings({}, {
+	ollama:embeddings({
 		model = "nomic-embed-text:latest",
 		prompt = text,
 	}, function(out)

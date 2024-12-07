@@ -2,20 +2,19 @@ local log = require("lungan.log")
 local str = require("lungan.str")
 
 local Http = {}
-Http.__index = Http
 
 ---HTTP client using curl
 function Http:new()
 	local o = {}
-	setmetatable(o, self)
+	setmetatable(o, { __index = self })
 	o.stdout = {}
 	o.stderr = {}
 	return o
 end
 
-local function handle_output(self, data, handler)
+local function handle_output(self, data)
 	if data then
-		log.trace(handler(data))
+		log.trace(data)
 		local clean_table = str.clean_table(data)
 		if #clean_table > 0 then
 			for _, token in ipairs(clean_table) do
@@ -57,10 +56,10 @@ function Http:get(url, on_exit, on_stdout, on_stderr)
 	log.debug("GET:" .. table.concat(args, " "))
 	self.job_id = vim.fn.jobstart(table.concat(args, " "), {
 		on_stdout = on_stdout or function(_, data, _)
-			handle_output(self, data, log.trace)
+			handle_output(self, data)
 		end,
 		on_stderr = on_stderr or function(_, data, _)
-			handle_output(self, data, print)
+			handle_output(self, data)
 		end,
 		on_exit = on_exit or function(_, code)
 			return handle_exit(self, code, on_exit)
@@ -111,10 +110,10 @@ function Http:post(request, on_exit, on_stdout, on_stderr)
 
 	self.job_id = vim.fn.jobstart(table.concat(args, " "), {
 		on_stdout = on_stdout or function(_, data, _)
-			handle_output(self, data, log.trace)
+			handle_output(self, data)
 		end,
 		on_stderr = on_stderr or function(_, data, _)
-			handle_output(self, data, print)
+			handle_output(self, data)
 		end,
 		on_exit = on_exit or function(_, code)
 			return handle_exit(self, code, on_exit)

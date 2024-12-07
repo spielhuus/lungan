@@ -29,7 +29,8 @@ local M = {
 		".nvim",
 		"test/spec",
 	},
-
+	linewidth = 80, -- the linewidth for the textwrapper
+	loglevel = "trace",
 	theme = {
 		header_signs = { "󰬺", "󰬻", "󰬼", "󰬽", "󰬾", "󰬿", "󰭀", "󰭁", "󰭂", "󰿩" },
 		clear = function(_, win, buffer, from, to)
@@ -193,7 +194,6 @@ local M = {
 			end
 		end,
 		error = function(_, _, buffer, data)
-			print("render error: " .. vim.inspect(data))
 			vim.api.nvim_buf_set_extmark(buffer, namespace, data.line - 1, 0, {
 				virt_text_pos = "eol",
 				virt_text = {
@@ -205,7 +205,6 @@ local M = {
 			})
 		end,
 		out = function(_, _, buffer, data)
-			print("render out: " .. vim.inspect(data))
 			if #data.out > 0 then
 				if #data.out == 1 then
 					vim.api.nvim_buf_set_extmark(buffer, namespace, data.line - 1, 0, {
@@ -232,6 +231,22 @@ local M = {
 			local lines = {}
 			for _, line in ipairs(data.stdout) do
 				table.insert(lines, { { line, "@comment" } })
+			end
+			vim.api.nvim_buf_set_extmark(buffer, namespace, data.line - 1, 0, {
+				virt_lines = lines,
+				hl_mode = "combine",
+			})
+		end,
+		image = function(_, _, buffer, data)
+			local lines = {}
+			local total_rows = 0
+			for _, image in ipairs(data.images) do
+				local term = require("lungan.nvim.termutils")
+				term.update_cell_size()
+				total_rows = total_rows + math.ceil(image.height / term.cell_size.y)
+			end
+			for _ = 1, total_rows do
+				table.insert(lines, { { "", "@comment" } })
 			end
 			vim.api.nvim_buf_set_extmark(buffer, namespace, data.line - 1, 0, {
 				virt_lines = lines,
