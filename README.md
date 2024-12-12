@@ -66,8 +66,8 @@ as Markdown links and gives us the possibility to use different targets
 ```py
 import matplotlib
 import sys
-matplotlib.use('module://elektron')
-import elektron
+matplotlib.use('module://lungan')
+import lungan
 
 ```
 
@@ -103,7 +103,7 @@ a/0
 
 ```py
 import matplotlib
-matplotlib.use('module://elektron')
+matplotlib.use('module://lungan')
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -117,10 +117,12 @@ plt.show()
 
 
 ```py
-import lua
-
+a = "hello mom"
 ```
 
+```py
+print(a)
+```
 
 ## chat templates
 

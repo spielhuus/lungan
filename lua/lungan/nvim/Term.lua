@@ -1,10 +1,11 @@
 local str = require("lungan.str")
+local log = require("lungan.log")
 
 local Repl = {}
 
 function Repl:__is_echo(value)
 	for i, v in ipairs(self.sent) do
-		if v == value then
+		if str.rtrim(v) == value then
 			table.remove(self.sent, i)
 			return true
 		end
@@ -64,7 +65,6 @@ function Repl:run(cmd)
 	-- initialize the repl
 	self.term.chan = vim.fn.termopen(cmd, {
 		on_exit = function(_, code, _)
-			print("on_exit:" .. code)
 			self.term.code = code
 			self.term.chanid = nil
 			self.term.opened = 0
@@ -72,7 +72,7 @@ function Repl:run(cmd)
 			self.term.buffer = nil
 		end,
 		on_stderr = function(_, data, _)
-			print("ERROR: " .. vim.inspect(data))
+			log.error("ERROR: " .. vim.inspect(data))
 		end,
 		on_stdout = function(_, data, _)
 			local clean_in = str.clean_table(data)

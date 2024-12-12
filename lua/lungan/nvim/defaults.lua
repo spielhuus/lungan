@@ -1,4 +1,4 @@
-local devicons_loaded, devicons = pcall(require, "nvim-web-devicons")
+local _, devicons = pcall(require, "nvim-web-devicons")
 
 local namespace = vim.api.nvim_create_namespace("lungan")
 
@@ -33,7 +33,7 @@ local M = {
 	loglevel = "trace",
 	theme = {
 		header_signs = { "󰬺", "󰬻", "󰬼", "󰬽", "󰬾", "󰬿", "󰭀", "󰭁", "󰭂", "󰿩" },
-		clear = function(_, win, buffer, from, to)
+		clear = function(_, _, buffer, from, to)
 			vim.api.nvim_buf_clear_namespace(buffer, namespace, from or 0, to or -1)
 		end,
 		header = function(options, win, buffer, data)
@@ -53,10 +53,9 @@ local M = {
 			})
 		end,
 		code = function(_, _, buffer, data)
-			-- print("Code:" .. vim.inspect(data))
 			local icon, hl = devicons.get_icon(nil, data.lang, { default = true })
 			-- prepare and draw the header
-			local header = { { (data.lang or "") .. " ", hl } }
+			local header = { { (data.lang or "") .. "    ", hl } }
 			if data.params then
 				table.insert(header, { vim.inspect(data.params), "" })
 			end

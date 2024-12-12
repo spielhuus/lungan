@@ -21,6 +21,10 @@ function LLM:stop(session)
 	self.options.providers[session.data:frontmatter().provider.name]:stop()
 end
 
+function LLM:context_size(session)
+	print("context_size:" .. vim.inspect(session))
+end
+
 function LLM:models(session, callback)
 	self.options.providers[session.data:frontmatter().provider.name]:models(callback)
 end
@@ -60,13 +64,19 @@ function LLM:chat(chat)
 				wrap:push({ "\n\n", "<== " .. token_role, "\n" })
 				role = token_role
 			end
-			if data["message"]["content"] and #data["message"]["content"] > 0 then
-				local token = data["message"]["content"]
-				-- draw the text
-				if type(token) == "table" then
-					wrap:push(token)
-				else
-					wrap:push({ token })
+			if data["message"]["content"] then
+				if #data["message"]["content"] > 0 then
+					local token = data["message"]["content"]
+					-- draw the text
+					if type(token) == "table" then
+						wrap:push(token)
+					else
+						wrap:push({ token })
+					end
+				end
+				if data["done"] then
+					wrap:push({ "\n", "==>", "\n" })
+					wrap:flush()
 				end
 				-- call the process function if available
 				-- if session.data:frontmatter()["process"] then

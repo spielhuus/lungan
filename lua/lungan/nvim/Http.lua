@@ -106,7 +106,7 @@ function Http:post(request, on_exit, on_stdout, on_stderr)
 		table.insert(args, vim.fn.shellescape(request.body))
 	end
 	table.insert(args, "'" .. request.url .. "'")
-	log.debug("POST" .. table.concat(args, " "))
+	log.debug("POST(" .. #request.body .. " Bytes):" .. table.concat(args, " "))
 
 	self.job_id = vim.fn.jobstart(table.concat(args, " "), {
 		on_stdout = on_stdout or function(_, data, _)

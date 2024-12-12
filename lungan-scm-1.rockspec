@@ -28,4 +28,7 @@ build = {
 			lungan = "bin/lungan.lua",
 		},
 	},
+	copy_directories = {
+		"python3",
+	},
 }

@@ -11,36 +11,53 @@ title: produkt
 version: 2
 draft: False
 history:
-  - { date: "2021-11-12",
-      description: "Bipolar LED and redesign of PCB",
-      revision: "2" }
-  - { date: "2021-04-01",
-      description: "initial commit of project",
-      revision: "1" }
+  - date: "2021-11-12"
+    description: "Bipolar LED and redesign of PCB"
+    revision: "2"
+  - date: "2021-04-01"
+    description: "initial commit of project"
+    revision: "1"
 references:
-  - { description: "VCA Techniques Investigated",
-       title: "ESP",
-       url: "https://sound-au.com/articles/vca-techniques.html" }
-  - { description: "Keyiing and VCA citcuits for electronic music instruments.",
-      title: "Popular Electronics",
-      url: "https://tinaja.com/glib/pop_elec/mus_keying_vca_1+2_75.pdf" }
-  - { description: "Basics of the Gilbert Cell | Analog Multiplier | Mixer | Modulator",
-      title: "w2aew",
-      url: "https://www.youtube.com/watch?v=7nmmb0pqTU0&t=2s" }
-  - { description: "AM & DSB-SC Modulation with the Gilbert Cell",
-      title: "w2aew",
-      url: "https://www.youtube.com/watch?v=38OQub2Vi2Q" }
-  - { description: "Analog multiplier application guide ",
-      title: "Analog Devices",
-      url: "https://www.analog.com/media/en/training-seminars/design-handbooks/ADI_Multiplier_Applications_Guide.pdf" }
-  - { description: "Datasheet",
-      title: "AD633",
-      url: "https://www.analog.com/media/en/technical-documentation/data-sheets/AD633.pdf" }
+  - description: "VCA Techniques Investigated"
+    title: "ESP"
+    url: "https://sound-au.com/articles/vca-techniques.html"
+  - description: "Keyiing and VCA citcuits for electronic music instruments."
+    title: "Popular Electronics"
+    url: "https://tinaja.com/glib/pop_elec/mus_keying_vca_1+2_75.pdf"
+  - description: "Basics of the Gilbert Cell | Analog Multiplier | Mixer | Modulator"
+    title: "w2aew"
+    url: "https://www.youtube.com/watch?v=7nmmb0pqTU0&t=2s"
+  - description: "AM & DSB-SC Modulation with the Gilbert Cell"
+    title: "w2aew"
+    url: "https://www.youtube.com/watch?v=38OQub2Vi2Q"
+  - description: "Analog multiplier application guide "
+    title: "Analog Devices"
+    url: "https://www.analog.com/media/en/training-seminars/design-handbooks/ADI_Multiplier_Applications_Guide.pdf"
+  - description: "Datasheet"
+    title: "AD633"
+    url: "https://www.analog.com/media/en/technical-documentation/data-sheets/AD633.pdf"
 ---
 
 # amplitude modulation
 
-In amplitude modulation the amplitude (signal strength) of the carrier changes in proportion to the message signal.
+"Amplitude Modulation (AM) is a fundamental technique used in both analog
+and digital signal processing. It's characterized by a simple yet effective
+method of encoding a message signal onto a carrier wave.
+
+There are two primary applications of AM:
+
+1. **Radio and Television Broadcasting**: AM is used to encode audio and video
+signals onto high-frequency carrier waves, which are then transmitted to
+receivers. This is how AM radio stations broadcast music and talk shows, and
+how television signals are transmitted over the airwaves.
+2. **Synthesizers**: AM is used in synthesizers to create dynamic and
+interesting sounds. In this context, AM is employed for applications like
+VCA (Voltage-Controlled Amplifier) modulation and ring modulation.
+
+At its core, AM involves changing the **amplitude** (signal strength) of the
+carrier wave in **proportion to the message signal**. This basic principle
+makes AM a versatile and widely-used technique in many areas of
+electronics."
 
 $$
 \begin{array}{c}
@@ -48,9 +65,10 @@ c(t) = A \sin(2 \pi f_c t)\,
 \end{array}
 $$
 
-Where A is the amplitude of the carrier singal and the function of f the modulation signal. Amplitude Modulation is a multiplication of the two signals.
+Where A is the amplitude of the carrier singal and the function of the
+modulation signal. Amplitude Modulation is a multiplication of the two signals.
 
-```{python echo=FALSE}
+```{py echo=FALSE}
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.fftpack
@@ -87,6 +105,32 @@ am_bode['AM'] = 2.0/N * np.abs(yam[40:160])
 
 ```{d3 element="am" x="x" y="INPUT,DSBSC" data="py$am" width="600" height="400" fig.align='center' fig.cap="Figure 1: Amplitude modulation"}```
 
+```py
+import matplotlib.pyplot as plt 
+import matplotlib
+matplotlib.use('module://lungan')
+ 
+# Ensure your lists have the same length 
+assert len(am['x']) == len(am['INPUT']) == len(am['DSBSC']) 
+ 
+# Create the plot 
+plt.plot(am['x'], am['INPUT'], label='INPUT') 
+plt.plot(am['x'], am['DSBSC'], label='DSBSC') 
+ 
+# Set title and labels 
+plt.title('DSBSC vs INPUT') 
+plt.xlabel('Time (ms)') 
+plt.ylabel('Amplitude') 
+ 
+# Add legend 
+plt.legend() 
+ 
+# Show the plot 
+plt.show() 
+
+```
+
+
 Here the carrier frequency is 200Hz and the modulation frequency is 40Hz. The carrier frequency is modulated by the modulation frequency. When the modulation signal is negative the resulting signal has a phase shift of 180°. The frequency analysis shows that the two sidebands are created at 160Hz and 240Hz. The modulation frequency is added and subtracted from the base frequency. This is called a double-sideband with suppressed carrier (DSBSC).
 
 ```{d3 element="am_bode" x="bx" y="AM,DSBSC" data="py$am_bode" width="600" height="400" fig.align='center' fig.cap="Figure 2: Frequency analysis" xType="scaleLinear"}```
@@ -99,79 +143,95 @@ The long-tailed pair or differential amplifier is probably the most widely used 
 
 
 ```{python echo=FALSE output="hide" fig.align="center" fig.cap="Figure 3: Long tailed pair"}
-from elektron import Circuit, Draw, Element, Label, Line, Dot, Simulation
+from IPython.display import SVG, display
+import recad
+import lungan
+lungan.set_plot(0, 0, [])
+import matplotlib
+matplotlib.use('module://lungan')
 
-draw = (Draw(["/usr/share/kicad/symbols"])
-  + Label("X").rotate(180)
-  + Element("Q1", "Transistor_BJT:BC547", unit=1, value="BC547",
-                 Spice_Netlist_Enabled="Y",
-                 Spice_Primitive="Q",
-                 Spice_Model="BC547B").anchor(2)
+hema = recad.Schema("")
+schema.move_to((50.8, 50.8))
+schema = (schema
+    + recad.LocalLabel("X").rotate(180) 
+)
+schema.plot(scale=10)
+print(plot)
+```
 
-  + Line().at("Q1", "1").up().length(5.08)
-  + (dot_out_a := Dot())
-  + Line().up().length(5.08)
-  + Element("R1", "Device:R", unit=1, value="15k").rotate(180)
-  + Line().up().length(5.08)
-  + Element("+15V", "power:+15V", value="+15V")
 
-  + Line().at("Q1", "3").down().length(5.08)
-  + Line().right().length(10.16)
-  + (dot1 := Dot())
-  + Line().right().length(10.16)
-  + Line().up().length(5.08)
-  + Element("Q2", "Transistor_BJT:BC547", unit=1, value="BC547",
-                 Spice_Netlist_Enabled="Y",
-                 Spice_Primitive="Q",
-                 Spice_Model="BC547B").anchor(3).mirror('x').rotate(180)
 
-  + Line().at("Q2", "1").up().length(5.08)
-  + (dot_out_b := Dot())
-  + Line().up().length(5.08)
-  + Element("R2", "Device:R", unit=1, value="15k").rotate(180)
-  + Line().up().length(5.08)
-  + Element("+15V", "power:+15V", value="+15V")
-
-  + Element("GND", "power:GND", value="GND").at("Q2", "2")
-
-  + Element("R3", "Device:R", unit=1, value="33k").at(dot1)
-  + Line().down().length(2.54)
-  + (dot2 := Dot())
-  + Line().down().length(2.54)
-  + Element("R4", "Device:R", unit=1, value="15k")
-  + Element("-15V", "power:-15V", value="-15V").rotate(180)
-
-  + Line().at(dot2).left().length(10.16)
-  + Line().down().length(2.54)
-  + Element("Q3", "Transistor_BJT:BC547", unit=1, value="BC547",
-                 Spice_Netlist_Enabled="Y",
-                 Spice_Primitive="Q",
-                 Spice_Model="BC547B").anchor(3).mirror('x')
-
-  + Element("GND", "power:GND", value="GND").at("Q3", "1")
-  + Line().at("Q3", "2")
-  + Label("Y").rotate(180)
-
-  + Line().at(dot_out_a).left().length(5.08)
-  + Label("OUTa").rotate(180)
-
-  + Line().at(dot_out_b).right().length(5.08)
-  + Label("OUTb"))
-
-circuit = draw.circuit(["../../lib/spice"])
-circuit.voltage("1", "+15V", "GND", "DC 15V")
-circuit.voltage("2", "-15V", "GND", "DC -15V")
-circuit.voltage("3", "X", "GND", "5V SIN(0, 25m, 1k)")
-circuit.voltage("4", "Y", "GND", "5V SIN(0, 5V, 100)")
-
-simulation = Simulation(circuit)
-ltp = simulation.tran("40us", "10ms", "0")
-ltp_data = {}
-ltp_data['time'] = [x * 1000 for x in ltp['time']]
-ltp_data['y'] = [x for x in ltp['y']]
-ltp_data['out'] = [5 * (a - b) for (a, b) in zip(ltp['outa'], ltp['outb'])]
-
-draw.plot(scale=2, theme='BlackWhite')
+# draw = (Draw(["/usr/share/kicad/symbols"])
+#   + Label("X").rotate(180)
+#   + Element("Q1", "Transistor_BJT:BC547", unit=1, value="BC547",
+#                  Spice_Netlist_Enabled="Y",
+#                  Spice_Primitive="Q",
+#                  Spice_Model="BC547B").anchor(2)
+#
+#   + Line().at("Q1", "1").up().length(5.08)
+#   + (dot_out_a := Dot())
+#   + Line().up().length(5.08)
+#   + Element("R1", "Device:R", unit=1, value="15k").rotate(180)
+#   + Line().up().length(5.08)
+#   + Element("+15V", "power:+15V", value="+15V")
+#
+#   + Line().at("Q1", "3").down().length(5.08)
+#   + Line().right().length(10.16)
+#   + (dot1 := Dot())
+#   + Line().right().length(10.16)
+#   + Line().up().length(5.08)
+#   + Element("Q2", "Transistor_BJT:BC547", unit=1, value="BC547",
+#                  Spice_Netlist_Enabled="Y",
+#                  Spice_Primitive="Q",
+#                  Spice_Model="BC547B").anchor(3).mirror('x').rotate(180)
+#
+#   + Line().at("Q2", "1").up().length(5.08)
+#   + (dot_out_b := Dot())
+#   + Line().up().length(5.08)
+#   + Element("R2", "Device:R", unit=1, value="15k").rotate(180)
+#   + Line().up().length(5.08)
+#   + Element("+15V", "power:+15V", value="+15V")
+#
+#   + Element("GND", "power:GND", value="GND").at("Q2", "2")
+#
+#   + Element("R3", "Device:R", unit=1, value="33k").at(dot1)
+#   + Line().down().length(2.54)
+#   + (dot2 := Dot())
+#   + Line().down().length(2.54)
+#   + Element("R4", "Device:R", unit=1, value="15k")
+#   + Element("-15V", "power:-15V", value="-15V").rotate(180)
+#
+#   + Line().at(dot2).left().length(10.16)
+#   + Line().down().length(2.54)
+#   + Element("Q3", "Transistor_BJT:BC547", unit=1, value="BC547",
+#                  Spice_Netlist_Enabled="Y",
+#                  Spice_Primitive="Q",
+#                  Spice_Model="BC547B").anchor(3).mirror('x')
+#
+#   + Element("GND", "power:GND", value="GND").at("Q3", "1")
+#   + Line().at("Q3", "2")
+#   + Label("Y").rotate(180)
+#
+#   + Line().at(dot_out_a).left().length(5.08)
+#   + Label("OUTa").rotate(180)
+#
+#   + Line().at(dot_out_b).right().length(5.08)
+#   + Label("OUTb"))
+#
+# circuit = draw.circuit(["../../lib/spice"])
+# circuit.voltage("1", "+15V", "GND", "DC 15V")
+# circuit.voltage("2", "-15V", "GND", "DC -15V")
+# circuit.voltage("3", "X", "GND", "5V SIN(0, 25m, 1k)")
+# circuit.voltage("4", "Y", "GND", "5V SIN(0, 5V, 100)")
+#
+# simulation = Simulation(circuit)
+# ltp = simulation.tran("40us", "10ms", "0")
+# ltp_data = {}
+# ltp_data['time'] = [x * 1000 for x in ltp['time']]
+# ltp_data['y'] = [x for x in ltp['y']]
+# ltp_data['out'] = [5 * (a - b) for (a, b) in zip(ltp['outa'], ltp['outb'])]
+#
+# draw.plot(scale=2, theme='BlackWhite')
 ```
 
 In this typical vca configuration, the audio signal is applied to the transistor Q1 where Q2 is grounded. The multiplication factor, or current, is set with the transistor Q3. The output is the difference of OUTa and OUTb (OUTb - OUTa).
@@ -396,4 +456,4 @@ _mixer_
 _attenuverter_
 * connect all or a single channel.
 * when you turn the pot knob counter clockwise the signal is inverted.
-
+=1,p=1;ENOENT:Put command refers to image with id: 1 that could not load its data=1;EBADPNG:bad adaptive filter value\

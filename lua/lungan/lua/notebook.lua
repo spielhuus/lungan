@@ -54,7 +54,7 @@ notebook.convert = function(md)
 				if ipyrepl == nil then
 					ipyrepl = require("lungan.repl.IPython"):new(require("lungan.lua.Term"):new(), callback)
 				end
-				entry.text = entry.text .. "\nelektron.plots()"
+				entry.text = entry.text .. "\nlungan.plots()"
 				ipyrepl:send(entry)
 				ipyrepl:wait()
 			end

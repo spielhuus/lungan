@@ -75,7 +75,7 @@ image.render = function(win, cell)
 	for _, img in ipairs(cell.images) do
 		-- check if visible
 		print(cell.line .. "->" .. info.topline .. "/" .. info.botline)
-		local cols, rows = image.size(img)
+		local _, rows = image.size(img)
 		if cell.line < info.topline - 1 or cell.line > info.botline then
 			if img.id then
 				log.debug("hide image")
@@ -84,7 +84,7 @@ image.render = function(win, cell)
 			end
 		else
 			local chop_top = 0
-			local chop_bottom = 0
+			local chop_bottom
 			-- get the chop top
 			if cell.line == info.topline - 1 then
 				local topfill = vim.fn.winsaveview().topfill

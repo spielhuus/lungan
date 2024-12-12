@@ -85,9 +85,13 @@ function Ollama:chat(prompt, stdout, stderr, exit)
 
 	local status, err = self.http:post(request, on_exit, function(_, data, _)
 		if data then
-			local clean_table = str.clean_table(data)
-			if #clean_table > 0 then
-				stdout(json.decode(table.concat(data, "")))
+			if type(data) == "string" then
+				stdout(json.decode(data))
+			else
+				local clean_table = str.clean_table(data)
+				if #clean_table > 0 then
+					stdout(json.decode(table.concat(data, "")))
+				end
 			end
 		end
 	end, function(_, data, _)
@@ -158,10 +162,14 @@ function Ollama:embeddings(_, request, stdout, stderr, exit)
 	end
 
 	local status, err = self.http:post(parsed_request, on_exit, function(_, data, _)
-		if data then
-			local clean_table = str.clean_table(data)
-			if #clean_table > 0 then
-				stdout(clean_table)
+		if data then -- TODO this should return a lua table
+			if type(data) == "string" then
+				stdout({ data })
+			else
+				local clean_table = str.clean_table(data)
+				if #clean_table > 0 then
+					stdout(clean_table)
+				end
 			end
 		end
 	end, function(_, data, _)

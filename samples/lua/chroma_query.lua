@@ -38,7 +38,7 @@ local function embed(text)
 end
 
 local function insert(id, file, line, text, embedding)
-	chroma:collection_add({}, id, embedding, nil, nil, file .. ":" .. line, text, function(data)
+	chroma:collection_add(id, embedding, nil, nil, file .. ":" .. line, text, function(data)
 		print(data)
 	end, function(data)
 		print(data)
@@ -46,14 +46,14 @@ local function insert(id, file, line, text, embedding)
 end
 
 local uuid
-chroma:get_or_create_collection({}, nil, nil, "NEOVIM", function(data)
+chroma:get_or_create_collection(nil, nil, "NEOVIM", function(data)
 	uuid = data
 end, function(err)
 	print("ERR: " .. err)
 end, nil)
 print("Chroma Collection: " .. uuid.id)
 
-err, count = chroma:get_collections_count({}, uuid.id) --, function(data)
+err, count = chroma:get_collections_count(uuid.id) --, function(data)
 -- end, function(err)
 -- 	print("ERR: " .. err)
 -- end, nil)
@@ -61,7 +61,7 @@ print("Chroma Collection count: " .. count)
 
 local query = "what are the buffer events"
 local embedded_query = embed(query)
-local res = chroma:collection_query({}, uuid, { embedded_query.embedding }, function(data)
+local res = chroma:collection_query(uuid, { embedded_query.embedding }, function(data)
 	print("###" .. str.to_string(data.documents[1]))
 end, function(data)
 	print(data)

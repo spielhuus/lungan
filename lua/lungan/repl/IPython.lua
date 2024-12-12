@@ -73,7 +73,7 @@ end
 
 function IPython:__parse_error(text)
 	if not text[1]:match("^[-]+$") then
-		return nil, "Input is not an error message."
+		return nil, "Input is not an error message: " .. str.to_string(text)
 	end
 	local name = text[2]:match("^([%w]+)[%s].*")
 	if not name then
@@ -222,7 +222,7 @@ function IPython:new(repl, on_message)
 		o:receive(line, message)
 	end)
 	o.repl:run(ipython_cmd)
-	o:send({ line = 1, text = "import elektron" })
+	o:send({ line = 1, text = "import lungan" })
 	return o
 end
 

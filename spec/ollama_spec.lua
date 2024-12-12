@@ -1,9 +1,18 @@
 local Ollama = require("lungan.providers.Ollama")
 local HttpMock = {
-	get = function(self, url)
+	get = function(
+		_ --[[self]],
+		_ --[[url]]
+	)
 		return 200, '{"models": ["model1", "model2"]}' -- TODO: return real response
 	end,
-	post = function(self, request, exit_callback, stdout_callback, stderr_callback)
+	post = function(
+		_ --[[self]],
+		_ --[[request]],
+		exit_callback,
+		stdout_callback,
+		_ --[[stderr_callback]]
+	)
 		stdout_callback(nil, {
 			'{"model":"llama3.2:1b","created_at":"2024-11-20T05:19:04.592750637Z","message":{"role":"assistant","content":" a"},"done":false}',
 			"",
@@ -17,7 +26,7 @@ describe("Ollama", function()
 		require("lungan.log").level = "info"
 	end)
 	it("should initialize with default options", function()
-		local ollama = Ollama:new(HttpMock)
+		local ollama = Ollama:new(HttpMock, {})
 		assert.are.equal(ollama.options.name, "Ollama")
 		assert.are.equal(ollama.options.model, "llama3.1")
 		assert.are.equal(ollama.options.url, "http://127.0.0.1:11434")
@@ -120,6 +129,7 @@ describe("Ollama", function()
 		end, function(exit)
 			ret = exit
 		end)
+		assert.are.Equal(nil, ret)
 		assert.are.same(out, {
 			model = "llama3.2:1b",
 			created_at = "2024-11-20T05:19:04.592750637Z",

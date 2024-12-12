@@ -43,10 +43,10 @@ luacheck: ## Run luackeck
 	$(LUACHECK) lua spec
 
 test: $(XDG_SITE) $(SOURCES) $(PYTHON) ## Run the tests
-	$(TEST_PATH) PYTHONPATH=./python:$(PYTHONPATH) $(LUAROCKS) --lua-version 5.1 --tree .venv test
+	$(TEST_PATH) PYTHONPATH=./python3:$(PYTHONPATH) $(LUAROCKS) --lua-version 5.1 --tree .venv test
 
 install: $(SOURCES) $(SPEC_FILES) ## install the lua rock
-	$(TEST_PATH) PYTHONPATH=./python:$(PYTHONPATH) $(LUAROCKS) --lua-version 5.1 --tree .venv make
+	$(TEST_PATH) PYTHONPATH=./python3:$(PYTHONPATH) $(LUAROCKS) --lua-version 5.1 --tree .venv make
 
 clean: ## Remove temprorary files
 	rm -rf .cache

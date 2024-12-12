@@ -5,7 +5,7 @@ local Repl = {}
 
 function Repl:__is_echo(value)
 	for i, v in ipairs(self.sent) do
-		if v == value then
+		if str.rtrim(v) == value then
 			table.remove(self.sent, i)
 			return true
 		end
@@ -52,7 +52,7 @@ function Repl:run(cmd)
 	self.stdin = uv.new_pipe()
 	self.stdout = uv.new_pipe()
 	self.stderr = uv.new_pipe()
-	local handle = uv.spawn(table.remove(cmd, 1), {
+	self.job_id = uv.spawn(table.remove(cmd, 1), {
 		args = cmd,
 		stdio = { self.stdin, self.stdout, self.stderr },
 	}, function(code)
@@ -61,6 +61,7 @@ function Repl:run(cmd)
 	end)
 
 	uv.read_start(self.stdout, function(err, data)
+		require("lungan.log").trace("STDERR:", err, data)
 		local clean_in = str.lines(data)
 		local result = {}
 		for _, c in ipairs(clean_in) do
@@ -82,6 +83,7 @@ function Repl:run(cmd)
 			end
 		end
 	end)
+	return self.job_id
 end
 
 function Repl:stop()

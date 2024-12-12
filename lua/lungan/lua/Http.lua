@@ -1,8 +1,16 @@
 local uv = require("luv")
 local log = require("lungan.log")
-local str = require("lungan.str")
 
 local Http = {}
+
+---HTTP client using curl
+function Http:new()
+	local o = {}
+	setmetatable(o, { __index = self })
+	o.stdout = {}
+	o.stderr = {}
+	return o
+end
 
 function Http:get(url, on_exit, on_stdout, on_stderr)
 	self.stdout = {}
@@ -11,44 +19,42 @@ function Http:get(url, on_exit, on_stdout, on_stderr)
 	local stdout = uv.new_pipe()
 	local stderr = uv.new_pipe()
 
-	local handle = uv.spawn("curl", {
+	self.job_id = uv.spawn("curl", {
 		args = { "--silent", "--no-buffer", "-X", "GET", url },
 		stdio = { nil, stdout, stderr },
-	}, function(code)
+	}, function(code) -- on_exit
+		log.trace("EXIT: " .. code)
+		uv.close(stdout)
+		uv.close(stderr)
+		uv.close(self.job_id)
 		if on_exit then
 			on_exit(code, self:response())
 		end
 	end)
 
-	uv.read_start(stdout, function(err, data)
-		if err then
-			return log.error("STDERR: " .. err)
-		end
+	uv.read_start(stderr, on_stderr or function(err, data)
 		if data then
-			local clean_table = str.clean_table({ data })
-			for _, token in ipairs(clean_table) do
-				table.insert(self.stdout, token)
+			log.trace("STDERR:", err, data)
+			if #data > 0 then
+				table.insert(self.stderr, data)
 			end
 		end
 	end)
 
-	uv.read_start(stderr, function(err, data)
-		if err then
-			return log.error("STDOUT: " .. err)
-		end
+	uv.read_start(stdout, on_stdout or function(err, data)
 		if data then
-			log.trace("STDOUT: " .. data)
-			local clean_table = str.clean_table({ data })
-			for _, token in ipairs(clean_table) do
-				table.insert(self.stderr, token)
+			log.trace("STDOUT:", err, data)
+			if #data > 0 then
+				table.insert(self.stdout, data)
 			end
 		end
 	end)
 
 	if not on_exit then
-		uv.run()
-		return 0, self:response()
+		local res = uv.run()
+		return res, self:response()
 	end
+	return self.job_id
 end
 
 function Http:post(request, on_exit, on_stdout, on_stderr)
@@ -66,8 +72,7 @@ function Http:post(request, on_exit, on_stdout, on_stderr)
 		table.insert(args, request.body)
 	end
 	table.insert(args, request.url)
-
-	log.trace("curl ", args)
+	log.debug("curl ", args)
 
 	local stdout = uv.new_pipe()
 	local stderr = uv.new_pipe()
@@ -78,36 +83,29 @@ function Http:post(request, on_exit, on_stdout, on_stderr)
 		stdio = { nil, stdout, stderr },
 	}, function(code)
 		log.debug("EXIT: " .. code)
-		if on_exit then
-			on_exit(code, self:response())
-		end
 		uv.close(stdout)
 		uv.close(stderr)
 		uv.close(handle)
-	end)
-	log.trace("process opened", handle, pid)
-
-	uv.read_start(stderr, function(err, data)
-		log.trace("STDERR: " .. (err or "nil") .. " " .. require("lungan.str").to_string(data))
-		if err then
-			return log.error("STDERR: " .. err)
+		if on_exit then
+			on_exit(code, self:response())
 		end
+	end)
+
+	uv.read_start(stderr, on_stderr or function(err, data)
 		if data then
-			local clean_table = str.clean_table({ data })
-			for _, token in ipairs(clean_table) do
-				table.insert(self.stderr, token)
+			log.trace("STDERR:", err, data)
+			if #data > 0 then
+				table.insert(self.stderr, data)
 			end
 		end
 	end)
 
-	uv.read_start(stdout, function(err, data)
-		log.trace("STDOUT: " .. (err or "nil") .. " " .. require("lungan.str").to_string(data))
-		if err then
-			return log.error("STDOUT: " .. err)
-		end
+	uv.read_start(stdout, on_stdout or function(err, data)
 		if data then
-			table.insert(self.stdout, data)
-			on_stdout(err, { data })
+			log.trace("STDOUT:", err, data)
+			if #data > 0 then
+				table.insert(self.stdout, data)
+			end
 		end
 	end)
 
@@ -115,18 +113,11 @@ function Http:post(request, on_exit, on_stdout, on_stderr)
 		uv.run()
 		return 0, self:response()
 	end
+	return handle, pid
 end
 
 function Http:response()
 	return table.concat(self.stdout, "")
-end
-
-function Http:new()
-	local o = {}
-	setmetatable(o, { __index = self })
-	o.stdout = {}
-	o.stderr = {}
-	return o
 end
 
 return Http

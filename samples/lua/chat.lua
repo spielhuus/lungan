@@ -17,7 +17,7 @@ end)
 print("chat with ollama")
 ollama:chat({
 	provider = {
-		model = ";;llama3.2:1b",
+		model = "llama3.2:1b",
 		name = "Ollama",
 	},
 	messages = {

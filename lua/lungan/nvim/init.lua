@@ -33,11 +33,6 @@ M.prompts = function()
 	return results
 end
 
-M.run = function(args)
-	error("this is really called") -- TODO
-	llm.chat(M.options, M.sessions[args.source_buf])
-end
-
 M.setup = function(opts)
 	vim.tbl_deep_extend("force", opts, M.options)
 	-- setup the logger

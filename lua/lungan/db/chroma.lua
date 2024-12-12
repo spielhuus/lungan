@@ -27,7 +27,7 @@ function Chroma:new(o, opts)
 	return instance
 end
 
-function Chroma:get_or_create_collection(opts, tenant, database, collection, stdout, stderr, exit)
+function Chroma:get_or_create_collection(tenant, database, collection, stdout, stderr, exit)
 	tenant = tenant or "default_tenant"
 	database = database or "default_database"
 
@@ -57,23 +57,24 @@ function Chroma:get_or_create_collection(opts, tenant, database, collection, std
 	local status, _ = self:post(request, on_exit, function(_, data, _)
 		log.trace("<<", data)
 		if data then
-			local clean_table = str.clean_table(data)
-			if #clean_table > 0 then
-				stdout(json.decode(table.concat(data, "")))
+			if type(data) == "string" then
+				stdout(json.decode(data))
+			else
+				local clean_table = str.clean_table(data)
+				if #clean_table > 0 then
+					stdout(json.decode(table.concat(data, "")))
+				end
 			end
 		end
 	end, function(_, data, _)
-		if stderr then
+		if stderr and data then
 			stderr(data)
 		end
 	end)
-	-- return client
+	return status
 end
 
-function Chroma:get_collections_count(opts, collection, stdout, stderr, exit)
-	tenant = tenant or "default_tenant"
-	database = database or "default_database"
-
+function Chroma:get_collections_count(collection)
 	local request = {
 		url = self.options.url .. "/api/v1/collections/" .. collection .. "/count",
 		headers = {
@@ -81,38 +82,11 @@ function Chroma:get_collections_count(opts, collection, stdout, stderr, exit)
 			"accept: application/json",
 		},
 	}
-
-	local on_exit
-	if exit ~= nil then
-		on_exit = function(_, b)
-			if b ~= 0 then
-				log.trace("Exit: " .. b)
-				if exit then
-					exit(b)
-				end
-			end
-		end
-	end
-
 	local status, err = self:get(request.url) --, on_exit, function(_, data, _)
-	-- 	log.trace("<<", data)
-	-- 	if data then
-	-- 		local clean_table = str.clean_table(data)
-	-- 		if #clean_table > 0 then
-	-- 			stdout(json.decode(table.concat(data, "")))
-	--
-	-- 		end
-	-- 	end
-	-- end, function(_, data, _)
-	-- 	if stderr then
-	-- 		stderr(data)
-	-- 	end
-	-- end)
-	-- return client
 	return status, err
 end
 
-function Chroma:collection_add(opts, collection, embeddings, metadata, uris, ids, text, stdout, stderr, exit)
+function Chroma:collection_add(collection, embeddings, metadata, uris, ids, text, stdout, stderr, exit)
 	local request = {
 		url = self.options.url .. "/api/v1/collections/" .. collection.id .. "/add",
 		body = json.encode({
@@ -159,7 +133,7 @@ function Chroma:collection_add(opts, collection, embeddings, metadata, uris, ids
 	return status, err
 end
 
-function Chroma:collection_query(opts, collection, query, count, stdout, stderr, exit)
+function Chroma:collection_query(collection, query, count, stdout, stderr, exit)
 	local request = {
 		url = self.options.url .. "/api/v1/collections/" .. collection.id .. "/query",
 		body = json.encode({
@@ -195,16 +169,20 @@ function Chroma:collection_query(opts, collection, query, count, stdout, stderr,
 	local status, err = self:post(request, on_exit, function(_, data, _)
 		log.trace("<<", data)
 		if data then
-			local clean_table = str.clean_table(data)
-			if #clean_table > 0 then
+			if type(data) == "string" then
 				log.debug("<<<", data)
-				stdout(json.decode(table.concat(data, "")))
+				stdout(json.decode(data))
+			else
+				local clean_table = str.clean_table(data)
+				if #clean_table > 0 then
+					log.debug("<<<", data)
+					stdout(json.decode(table.concat(data, "")))
+				end
 			end
 		end
 	end, function(_, data, _)
-		local clean_table = str.clean_table(data)
-		if #clean_table > 0 then
-			stderr(clean_table)
+		if data then
+			stderr(data)
 		end
 	end)
 	-- return client

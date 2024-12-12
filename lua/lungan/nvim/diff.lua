@@ -96,8 +96,7 @@ M.diff = function(left, right)
 	return result
 end
 
-M.clear_marks = function(options, session)
-	print("clear_marks" .. vim.inspect(session))
+M.clear_marks = function(session)
 	vim.api.nvim_buf_clear_namespace(session.source_buf, M.namespace, session.line1 - 1, session.line2)
 end
 
@@ -144,8 +143,9 @@ M.replace = function(opts, session)
 			table.insert(user_chat, M.__clean_result(message.text))
 		end
 	end
-	M.clear_marks(opts, session)
-	vim.api.nvim_buf_set_lines(session.source_buf, session.line1 - 1, session.line2, true, user_chat[#user_chat]) -- TODO maybe select the others
+	M.clear_marks(session)
+	-- TODO maybe select the others
+	vim.api.nvim_buf_set_lines(session.source_buf, session.line1 - 1, session.line2, true, user_chat[#user_chat])
 end
 
 return M

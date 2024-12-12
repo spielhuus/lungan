@@ -1,13 +1,11 @@
 local log = require("lungan.log")
 local M = {}
 
-local namespace = vim.api.nvim_create_namespace("lungan.images")
-
 function M.render(options, win, buffer, data, results)
 	options.theme.clear(options, win, buffer)
 	for line in data:iter() do
 		local res, mes = pcall(options.theme[line.type], options, win, buffer, line)
-		if not res then
+		if not res and line.type ~= "paragraph" then
 			log.info("Markdown type '" .. line.type .. "' not found. (" .. mes .. ")")
 		end
 	end
@@ -35,6 +33,9 @@ function M.render(options, win, buffer, data, results)
 			if line.images then
 				local res, mes = pcall(options.theme.image, options, win, buffer, line)
 				require("lungan.nvim.image").render(win, line)
+				if not res and line.type ~= "paragraph" then
+					log.info("Can not render image '" .. res .. "(" .. mes .. ")")
+				end
 			end
 			-- TODO is there also stderr?
 		end

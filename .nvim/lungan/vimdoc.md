@@ -24,7 +24,7 @@ system_context: |
     local ollama = Ollama:new(http, {})
     local function collection_id()
     	local uuid
-    	chroma:get_or_create_collection({}, nil, nil, "NEOVIM", function(data)
+    	chroma:get_or_create_collection(nil, nil, "NEOVIM", function(data)
     		uuid = data
     	end, function(err)
     		print("ERR: " .. vim.inspect(err))

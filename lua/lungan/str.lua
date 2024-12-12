@@ -4,6 +4,10 @@ str.trim = function(s)
 	return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
 
+str.rtrim = function(s)
+	return (s:gsub("^(%s*.-)%s*$", "%1"))
+end
+
 ---Cleans a table by removing empty strings and whitespace-only strings.
 ---@param data table The table containing string elements to be cleaned.
 ---@return table A new table with only non-empty, non-whitespace strings from the original table.

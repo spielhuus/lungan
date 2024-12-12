@@ -53,7 +53,7 @@ function Page:attach(win, buffer)
 				table.insert(self.results, message)
 				self:refresh()
 			end)
-			cell.text = cell.text .. "\nelektron.plots()"
+			cell.text = cell.text .. "\nlungan.plots()"
 			repl:send(cell)
 		end
 	end, {
@@ -75,17 +75,6 @@ function Page:refresh()
 	require("lungan.nvim.renderer").render(self.options, self.win, self.buffer, self.data, self.results)
 end
 
-local ipython_cmd = {
-	"ipython",
-	"--simple-prompt",
-	"--no-banner",
-	"--quiet",
-	"--no-pprint",
-	"--no-color-info",
-	"--no-term-title",
-	"--colors=NoColor",
-}
-
 function Page:get_repl(lang, callback)
 	if self.repls == nil then
 		self.repls = {}
@@ -101,7 +90,7 @@ function Page:get_repl(lang, callback)
 			end)
 			self.repls[lang] = repl
 		else
-			-- log.warn("Unsupported language: " .. lang)
+			require("lungan.log").warn("Unsupported language: " .. lang)
 		end
 	end
 	return self.repls[lang]

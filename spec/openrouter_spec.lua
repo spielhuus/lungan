@@ -1,6 +1,9 @@
 local Openrouter = require("lungan.providers.Openrouter")
 local HttpMock = {
-	get = function(self, url)
+	get = function(
+		_ --[[self]],
+		_ --[[url]]
+	)
 		local file = io.open("spec/openrouter_models.txt", "r")
 		if file then
 			local content = file:read("*all")
@@ -10,7 +13,13 @@ local HttpMock = {
 			return 1, "File not found"
 		end
 	end,
-	post = function(self, request, exit_callback, stdout_callback, stderr_callback)
+	post = function(
+		_ --[[self]],
+		_ --[[request]],
+		exit_callback,
+		stdout_callback,
+		_ --[[stderr_callback]]
+	)
 		stdout_callback(nil, {
 			'{"id":"gen-1732085225-Btt5jnvYrsnrQqvkmbSI","provider":"DeepInfra","model":"meta-llama/llama-3.1-8b-instruct","object":"chat.completion.chunk","created":1732085225,"choices":[{"index":0,"delta":{"role":"assistant","content":" happy"},"finish_reason":null,"logprobs":null}]}',
 		})

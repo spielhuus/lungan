@@ -27,7 +27,7 @@ local function embed(text)
 end
 
 local function insert(id, file, line, text, embedding)
-	chroma:collection_add({}, id, { embedding }, nil, nil, { file .. ":" .. line }, { text }, function(data)
+	chroma:collection_add(id, { embedding }, nil, nil, { file .. ":" .. line }, { text }, function(data)
 		print(str.to_string(data))
 	end, function(data)
 		print(data)
@@ -36,14 +36,13 @@ end
 
 local function collection_id()
 	local uuid
-	chroma:get_or_create_collection({}, nil, nil, "NEOVIM", function(data)
+	chroma:get_or_create_collection(nil, nil, "NEOVIM", function(data)
 		uuid = data
 	end, function(err)
 		print("ERR: " .. err)
 	end, nil)
 	return uuid
 end
-
 local function print_usage()
 	print("Parse and Query the neovim documentation.")
 	print("> luajit <command>")
@@ -148,10 +147,13 @@ elseif arg[1] == "json" then
 	to_json(documents)
 elseif arg[1] == "search" then
 	print("Serch for: " .. arg[2])
-	local count = arg[3] or 1
 	local uuid = collection_id()
+	print("UUID: " .. str.to_string(uuid))
+	err, collections = chroma:get_collections_count(uuid.id)
+	print("Chroma Collection count: " .. collections)
+	local count = arg[3] or 1
 	local embeddings = embed(arg[2])
-	local data = chroma:collection_query({}, uuid, { embeddings.embedding }, count, function(data)
+	local data = chroma:collection_query(uuid, { embeddings.embedding }, count, function(data)
 		print("###" .. str.to_string(data.documents))
 	end, function(data)
 		print(data)

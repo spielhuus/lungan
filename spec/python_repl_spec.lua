@@ -84,9 +84,21 @@ describe("Test the IPython repl", function()
 	describe("IPython:send", function()
 		local ipython, received
 		before_each(function()
-			ipython = require("lungan.repl.IPython"):new(require("lungan.nvim.Term"):new(), function(line, message)
+			ipython = require("lungan.repl.IPython"):new(require("lungan.nvim.Term"):new(), function(_, message)
 				received = message
 			end)
+		end)
+		it("should not echo the inputs", function()
+			local content = {
+				{ line = 1, text = "a = 42" },
+				{ line = 2, text = "b = 27 " },
+				{ line = 3, text = "a+b " },
+			}
+			for _, c in ipairs(content) do
+				ipython:send(c)
+			end
+			ipython:wait()
+			assert.Same({ [1] = 1, line = 1, out = { "69" } }, received)
 		end)
 		it("should return return 69", function()
 			local content = {
@@ -94,7 +106,7 @@ describe("Test the IPython repl", function()
 				{ line = 2, text = "b = 27" },
 				{ line = 3, text = "a+b" },
 			}
-			for i, c in ipairs(content) do
+			for _, c in ipairs(content) do
 				ipython:send(c)
 			end
 			ipython:wait()
@@ -102,7 +114,7 @@ describe("Test the IPython repl", function()
 		end)
 		it("should return plot the image", function()
 			local content = [[import matplotlib
-matplotlib.use('module://elektron')
+matplotlib.use('module://lungan')
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -116,7 +128,7 @@ plt.show()
 			for i, c in ipairs(require("lungan.str").lines(content)) do
 				ipython:send({ line = i, text = c })
 			end
-			ipython:send({ line = #content, text = "elektron.plots()" })
+			ipython:send({ line = #content, text = "lungan.plots()" })
 			ipython:wait()
 			assert.are.Equal(640, received.images[1].width)
 			assert.are.Equal(480, received.images[1].height)

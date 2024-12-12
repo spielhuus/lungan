@@ -1,7 +1,7 @@
 ---
 provider:
   name: Ollama
-  model: hf.co/bartowski/Qwen2.5.1-Coder-7B-Instruct-GGUF:Q8_0
+  model: qwen2.5-coder:14b-instruct-q5_K_M
 name: LuaDocumentation
 icon:
   character: 󱂛

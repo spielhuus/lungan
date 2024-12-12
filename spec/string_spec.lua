@@ -15,7 +15,7 @@ describe("Test the string utilities", function()
 			assert.same(
 				{
 					"import matplotlib",
-					"matplotlib.use('module://elektron')",
+					"matplotlib.use('module://lungan')",
 					"",
 					"import matplotlib.pyplot as plt",
 					"import numpy as np",
@@ -26,7 +26,7 @@ describe("Test the string utilities", function()
 					"plt.plot(xpoints,ypoints)",
 				},
 				str.lines(
-					"import matplotlib\nmatplotlib.use('module://elektron')\n\nimport matplotlib.pyplot as plt\nimport numpy as np\n\nxpoints = np.array([1, 8])\nypoints = np.array([3, 10])\n\nplt.plot(xpoints,ypoints)"
+					"import matplotlib\nmatplotlib.use('module://lungan')\n\nimport matplotlib.pyplot as plt\nimport numpy as np\n\nxpoints = np.array([1, 8])\nypoints = np.array([3, 10])\n\nplt.plot(xpoints,ypoints)"
 				)
 			)
 		end)
