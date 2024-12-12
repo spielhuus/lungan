@@ -42,4 +42,4 @@ jobs:
 
       - name: Run tests
         run: |
-          PYTHONPATH=./python luarocks test --local
+          PYTHONPATH=./python3 luarocks test --local
