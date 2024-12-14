@@ -1,4 +1,4 @@
-assert = require("luassert")
+assert = require("luassert") -- luacheck: ignore
 describe("Test the notebook class", function()
 	describe("read the gitignore file", function()
 		it("should read the content of the example file", function()

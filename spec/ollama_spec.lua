@@ -1,4 +1,4 @@
-assert = require("luassert")
+assert = require("luassert") -- luacheck: ignore
 local Ollama = require("lungan.providers.Ollama")
 local HttpMock = {
 	get = function(

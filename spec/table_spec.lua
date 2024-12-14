@@ -1,4 +1,4 @@
-assert = require("luassert")
+assert = require("luassert") -- luacheck: ignore
 local tbl = require("lungan.tbl")
 describe("Test the table utilities", function()
 	it("should insert a value by root path", function()

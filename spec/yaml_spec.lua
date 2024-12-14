@@ -1,4 +1,4 @@
-assert = require("luassert")
+assert = require("luassert") -- luacheck: ignore
 describe("Test the YAML parser", function()
 	it("should parse key value pairs", function()
 		local lines = {

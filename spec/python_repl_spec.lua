@@ -1,4 +1,4 @@
-assert = require("luassert")
+assert = require("luassert") -- luacheck: ignore
 describe("Test the IPython repl", function()
 	describe("IPython:receive", function()
 		local ipython, received

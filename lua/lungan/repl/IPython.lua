@@ -3,7 +3,7 @@ local str = require("lungan.str")
 local IPython = {}
 IPython.__index = IPython
 
-local STARTUP_TIMEOUT = 2000
+local STARTUP_TIMEOUT = 5000
 local EXECUTE_TIMEOUT = 10000
 
 local ipython_cmd = {
