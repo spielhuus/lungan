@@ -4,7 +4,7 @@ local json = require("lungan.json")
 
 ---@class Chroma
 ---@field options table
----@field http table --TODO make it http
+---@field http Http
 local Chroma = {}
 
 local defaults = {

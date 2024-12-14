@@ -154,12 +154,6 @@ docker run --user 1000:1000 -it -v /home/etienne:/home/etienne nvim
 
 # TODO
 
-- catch error when ipython could not be found
-- support for images
-- is completion support needed?
-- tools calling
-- chromadb integration
-- refactor logger
 - dont execute luarocks when in neovim
 - add openrouter prices to cmp description
 - create api doc

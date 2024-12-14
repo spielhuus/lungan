@@ -3,7 +3,7 @@ local str = require("lungan.str")
 
 ---@class Ollama
 ---@field options table
----@field http table --TODO make it http
+---@field http Http
 local Ollama = {}
 
 local defaults = {
@@ -84,7 +84,6 @@ function Ollama:chat(prompt, stdout, stderr, exit)
 			end
 		end
 	end
-
 	local status, err = self.http:post(request, on_exit, function(_, data, _)
 		if data then
 			if type(data) == "string" then
@@ -118,7 +117,6 @@ function Ollama:generate(prompt, stdout, stderr, exit)
 			end
 		end
 	end
-
 	local status, err = self.http:post(request, on_exit, function(_, data, _)
 		if data then
 			local clean_table = str.clean_table(data)

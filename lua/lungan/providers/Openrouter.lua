@@ -4,7 +4,7 @@ local OPENROUTER_API_TOKEN = os.getenv("OPENROUTER_API_TOKEN") or ""
 
 ---@class Openrouter
 ---@field options table
----@field http table  -- TODO change type to Http
+---@field http Http
 local Openrouter = {}
 
 local defaults = {

@@ -1,10 +1,12 @@
 local uv = require("luv")
 local log = require("lungan.log")
 
-local Http = {}
+---@class LuvHttp
+---@as Http
+local LuvHttp = {}
 
 ---HTTP client using curl
-function Http:new()
+function LuvHttp:new()
 	local o = {}
 	setmetatable(o, { __index = self })
 	o.stdout = {}
@@ -12,7 +14,7 @@ function Http:new()
 	return o
 end
 
-function Http:get(url, on_exit, on_stdout, on_stderr)
+function LuvHttp:get(url, on_exit, on_stdout, on_stderr)
 	self.stdout = {}
 	self.stderr = {}
 
@@ -57,7 +59,7 @@ function Http:get(url, on_exit, on_stdout, on_stderr)
 	return self.job_id
 end
 
-function Http:post(request, on_exit, on_stdout, on_stderr)
+function LuvHttp:post(request, on_exit, on_stdout, on_stderr)
 	self.stdout = {}
 	self.stderr = {}
 	local args = { "--silent", "--no-buffer", "-X", "POST" }
@@ -116,8 +118,8 @@ function Http:post(request, on_exit, on_stdout, on_stderr)
 	return handle, pid
 end
 
-function Http:response()
+function LuvHttp:response()
 	return table.concat(self.stdout, "")
 end
 
-return Http
+return LuvHttp

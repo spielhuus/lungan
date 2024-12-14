@@ -1,6 +1,6 @@
 local uv = require("luv")
 local str = require("lungan.str")
-
+local log = require("lungan.log")
 local Repl = {}
 
 function Repl:__is_echo(value)
@@ -74,8 +74,7 @@ function Repl:run(cmd)
 	end)
 
 	uv.read_start(self.stderr, function(err, data)
-		print("TERM:STDERR: Err:" .. (err or "nil") .. ", data:'" .. str.to_string(data) .. "'")
-		-- TODO
+		log.error("TERM:STDERR: Err:" .. (err or "nil") .. ", data:'" .. str.to_string(data) .. "'")
 		if data then
 			local clean_table = str.clean_table({ data })
 			for _, token in ipairs(clean_table) do

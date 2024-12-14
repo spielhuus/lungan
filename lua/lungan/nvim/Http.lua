@@ -1,10 +1,12 @@
 local log = require("lungan.log")
 local str = require("lungan.str")
 
-local Http = {}
+---@class NvimHttp
+---@as Http
+local NvimHttp = {}
 
----HTTP client using curl
-function Http:new()
+---@as Http:new
+function NvimHttp:new()
 	local o = {}
 	setmetatable(o, { __index = self })
 	o.stdout = {}
@@ -48,7 +50,7 @@ end
 --- @param on_stderr function|nil An optional callback function to handle standard error data.
 --- @return nil If an exit callback is provided, returns immediately. Otherwise,
 ---                waits for job completion and returns the response.
-function Http:get(url, on_exit, on_stdout, on_stderr)
+function NvimHttp:get(url, on_exit, on_stdout, on_stderr)
 	self.stdout = {}
 	self.stderr = {}
 	local status = -1
@@ -90,7 +92,7 @@ end
 --- @param on_stderr function|nil An optional callback function to handle standard error data.
 --- @return nil If an exit callback is provided, returns immediately. Otherwise,
 ---                waits for job completion and returns the response.
-function Http:post(request, on_exit, on_stdout, on_stderr)
+function NvimHttp:post(request, on_exit, on_stdout, on_stderr)
 	self.stdout = {}
 	self.stderr = {}
 	local status = -1
@@ -127,7 +129,7 @@ end
 
 --- Cancels the current HTTP request by stopping the associated job.
 --- @return integer|nil, string Returns the job id and an error message if cancelling fails
-function Http:cancel()
+function NvimHttp:cancel()
 	if self.job_id ~= nil then
 		local result = vim.fn.jobstop(self.job_id)
 		if result == 0 then
@@ -140,8 +142,8 @@ end
 
 ---Return the retrieved body
 ---@return string the body
-function Http:response()
+function NvimHttp:response()
 	return table.concat(self.stdout, "")
 end
 
-return Http
+return NvimHttp
