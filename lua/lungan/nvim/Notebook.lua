@@ -58,7 +58,8 @@ end
 ---stores the filename and all the regerences in the
 ---page. the references are marked like this: [link]
 ---@param path string the path for the notebook
----@return table the parsed notebook pages -- TODO add journals
+---@return table the parsed notebook pages
+---@return table  the parsed journal pages
 function Notebook:_load(path, ignore)
 	local pages = {}
 	local journals = {}

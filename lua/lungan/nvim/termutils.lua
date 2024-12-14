@@ -37,12 +37,12 @@ function termutils.update_cell_size()
 	local sz = ffi.new("winsize")
 	assert(ffi.C.ioctl(1, TIOCGWINSZ, sz) == 0, "Hologram failed to get screen size: detected OS is not supported.")
 
-	termutils.screen_size.x = sz.xpixel
-	termutils.screen_size.y = sz.ypixel
-	termutils.screen_size.cols = sz.col
-	termutils.screen_size.rows = sz.row
-	termutils.cell_size.x = sz.xpixel / sz.col
-	termutils.cell_size.y = sz.ypixel / sz.row
+	termutils.screen_size.x = sz.xpixel ---@diagnostic disable-line
+	termutils.screen_size.y = sz.ypixel ---@diagnostic disable-line
+	termutils.screen_size.cols = sz.col ---@diagnostic disable-line
+	termutils.screen_size.rows = sz.row ---@diagnostic disable-line
+	termutils.cell_size.x = sz.xpixel / sz.col ---@diagnostic disable-line
+	termutils.cell_size.y = sz.ypixel / sz.row ---@diagnostic disable-line
 end
 
 local stdout = vim.loop.new_tty(1, false)
@@ -60,6 +60,7 @@ end
 
 -- glob together writes to stdout
 function termutils.write(data) -- vim.schedule_wrap(function(data)
+	assert(stdout)
 	stdout:write(data)
 end
 

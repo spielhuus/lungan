@@ -10,7 +10,7 @@ local ollama = Ollama:new(http, {})
 
 -- get the available models from the server
 print("get ollama models")
-ollama:models(function(status, data)
+ollama:models(function(_, data)
 	print(require("lungan.str").to_string(data))
 end)
 
@@ -33,7 +33,7 @@ end, function(err)
 end, nil)
 
 print("\n\ncreate embeddings")
-ollama:embeddings({}, {
+ollama:embeddings({
 	model = "nomic-embed-text:latest",
 	prompt = "mom likes embeddings",
 }, function(out)

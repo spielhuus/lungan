@@ -1,3 +1,4 @@
+assert = require("luassert")
 local Ollama = require("lungan.providers.Ollama")
 local HttpMock = {
 	get = function(

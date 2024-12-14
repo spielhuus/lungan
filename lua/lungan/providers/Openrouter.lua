@@ -2,6 +2,9 @@ local log = require("lungan.log")
 
 local OPENROUTER_API_TOKEN = os.getenv("OPENROUTER_API_TOKEN") or ""
 
+---@class Openrouter
+---@field options table
+---@field http table  -- TODO change type to Http
 local Openrouter = {}
 
 local defaults = {
@@ -10,7 +13,6 @@ local defaults = {
 }
 
 ---Creates a new instance of the Ollama object.
----@class Openrouter
 ---@param http table The Http implementation to use
 ---@param opts table An optional table containing configuration options.
 ---@return Openrouter A new instance of Openrouter with the specified options.

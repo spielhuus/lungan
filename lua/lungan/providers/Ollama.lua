@@ -1,6 +1,9 @@
 local json = require("lungan.json")
 local str = require("lungan.str")
 
+---@class Ollama
+---@field options table
+---@field http table --TODO make it http
 local Ollama = {}
 
 local defaults = {
@@ -10,7 +13,6 @@ local defaults = {
 }
 
 ---Creates a new instance of the Ollama object.
----@class Ollama
 ---@param http table The Http implementation to use
 ---@param opts table An optional table containing configuration options.
 ---@return Ollama A new instance of Ollama with the specified options.
@@ -143,10 +145,10 @@ end
 ---  - prompt: The input text for which embeddings are to be generated.
 ---@param stdout fun(data: table) A callback function to handle standard output data.
 ---@param stderr fun(data: table) A callback function to handle standard error data.
----@param exit fun(code: number) A callback function to handle the exit status code.
+---@param exit fun(code: number)|nil A callback function to handle the exit status code.
 ---@return integer return code
 ---@return string error message
-function Ollama:embeddings(_, request, stdout, stderr, exit)
+function Ollama:embeddings(request, stdout, stderr, exit)
 	local parsed_request = {
 		url = self.options.url .. "/api/embeddings",
 		body = json.encode(request),

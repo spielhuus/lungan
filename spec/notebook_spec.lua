@@ -1,3 +1,4 @@
+assert = require("luassert")
 describe("Test the notebook class", function()
 	describe("read the gitignore file", function()
 		it("should read the content of the example file", function()

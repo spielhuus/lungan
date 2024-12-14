@@ -1,3 +1,4 @@
+assert = require("luassert")
 describe("Test the markdown parser", function()
 	it("should pass the paragraphs", function()
 		local lines = {
@@ -178,6 +179,9 @@ describe("Test the markdown parser", function()
 	end)
 	it("should parse a chat prompt", function()
 		local handle = io.open(".nvim/lungan/lua.md", "r")
+		if not handle then
+			error("unable to open file: '.nvim/lungan/lua.md'")
+		end
 		assert.is.True(handle ~= nil)
 		local content = handle:read("*a")
 		handle:close()

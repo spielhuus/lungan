@@ -2,6 +2,9 @@ local log = require("lungan.log")
 local str = require("lungan.str")
 local json = require("lungan.json")
 
+---@class Chroma
+---@field options table
+---@field http table --TODO make it http
 local Chroma = {}
 
 local defaults = {
@@ -10,21 +13,21 @@ local defaults = {
 }
 
 ---Creates a new instance of the Chroma object.
----@class Chroma
----@param o table The Http implementation to use
+---@param http table The Http implementation to use
 ---@param opts table An optional table containing configuration options.
 ---@return Chroma A new instance of Chroma with the specified options.
-function Chroma:new(o, opts)
-	local instance = setmetatable(self, { __index = o })
-	instance.__index = Chroma
-	instance.__name = "chroma"
+function Chroma:new(http, opts)
+	local o = {}
+	setmetatable(o, { __index = self })
+	o.__name = "chroma"
 	local in_opts = opts or {}
 	local options = defaults
 	for k, v in pairs(in_opts) do
 		defaults[k] = v
 	end
-	instance.options = options
-	return instance
+	o.options = options
+	o.http = http
+	return o
 end
 
 function Chroma:get_or_create_collection(tenant, database, collection, stdout, stderr, exit)
@@ -54,7 +57,7 @@ function Chroma:get_or_create_collection(tenant, database, collection, stdout, s
 		end
 	end
 
-	local status, _ = self:post(request, on_exit, function(_, data, _)
+	local status, _ = self.http:post(request, on_exit, function(_, data, _)
 		log.trace("<<", data)
 		if data then
 			if type(data) == "string" then
@@ -74,6 +77,8 @@ function Chroma:get_or_create_collection(tenant, database, collection, stdout, s
 	return status
 end
 
+---get the collection count
+---@collection string the uuid of the collection
 function Chroma:get_collections_count(collection)
 	local request = {
 		url = self.options.url .. "/api/v1/collections/" .. collection .. "/count",
@@ -82,7 +87,7 @@ function Chroma:get_collections_count(collection)
 			"accept: application/json",
 		},
 	}
-	local status, err = self:get(request.url) --, on_exit, function(_, data, _)
+	local status, err = self.http:get(request.url) --, on_exit, function(_, data, _)
 	return status, err
 end
 
@@ -116,7 +121,7 @@ function Chroma:collection_add(collection, embeddings, metadata, uris, ids, text
 		end
 	end
 
-	local status, err = self:post(request, on_exit, function(_, data, _)
+	local status, err = self.http:post(request, on_exit, function(_, data, _)
 		log.trace("<<", data)
 		if data then
 			local clean_table = str.clean_table(data)
@@ -166,7 +171,7 @@ function Chroma:collection_query(collection, query, count, stdout, stderr, exit)
 	end
 
 	log.debug("create embeddings")
-	local status, err = self:post(request, on_exit, function(_, data, _)
+	local status, err = self.http:post(request, on_exit, function(_, data, _)
 		log.trace("<<", data)
 		if data then
 			if type(data) == "string" then

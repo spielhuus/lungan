@@ -1,3 +1,5 @@
+local LLM = require("lungan.llm")
+
 ---@class Chat
 ---@field options table options
 ---@field args table the session args
@@ -5,6 +7,22 @@
 ---@field prompt Prompt the chat prompt
 ---@field llm LLM the chat prompt
 local Chat = {}
+
+-- Creates a new instance the Chat class
+-- @param options table The global options
+-- @param args table The arguments for this option (source_buf, line ...)
+-- @param prompt Prompt the prompt
+-- @return An instance of the Chat class with the provided configurations.
+function Chat:new(options, args, prompt)
+	local o = {}
+	setmetatable(o, { __index = self, __name = "Chat" })
+	o.options = options
+	o.args = args
+	o.prompt = prompt
+	o.data = nil
+	o.llm = LLM:new(options)
+	return o
+end
 
 local get_win_opts = function()
 	local win_width = vim.api.nvim_win_get_width(0)
@@ -150,21 +168,6 @@ function Chat:get()
 		end
 	end
 	return output
-end
-
--- Creates a new instance the Chat class
--- @param options table The global options
--- @param args table The arguments for this option (source_buf, line ...)
--- @param prompt Prompt the prompt
--- @return An instance of the Chat class with the provided configurations.
-function Chat:new(options, args, prompt)
-	local o = {}
-	setmetatable(o, { __index = self, __name = "Chat" })
-	o.options = options
-	o.args = args
-	o.prompt = prompt
-	o.llm = require("lungan.llm"):new(options)
-	return o
 end
 
 return Chat

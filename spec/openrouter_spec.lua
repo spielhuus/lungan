@@ -1,3 +1,4 @@
+assert = require("luassert")
 local Openrouter = require("lungan.providers.Openrouter")
 local HttpMock = {
 	get = function(
@@ -32,7 +33,7 @@ describe("Openrouter", function()
 		require("lungan.log").level = "info"
 	end)
 	it("should initialize with default options", function()
-		local openrouter = Openrouter:new(HttpMock)
+		local openrouter = Openrouter:new(HttpMock, {})
 		assert.are.equal(openrouter.options.name, "Openrouter")
 		assert.are.equal(openrouter.options.url, "https://openrouter.ai")
 	end)

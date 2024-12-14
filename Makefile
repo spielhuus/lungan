@@ -55,6 +55,17 @@ clean: ## Remove temprorary files
 	rm -rf .bash_history
 	rm -rf .wget-hsts
 	rm -rf .venv
+	rm -rf .ci
 
 help: 
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+luals:
+	# rm -rf .ci/lua-ls/log
+	lua-language-server --configpath .luarc.json --logpath .ci/lua-ls/log --check .
+	# [ -f .ci/lua-ls/log/check.json ] && { cat .ci/lua-ls/log/check.json 2>/dev/null; exit 1; } || true
+
+# luals:
+	# mkdir -p .ci/lua-ls
+	# curl -sL "https://github.com/LuaLS/lua-language-server/releases/download/3.7.4/lua-language-server-3.7.4-darwin-x64.tar.gz" | tar xzf - -C "${PWD}/.ci/lua-ls"
+	# make luals-ci

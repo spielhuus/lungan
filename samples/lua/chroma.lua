@@ -13,7 +13,7 @@ local ollama = Ollama:new(http, {})
 
 local function embed(text)
 	local res = ""
-	ollama:embeddings({}, {
+	ollama:embeddings({
 		model = "nomic-embed-text:latest",
 		prompt = text,
 	}, function(out)
@@ -149,7 +149,7 @@ elseif arg[1] == "search" then
 	print("Serch for: " .. arg[2])
 	local uuid = collection_id()
 	print("UUID: " .. str.to_string(uuid))
-	err, collections = chroma:get_collections_count(uuid.id)
+	local err, collections = chroma:get_collections_count(uuid.id)
 	print("Chroma Collection count: " .. collections)
 	local count = arg[3] or 1
 	local embeddings = embed(arg[2])

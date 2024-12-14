@@ -55,7 +55,7 @@ function textwrap:flush()
 end
 
 ---Creates a new textwrap instance.
----@param o table The object to initialize. If nil, a new table is created.
+---@param o table|nil The object to initialize. If nil, a new table is created.
 ---@param options table Configuration options for the text wrap.
 ---@param chat Chat Chat buffer to write the text to
 ---@return table A new textwrap instance with initialized properties and methods.

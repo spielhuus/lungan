@@ -1,3 +1,4 @@
+assert = require("luassert")
 describe("Test the YAML parser", function()
 	it("should parse key value pairs", function()
 		local lines = {

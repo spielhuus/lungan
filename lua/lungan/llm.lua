@@ -2,9 +2,10 @@ local log = require("lungan.log")
 local str = require("lungan.str")
 local textwrap = require("lungan.textwrap")
 
+---@class LLM
+---@field options table the llm options
 local LLM = {}
 
----@class LLM
 ---Represents an instance of a large language model.
 ---@param opts table A table containing configuration options for the LLM.
 ---@return LLM A new instance of the LLM with the specified options.
@@ -16,7 +17,7 @@ function LLM:new(opts)
 end
 
 ---Stops a language model provider session.
----@param session chat The session object
+---@param session Chat The session object
 function LLM:stop(session)
 	self.options.providers[session.data:frontmatter().provider.name]:stop()
 end

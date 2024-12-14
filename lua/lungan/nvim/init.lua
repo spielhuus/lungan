@@ -65,7 +65,7 @@ M.setup = function(opts)
 		elseif arg.args == "Run" then
 			M.run(arg)
 		elseif arg.args == "Notebooks" then
-			local notebook = require("lungan.nvim..Notebook"):new(nil, M.options, ".")
+			local notebook = require("lungan.nvim.Notebook"):new(nil, M.options, ".")
 			M.options.picker.notebooks({}, notebook.pages, function(entry)
 				entry.data:open()
 				M.attach()

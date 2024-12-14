@@ -43,7 +43,7 @@ end
 
 for i, x in ipairs(modes) do
 	local nameupper = x.name:upper()
-	log[x.name] = function(...)
+	log[x.name] = function(...) ---@diagnostic disable-line
 		-- Return early if we're below the log level
 		if i < levels[log.level] then
 			return
@@ -56,6 +56,7 @@ for i, x in ipairs(modes) do
 		-- Output to log file
 		if log.outfile then
 			local fp = io.open(log.outfile, "a")
+			assert(fp ~= nil)
 			local str = string.format("[%-6s%s] %s: %s\n", nameupper, os.date(), lineinfo, msg)
 			fp:write(str)
 			fp:close()

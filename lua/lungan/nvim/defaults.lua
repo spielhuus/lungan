@@ -11,8 +11,8 @@ local M = {
 	},
 	provider = "Ollama",
 	providers = {
-		Ollama = require("lungan.providers.Ollama"):new(require("lungan.nvim.Http"):new()),
-		Openrouter = require("lungan.providers.Openrouter"):new(require("lungan.nvim.Http"):new()),
+		Ollama = require("lungan.providers.Ollama"):new(require("lungan.nvim.Http"):new(), {}),
+		Openrouter = require("lungan.providers.Openrouter"):new(require("lungan.nvim.Http"):new(), {}),
 		-- Replicate = require("lungan.providers.replicate").setup(),
 	},
 	picker = {

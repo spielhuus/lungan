@@ -1,3 +1,4 @@
+assert = require("luassert")
 describe("Test the IPython repl", function()
 	describe("IPython:receive", function()
 		local ipython, received

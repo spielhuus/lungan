@@ -53,7 +53,7 @@ end, function(err)
 end, nil)
 print("Chroma Collection: " .. uuid.id)
 
-err, count = chroma:get_collections_count(uuid.id) --, function(data)
+local err, count = chroma:get_collections_count(uuid.id) --, function(data)
 -- end, function(err)
 -- 	print("ERR: " .. err)
 -- end, nil)
