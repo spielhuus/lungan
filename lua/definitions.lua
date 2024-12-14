@@ -8,23 +8,23 @@
 ---@field url string the request url
 ---@field body string the post body
 
----HTTP client using curl
----Sends an HTTP GET or post request to the specified URL.
+--- HTTP client using curl
+--- Sends an HTTP GET or post request to the specified URL.
 ---
----Example usage:
----```lua
+--- Example usage:
+--- ```lua
 ---
----```
----If `on_exit` is `nil`, the method will not wait for the job to
----complete before returning; instead, it will return immediately with
----an exit status indicating the job's completion.
+--- ```
+--- If `on_exit` is `nil`, the method will not wait for the job to
+--- complete before returning; instead, it will return immediately with
+--- an exit status indicating the job's completion.
 ---
----When on_stdout and on_stderr are not set the responses will be collected
----and can then be accessed with Http:response()
+--- When on_stdout and on_stderr are not set the responses will be collected
+--- and can then be accessed with Http:response()
 ---
----Implementations:
----[NvimHttp type](lua://NvimHttp) using the nvim uv package
----[LuvHttp type](lua://LuvHttp) using the luv package
+--- Implementations:
+--- [NvimHttp type](lua://NvimHttp) using the nvim uv package
+--- [LuvHttp type](lua://LuvHttp) using the luv package
 ---@class Http
 ---@field new fun() create a new HTTP object.
 ---@field get fun(self, url: string,

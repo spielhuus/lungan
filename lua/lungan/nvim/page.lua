@@ -1,3 +1,6 @@
+---@class Page
+---@field path string
+---@field options table
 local Page = {}
 
 function Page:open()

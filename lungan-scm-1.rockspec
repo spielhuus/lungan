@@ -15,6 +15,8 @@ test_dependencies = {
 	"luassert",
 	"busted",
 	"lbase64",
+	"mini.doc",
+	"mini.test",
 }
 
 source = {

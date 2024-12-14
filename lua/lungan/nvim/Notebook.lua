@@ -1,6 +1,12 @@
-local Page = require("lungan.nvim.page")
-
+--- *Markdown Page*
+--- A markdown Notebook. Handles all the markdown pages in the project.
+---
+---@class Notebook
+---@field options table:
+---@field pages Page the Pages
 local Notebook = {}
+
+local Page = require("lungan.nvim.page")
 
 local function ends_with(str, suffix)
 	local suffix_len = #suffix
@@ -33,9 +39,6 @@ function Notebook:_gitignore(path)
 end
 
 --- Checks whether a given path matches any of the ignore patterns.
---- @param path string: Path to check against ignore patterns.
---- @param ignore string[]: Table of patterns to match against.
---- @return boolean: True if path matches any pattern, false otherwise.
 function Notebook:_is_ignore(path, ignore)
 	local filename = string.match(path, "[^\\/]+$")
 	for _, pattern in ipairs(ignore) do
@@ -57,9 +60,6 @@ end
 ---loads all the markdown pages from the path and
 ---stores the filename and all the regerences in the
 ---page. the references are marked like this: [link]
----@param path string the path for the notebook
----@return table the parsed notebook pages
----@return table  the parsed journal pages
 function Notebook:_load(path, ignore)
 	local pages = {}
 	local journals = {}

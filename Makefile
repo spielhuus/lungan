@@ -37,10 +37,14 @@ $(XDG_SITE):
                       $(XDG_SITE)/pack/testing/start/nvim-cmp
 
 apidoc: ## Create the apidoc
-	$(TEST_PATH) nlua scripts/makedoc.lua
+	nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua require('mini.doc').generate()" -c "qa!"
+	#$(TEST_PATH) nlua scripts/makedoc.lua
 
 luacheck: ## Run luackeck
 	$(LUACHECK) lua spec
+
+luals: ## Run language server checks.
+	lua-language-server --configpath .luarc.json --logpath .ci/lua-ls/log --check .
 
 test: $(XDG_SITE) $(SOURCES) $(PYTHON) ## Run the tests
 	$(TEST_PATH) PYTHONPATH=./python3:$(PYTHONPATH) $(LUAROCKS) --lua-version 5.1 --tree .venv test
@@ -60,12 +64,4 @@ clean: ## Remove temprorary files
 help: 
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-luals:
-	# rm -rf .ci/lua-ls/log
-	lua-language-server --configpath .luarc.json --logpath .ci/lua-ls/log --check .
-	# [ -f .ci/lua-ls/log/check.json ] && { cat .ci/lua-ls/log/check.json 2>/dev/null; exit 1; } || true
 
-# luals:
-	# mkdir -p .ci/lua-ls
-	# curl -sL "https://github.com/LuaLS/lua-language-server/releases/download/3.7.4/lua-language-server-3.7.4-darwin-x64.tar.gz" | tar xzf - -C "${PWD}/.ci/lua-ls"
-	# make luals-ci

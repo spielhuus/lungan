@@ -132,7 +132,7 @@ function Chat:open()
 		buffer = self.buffer,
 	})
 	vim.keymap.set("n", "<C-r>", function()
-		self.llm:chat(self) -- TODO: is this really not needed |, self.data)
+		self.llm:chat(self)
 	end, {
 		nowait = true,
 		noremap = true,
