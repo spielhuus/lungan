@@ -42,10 +42,8 @@ function Page:attach(win, buffer)
 		local row, _ = vim.api.nvim_win_get_cursor(0)
 		local cell = self:content_at_line(row[1])
 		if cell then
-			-- log.info("send cell: " .. vim.inspect(cell))
-			local repl
-			repl = self:get_repl(cell.lang, function(line, message, c) -- TODO: remove arg c
-				-- log.info("page message: " .. line .. ":" .. vim.inspect(message))
+			local repl, status
+			status, repl = self:get_repl(cell.lang, function(line, message, c)
 				if not self.results then
 					self.results = {}
 				end
@@ -53,7 +51,12 @@ function Page:attach(win, buffer)
 				table.insert(self.results, message)
 				self:refresh()
 			end)
+			if not status then
+				require("lungan.log").error("lungan: unable to start IPython: " .. repl)
+				return
+			end
 			cell.text = cell.text .. "\nlungan.plots()"
+			assert(repl)
 			repl:send(cell)
 		end
 	end, {
@@ -81,7 +84,10 @@ function Page:get_repl(lang, callback)
 	end
 	if not self.repls[lang] then
 		if lang == "python" or lang == "py" then
-			local repl = require("lungan.repl.IPython"):new(require("lungan.nvim.Term"):new(), callback)
+			local status, repl = require("lungan.repl.IPython"):new(require("lungan.nvim.Term"):new(), callback)
+			if not status then
+				return status, repl
+			end
 			self.repls[lang] = repl
 		elseif lang == "lua" then
 			local repl = require("lungan.repl.lua"):new(nil, self.options, function(line, message)
@@ -93,7 +99,7 @@ function Page:get_repl(lang, callback)
 			require("lungan.log").warn("Unsupported language: " .. lang)
 		end
 	end
-	return self.repls[lang]
+	return true, self.repls[lang]
 end
 
 function Page:new(o, options, path)

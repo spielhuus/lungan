@@ -18,7 +18,7 @@ TEST_PATH=PATH='.venv/bin:$(PATH)' \
 
 .PHONY: apidoc luacheck docker test clean help
 
-all: $(PYTHON) $(XDG_SITE) test ## Run all the targets
+all: $(PYTHON) $(XDG_SITE) test luacheck luals ## Run all the targets
 
 $(PYTHON):
 	python -m venv .venv

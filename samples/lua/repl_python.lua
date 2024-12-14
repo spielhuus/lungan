@@ -5,11 +5,15 @@ local code = [[a = 44
 b = 25
 a + b]]
 
-local repl = Repl:new(Term:new(), function(_, message)
+local status, repl = Repl:new(Term:new(), function(_, message)
 	if message["out"] then
 		print(message["out"][1])
 	end
 end)
+
+if not status then
+	error("[ERROR] Unable to load IPyton: " .. repl)
+end
 
 print(code)
 repl:send({

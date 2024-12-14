@@ -1,11 +1,12 @@
 assert = require("luassert") -- luacheck: ignore
 describe("Test the IPython repl", function()
 	describe("IPython:receive", function()
-		local ipython, received
+		local status, ipython, received
 		before_each(function()
-			ipython = require("lungan.repl.IPython"):new(require("lungan.nvim.Term"):new(), function(_, message)
+			status, ipython = require("lungan.repl.IPython"):new(require("lungan.nvim.Term"):new(), function(_, message)
 				received = message
 			end)
+			assert.is.True(status)
 		end)
 		it("should handle session in", function()
 			assert.are.equal(3, ipython.state)
@@ -83,11 +84,12 @@ describe("Test the IPython repl", function()
 		end)
 	end)
 	describe("IPython:send", function()
-		local ipython, received
+		local status, ipython, received
 		before_each(function()
-			ipython = require("lungan.repl.IPython"):new(require("lungan.nvim.Term"):new(), function(_, message)
+			status, ipython = require("lungan.repl.IPython"):new(require("lungan.nvim.Term"):new(), function(_, message)
 				received = message
 			end)
+			assert.is.True(status)
 		end)
 		it("should not echo the inputs", function()
 			local content = {

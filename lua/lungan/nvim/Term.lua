@@ -63,7 +63,8 @@ end
 
 function Repl:run(cmd)
 	-- initialize the repl
-	self.term.chan = vim.fn.termopen(cmd, {
+	local status
+	status, self.term.chan = pcall(vim.fn.termopen, cmd, {
 		on_exit = function(_, code, _)
 			self.term.code = code
 			self.term.chanid = nil
@@ -87,6 +88,7 @@ function Repl:run(cmd)
 		end,
 	})
 	vim.cmd("wincmd p") -- go back to the caller win
+	return status, self.term.chan
 end
 
 function Repl:stop()

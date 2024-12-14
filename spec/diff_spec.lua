@@ -24,7 +24,6 @@ describe("Test the diff funcitons", function()
 			local expected = "loem ipsum"
 			assert.same(expected, require("lungan.nvim.diff").lcs(original, modified))
 		end)
-		-- TODO
 		it("should diff the example", function()
 			local original = "lorem ipsum"
 			local modified = "loem kipsum"

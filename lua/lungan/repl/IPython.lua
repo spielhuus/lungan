@@ -1,7 +1,10 @@
 local str = require("lungan.str")
 
+---@class IPython
+---@field prologue table
+---@field on_message function
+---@field repl table
 local IPython = {}
-IPython.__index = IPython
 
 local STARTUP_TIMEOUT = 5000
 local EXECUTE_TIMEOUT = 10000
@@ -23,8 +26,6 @@ local state = {
 	WAIT = 3, -- wait for response
 	CONT = 4, -- expect more content
 }
-
--- TODO hangs on error, for example without the venv set
 
 function IPython:__parse_image(out)
 	if out.stdout == nil then
@@ -221,9 +222,12 @@ function IPython:new(repl, on_message)
 	o.repl:callback(function(line, message)
 		o:receive(line, message)
 	end)
-	o.repl:run(ipython_cmd)
+	local status, mes = o.repl:run(ipython_cmd)
+	if not status then
+		return status, mes
+	end
 	o:send({ line = 1, text = "import lungan" })
-	return o
+	return true, o
 end
 
 return IPython
