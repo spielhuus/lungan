@@ -42,7 +42,11 @@ function Repl:new(options, on_message)
 		vim.api.nvim_buf_set_name(o.term.buffer, "Lungan REPL: #" .. o.term.buffer)
 		vim.api.nvim_set_option_value("buftype", "nowrite", { buf = o.term.buffer })
 		vim.api.nvim_set_option_value("filetype", "markdown", { buf = o.term.buffer })
-		if options.repl_show then -- TODO this does not work
+
+		if not options.repl_show then
+			-- Ensure the buffer is hidden and not shown in any window
+			vim.api.nvim_buf_set_option(o.term.buffer, "bufhidden", "hide")
+		else
 			-- creat the window
 			local win_width = vim.api.nvim_win_get_width(0)
 			local win_height = vim.api.nvim_win_get_height(0)
