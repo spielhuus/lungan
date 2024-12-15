@@ -36,7 +36,60 @@ function Page:attach(win, buffer)
 		buffer = buffer,
 		group = group,
 		callback = function()
-			self:refresh()
+			print("refresh changed")
+			if not self.edit_content then
+				self:refresh()
+			end
+		end,
+	})
+	vim.api.nvim_create_autocmd({ "ModeChanged" }, {
+		buffer = buffer,
+		group = group,
+		callback = function()
+			local mode = vim.fn.mode()
+			if mode == "i" then
+				print("refresh mode changed i")
+				local current_line = vim.fn.line(".")
+				local content = self:content_at_line(current_line)
+				require("lungan.nvim.renderer").clear(
+					self.options,
+					self.win,
+					self.buffer,
+					content["from"] - 1,
+					content["to"]
+				)
+				self.edit_content = content
+			elseif mode == "n" and self.edit_content then
+				print("refresh mode changed n")
+				self:refresh()
+				self.edit_content = nil
+			end
+		end,
+	})
+	vim.api.nvim_create_autocmd({ "CursorMovedI" }, {
+		buffer = buffer,
+		group = group,
+		callback = function()
+			print("refresh cursor changed")
+			local current_line = vim.fn.line(".")
+			if
+				self.edit_content
+				and self.edit_content["from"] >= current_line
+				and self.edit_content["to"] <= current_line
+			then
+				return
+			else
+				self:refresh()
+				local content = self:content_at_line(current_line)
+				require("lungan.nvim.renderer").clear(
+					self.options,
+					self.win,
+					self.buffer,
+					content["from"] - 1,
+					content["to"]
+				)
+				self.edit_content = content
+			end
 		end,
 	})
 
@@ -52,6 +105,13 @@ function Page:attach(win, buffer)
 				end
 				message.line = line + c.from
 				table.insert(self.results, message)
+				vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "WinScrolled" }, {
+					buffer = buffer,
+					group = group,
+					callback = function()
+						self:refresh()
+					end,
+				})
 				self:refresh()
 			end)
 			if not status then
@@ -77,6 +137,7 @@ function Page:content_at_line(line)
 end
 
 function Page:refresh()
+	print("refresh")
 	self.data = require("lungan.markdown"):new(nil, vim.api.nvim_buf_get_lines(self.buffer, 0, -1, false))
 	require("lungan.nvim.renderer").render(self.options, self.win, self.buffer, self.data, self.results)
 end

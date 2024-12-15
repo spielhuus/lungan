@@ -1,6 +1,10 @@
 local log = require("lungan.log")
 local M = {}
 
+function M.clear(options, win, buffer, start, stop)
+	options.theme.clear(options, win, buffer, start, stop)
+end
+
 function M.render(options, win, buffer, data, results)
 	options.theme.clear(options, win, buffer)
 	for line in data:iter() do
