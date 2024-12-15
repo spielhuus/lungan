@@ -1,6 +1,6 @@
 ---
 provider:
-  model: hf.co/bartowski/Qwen2.5.1-Coder-7B-Instruct-GGUF:Q8_0
+  model: qwen2.5-coder:7b-instruct-q8_0
   name: Ollama
 stream: true
 name: Lua

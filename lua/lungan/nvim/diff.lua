@@ -1,6 +1,18 @@
 local log = require("lungan.log")
+local utils = require("lungan.utils")
 
 local M = {}
+
+local function extract_chat(data)
+	local user_chat = {}
+	for message in data:iter() do
+		if message.type == "chat" and message.role == "assistant" then
+			log.trace("chatData: " .. vim.inspect(message.text))
+			table.insert(user_chat, vim.split(message.text, "\n"))
+		end
+	end
+	return user_chat
+end
 
 ---Clean result table
 ---Retrieves a buffer line with strings.
@@ -61,6 +73,27 @@ M.lcs = function(left, right)
 	end
 
 	return dp[len1][len2]
+end
+
+M.diff_buffer = function(args, data)
+	print(vim.inspect(args))
+	local chat_data = extract_chat(data)
+	if #chat_data > 0 then
+		local code, lang = utils.get_code_fence(chat_data[#chat_data])
+		print(vim.inspect(code))
+		local source = vim.api.nvim_buf_get_lines(args.source_buf, 0, -1, false)
+		local new_buf = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_set_option_value("filetype", lang, { buf = new_buf })
+		vim.api.nvim_buf_set_lines(new_buf, 0, -1, false, source)
+		vim.api.nvim_buf_set_lines(new_buf, args.line1 - 1, args.line2, false, M.__clean_result(code))
+		vim.cmd("buffer " .. new_buf)
+		vim.cmd("diffthis")
+		vim.api.nvim_set_current_win(args.source_win)
+		-- vim.api.nvim_command("buffer " .. args.source_buf)
+		vim.cmd("diffthis")
+	else
+		log.warn("lungan: No code found in chat response")
+	end
 end
 
 M.diff = function(left, right)

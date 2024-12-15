@@ -1,5 +1,30 @@
 local M = {}
 
+---Extract fenced code
+---@param code table[string] text lines.
+M.get_code_fence = function(code)
+	local in_fence = false
+	local fenced_code = {}
+	local fence_language = nil
+
+	for _, line in ipairs(code) do
+		if line:match("^%s*```") then
+			if in_fence then
+				-- End of a fenced block
+				in_fence = false
+			else
+				-- Start of a fenced block
+				in_fence = true
+				fence_language = line:match("^%s*```(.*)")
+			end
+		elseif in_fence then
+			table.insert(fenced_code, line)
+		end
+	end
+
+	return fenced_code, fence_language
+end
+
 --- Generate a formatted code fence for the specified range in the buffer.
 -- @param bufnr integer: Buffer number where the range is located.
 -- @param start integer: Starting line of the range (1-based index).
@@ -32,7 +57,10 @@ end
 -- @return table|nil: A table representing the code block in markdown format,
 -- or nil followed by an error message if no code block was found.
 M.GetCodeBlock = function(buf, line)
-	local parser = vim.treesitter.get_parser(buf)
+	local parser, mes = vim.treesitter.get_parser(buf)
+	if not parser then
+		error("can not load treesitter parser: " .. mes)
+	end
 	local tree = parser:parse()[1]
 	local root = tree:root()
 
