@@ -15,10 +15,18 @@ TEST_PATH=PATH='.venv/bin:$(PATH)' \
 					XDG_CONFIG_HOME='$(XDG)/config/' \
 					XDG_STATE_HOME='$(XDG)/local/state/' \
 					XDG_DATA_HOME='$(XDG)/local/share/'
+LLS_URL="https://github.com/LuaLS/lua-language-server/releases/download/3.13.4/lua-language-server-3.13.4-linux-x64.tar.gz"
+LLS_GZ=lua-language-server-3.13.4-linux-x64.tar.gz
+LLS=.venv/bin/lua-language-server
 
 .PHONY: apidoc luacheck docker test clean help
 
 all: $(PYTHON) $(XDG_SITE) test luacheck luals ## Run all the targets
+
+$(LLS):
+	curl -L $(LLS_URL) -o /tmp/$(LLS_GZ)
+	tar xfz /tmp/$(LLS_GZ) -C .venv
+	rm /tmp/$(LLS_GZ)
 
 $(PYTHON):
 	python -m venv .venv
@@ -43,7 +51,7 @@ apidoc: ## Create the apidoc
 luacheck: ## Run luackeck
 	$(LUACHECK) lua spec
 
-luals: ## Run language server checks.
+luals: $(LLS) ## Run language server checks.
 	lua-language-server --configpath .luarc.json --logpath .ci/lua-ls/log --check .
 
 test: $(XDG_SITE) $(SOURCES) $(PYTHON) ## Run the tests

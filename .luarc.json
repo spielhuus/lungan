@@ -2,7 +2,7 @@
     "diagnostics.libraryFiles": "Disable",
     "runtime.version": "LuaJIT",
     "workspace.checkThirdParty": "Disable",
-    "workspace.ignoreDir": [".lua", ".luarocks"],
+    "workspace.ignoreDir": [".lua", ".luarocks", ".venv"],
     "diagnostics.globals": [
       "vim",
       "before_each",
