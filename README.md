@@ -43,7 +43,30 @@ dependencies are:
 
 
 
-## second
+## Usage
+
+
+commands:
+
+| command    | description               |
+|------------|---------------------------|
+| :Lg Chat   | open a chat window        |
+| :Lg Attach | attach the current buffer |
+
+
+### Chat with LLM
+
+When you are in a chat buffer you can use the following keys:
+
+
+| command    | description                     |
+|------------|---------------------------------|
+| <C>r       | run the chat                    |
+| <C>c       | stop a running chat request     |
+| <C>y       | preview the result in the bufer |
+| <C>a       | Apply the result                |
+| <C>l       | clear the preview               |
+
 
 # lungan
 
@@ -54,7 +77,7 @@ with llamacode you can create your own prompts and content receiver.
 
 ## Markdown Format
 
-To display LLM expressions in Markdown, a rather unusual syntax is used. 
+To display LLM expressions in Markdown, a rather unusual syntax is used.
 The requirements are that the syntax must be parseable with Tree-sitter
 and that syntax highlighting for Markdown and code in fences still works.
 The chosen format is `[role](command) hello assistant [/role]`. This parses

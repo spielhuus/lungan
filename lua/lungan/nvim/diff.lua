@@ -65,7 +65,7 @@ end
 
 M.diff = function(left, right)
 	local lcs_str = M.lcs(left, right)
-
+	print(lcs_str)
 	local i, j, k = 1, 1, 1
 	local result = {}
 
@@ -96,14 +96,13 @@ M.diff = function(left, right)
 	return result
 end
 
-M.clear_marks = function(session)
-	vim.api.nvim_buf_clear_namespace(session.source_buf, M.namespace, session.line1 - 1, session.line2)
+M.clear_marks = function(args)
+	vim.api.nvim_buf_clear_namespace(args.source_buf, M.namespace, args.line1 - 1, args.line2)
 end
 
 M.preview = function(args, data)
 	local user_chat = {}
 	for message in data:iter() do
-		print("--" .. vim.inspect(message))
 		if message.type == "chat" and message.role == "assistant" then
 			table.insert(user_chat, M.__clean_result(vim.split(message.text, "\n")))
 		end
@@ -135,17 +134,16 @@ M.preview = function(args, data)
 	end
 end
 
-M.replace = function(opts, session)
+M.replace = function(args, data)
 	local user_chat = {}
-	log.debug("DIFF: opts:" .. vim.inspect(opts) .. " --- session: " .. vim.inspect(session))
-	for _, message in ipairs(session["tree"]) do
-		if message.name == "chat" and message.role == "assistant" then
-			table.insert(user_chat, M.__clean_result(message.text))
+	for message in data:iter() do
+		if message.type == "chat" and message.role == "assistant" then
+			user_chat = M.__clean_result(vim.split(message.text, "\n"))
 		end
 	end
-	M.clear_marks(session)
-	-- TODO maybe select the others
-	vim.api.nvim_buf_set_lines(session.source_buf, session.line1 - 1, session.line2, true, user_chat[#user_chat])
+	M.clear_marks(args)
+	print(vim.inspect(user_chat))
+	vim.api.nvim_buf_set_lines(args.source_buf, args.line1 - 1, args.line2, true, user_chat)
 end
 
 return M

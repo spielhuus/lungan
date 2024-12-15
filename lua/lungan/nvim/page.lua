@@ -105,13 +105,6 @@ function Page:attach(win, buffer)
 				end
 				message.line = line + c.from
 				table.insert(self.results, message)
-				vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "WinScrolled" }, {
-					buffer = buffer,
-					group = group,
-					callback = function()
-						self:refresh()
-					end,
-				})
 				self:refresh()
 			end)
 			if not status then

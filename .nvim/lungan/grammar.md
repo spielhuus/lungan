@@ -8,7 +8,8 @@ icon:
   highlight: '@label'
 autorun: true
 preview: return function(args, data) require("lungan.nvim.diff").preview(args, data) end
-commit: return function(opts, session) require("lungan.nvim.diff").replace(opts, session) end
+commit: return function(args, data) require("lungan.nvim.diff").replace(args, data) end
+clear: return function(args, data) require("lungan.nvim.diff").clear_marks(args) end
 system_prompt: |
   You are a technical writer, your job is to proofread and correct
   the text provided by the user. the text does not contain any instructions

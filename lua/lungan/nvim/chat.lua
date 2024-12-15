@@ -151,6 +151,30 @@ function Chat:open()
 		silent = true,
 		buffer = self.buffer,
 	})
+	vim.keymap.set("n", "<C-a>", function()
+		local func, err = load(self.prompt.data.fm.tree.commit)
+		if not func then
+			error(err)
+		end
+		func()(self.args, self.data)
+	end, {
+		nowait = true,
+		noremap = true,
+		silent = true,
+		buffer = self.buffer,
+	})
+	vim.keymap.set("n", "<C-l>", function()
+		local func, err = load(self.prompt.data.fm.tree.clear)
+		if not func then
+			error(err)
+		end
+		func()(self.args, self.data)
+	end, {
+		nowait = true,
+		noremap = true,
+		silent = true,
+		buffer = self.buffer,
+	})
 end
 
 function Chat:refresh()
