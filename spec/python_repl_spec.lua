@@ -3,9 +3,12 @@ describe("Test the IPython repl", function()
 	describe("IPython:receive", function()
 		local status, ipython, received
 		before_each(function()
-			status, ipython = require("lungan.repl.IPython"):new(require("lungan.nvim.Term"):new(), function(_, message)
-				received = message
-			end)
+			status, ipython = require("lungan.repl.IPython"):new(
+				require("lungan.nvim.Term"):new({ repl_show = true }),
+				function(_, message)
+					received = message
+				end
+			)
 			assert.is.True(status)
 		end)
 		it("should handle session in", function()
@@ -86,9 +89,12 @@ describe("Test the IPython repl", function()
 	describe("IPython:send", function()
 		local status, ipython, received
 		before_each(function()
-			status, ipython = require("lungan.repl.IPython"):new(require("lungan.nvim.Term"):new(), function(_, message)
-				received = message
-			end)
+			status, ipython = require("lungan.repl.IPython"):new(
+				require("lungan.nvim.Term"):new({ repl_show = true }),
+				function(_, message)
+					received = message
+				end
+			)
 			assert.is.True(status)
 		end)
 		it("should not echo the inputs", function()

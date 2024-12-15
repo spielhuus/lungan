@@ -1,3 +1,6 @@
+local log = require("lungan.log")
+
+---class Yaml
 local Yaml = {}
 
 local MATCH_KEY = "^%s*([%w|_]+):%s*$"
@@ -53,10 +56,10 @@ function Yaml:_parse(lines, indent, index)
 			subtree[list_key] = list_val
 			table.insert(tree, subtree)
 		elseif string.match(lines[index], "%s*-") then
-			print("unknown: " .. require("lungan.str").to_string(lines[index]))
+			log.warn("unknown: " .. require("lungan.str").to_string(lines[index]))
 			-- error("what to do here")
 		else
-			print(">" .. lines[index])
+			log.info(">" .. lines[index])
 		end
 		index = index + 1
 	end

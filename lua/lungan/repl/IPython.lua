@@ -1,3 +1,4 @@
+local log = require("lungan.log")
 local str = require("lungan.str")
 
 ---@class IPython
@@ -31,7 +32,7 @@ function IPython:__parse_image(out)
 	if out.stdout == nil then
 		return out
 	end
-	-- print("PARSE_IMAGE:" .. vim.inspect(out))
+
 	local images = {}
 	local image_chunks = {}
 	local stdout = {}
@@ -120,7 +121,7 @@ function IPython:receive(content)
 					if err then
 						message.error = err
 					else
-						print("Error in parse error: " .. mes)
+						log.error("Error in parse error: " .. mes)
 					end
 				end
 				message = self:__parse_image(message)

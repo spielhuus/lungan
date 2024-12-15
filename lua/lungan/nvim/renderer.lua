@@ -37,7 +37,7 @@ function M.render(options, win, buffer, data, results)
 			if line.images then
 				local res, mes = pcall(options.theme.image, options, win, buffer, line)
 				require("lungan.nvim.image").render(win, line)
-				if not res and line.type ~= "paragraph" then
+				if not res then
 					log.info("Can not render image '" .. res .. "(" .. mes .. ")")
 				end
 			end

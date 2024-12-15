@@ -30,6 +30,7 @@ local M = {
 		"test/spec",
 	},
 	linewidth = 80, -- the linewidth for the textwrapper
+	repl_show = true,
 	loglevel = "trace",
 	theme = {
 		header_signs = { "󰬺", "󰬻", "󰬼", "󰬽", "󰬾", "󰬿", "󰭀", "󰭁", "󰭂", "󰿩" },

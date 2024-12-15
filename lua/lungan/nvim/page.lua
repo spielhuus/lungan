@@ -36,7 +36,6 @@ function Page:attach(win, buffer)
 		buffer = buffer,
 		group = group,
 		callback = function()
-			print("refresh changed")
 			if not self.edit_content then
 				self:refresh()
 			end
@@ -48,7 +47,6 @@ function Page:attach(win, buffer)
 		callback = function()
 			local mode = vim.fn.mode()
 			if mode == "i" then
-				print("refresh mode changed i")
 				local current_line = vim.fn.line(".")
 				local content = self:content_at_line(current_line)
 				require("lungan.nvim.renderer").clear(
@@ -60,7 +58,6 @@ function Page:attach(win, buffer)
 				)
 				self.edit_content = content
 			elseif mode == "n" and self.edit_content then
-				print("refresh mode changed n")
 				self:refresh()
 				self.edit_content = nil
 			end
@@ -70,7 +67,6 @@ function Page:attach(win, buffer)
 		buffer = buffer,
 		group = group,
 		callback = function()
-			print("refresh cursor changed")
 			local current_line = vim.fn.line(".")
 			if
 				self.edit_content
@@ -130,7 +126,6 @@ function Page:content_at_line(line)
 end
 
 function Page:refresh()
-	print("refresh")
 	self.data = require("lungan.markdown"):new(nil, vim.api.nvim_buf_get_lines(self.buffer, 0, -1, false))
 	require("lungan.nvim.renderer").render(self.options, self.win, self.buffer, self.data, self.results)
 end
@@ -141,7 +136,8 @@ function Page:get_repl(lang, callback)
 	end
 	if not self.repls[lang] then
 		if lang == "python" or lang == "py" then
-			local status, repl = require("lungan.repl.IPython"):new(require("lungan.nvim.Term"):new(), callback)
+			local status, repl =
+				require("lungan.repl.IPython"):new(require("lungan.nvim.Term"):new(self.options), callback)
 			if not status then
 				return status, repl
 			end

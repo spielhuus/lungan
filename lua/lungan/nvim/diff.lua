@@ -76,11 +76,9 @@ M.lcs = function(left, right)
 end
 
 M.diff_buffer = function(args, data)
-	print(vim.inspect(args))
 	local chat_data = extract_chat(data)
 	if #chat_data > 0 then
 		local code, lang = utils.get_code_fence(chat_data[#chat_data])
-		print(vim.inspect(code))
 		local source = vim.api.nvim_buf_get_lines(args.source_buf, 0, -1, false)
 		local new_buf = vim.api.nvim_create_buf(false, true)
 		vim.api.nvim_set_option_value("filetype", lang, { buf = new_buf })
@@ -98,7 +96,6 @@ end
 
 M.diff = function(left, right)
 	local lcs_str = M.lcs(left, right)
-	print(lcs_str)
 	local i, j, k = 1, 1, 1
 	local result = {}
 
@@ -175,7 +172,6 @@ M.replace = function(args, data)
 		end
 	end
 	M.clear_marks(args)
-	print(vim.inspect(user_chat))
 	vim.api.nvim_buf_set_lines(args.source_buf, args.line1 - 1, args.line2, true, user_chat)
 end
 

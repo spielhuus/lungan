@@ -65,7 +65,6 @@ notebook.convert = function(md)
 				ipyrepl:wait()
 			end
 		else
-			print(require("lungan.str").to_string(entry))
 			table.insert(result, entry.text)
 		end
 	end

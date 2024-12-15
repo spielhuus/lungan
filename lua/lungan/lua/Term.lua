@@ -36,7 +36,7 @@ function Repl:callback(fn)
 	self.on_message = fn
 end
 
-function Repl:new(on_message)
+function Repl:new(options, on_message)
 	local o = {}
 	setmetatable(o, { __index = self })
 	o.term = {}
@@ -45,6 +45,7 @@ function Repl:new(on_message)
 	o.count = 1
 	o.response = {}
 	o.sent = {}
+	o.options = options
 	return o
 end
 
@@ -56,8 +57,7 @@ function Repl:run(cmd)
 		args = cmd,
 		stdio = { self.stdin, self.stdout, self.stderr },
 	}, function(code)
-		print(str.to_string("Term:Exit:" .. code))
-		-- on_exit(code, self:response())
+		log.info(str.to_string("Term:Exit:" .. code))
 	end)
 
 	uv.read_start(self.stdout, function(err, data)

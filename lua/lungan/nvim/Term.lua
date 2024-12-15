@@ -26,7 +26,7 @@ function Repl:callback(fn)
 	self.on_message = fn
 end
 
-function Repl:new(on_message)
+function Repl:new(options, on_message)
 	local o = {}
 	setmetatable(o, { __index = self })
 	o.term = {}
@@ -35,13 +35,14 @@ function Repl:new(on_message)
 	o.count = 1
 	o.response = {}
 	o.sent = {}
+	o.options = options
 	-- open the buffer
-	if not o.term.win or not o.term.buffer then -- TODO check the win only when we need to open one
+	if not o.term.buffer then
 		o.term.buffer = vim.api.nvim_create_buf(false, true)
 		vim.api.nvim_buf_set_name(o.term.buffer, "Lungan REPL: #" .. o.term.buffer)
 		vim.api.nvim_set_option_value("buftype", "nowrite", { buf = o.term.buffer })
 		vim.api.nvim_set_option_value("filetype", "markdown", { buf = o.term.buffer })
-		if true then -- TODO configure
+		if options.repl_show then -- TODO this does not work
 			-- creat the window
 			local win_width = vim.api.nvim_win_get_width(0)
 			local win_height = vim.api.nvim_win_get_height(0)
