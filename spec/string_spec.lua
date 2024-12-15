@@ -1,4 +1,4 @@
-assert = require("luassert") -- luacheck: ignore
+local assert = require("luassert")
 local str = require("lungan.str")
 describe("Test the string utilities", function()
 	describe(", the string utilities", function()

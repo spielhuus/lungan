@@ -1,4 +1,4 @@
-assert = require("luassert") -- luacheck: ignore
+local assert = require("luassert")
 local Openrouter = require("lungan.providers.Openrouter")
 local HttpMock = {
 	get = function(

@@ -1,4 +1,4 @@
-assert = require("luassert") -- luacheck: ignore
+local assert = require("luassert")
 describe("Test the diff funcitons", function()
 	describe("Clean the result table", function()
 		it("should remove all the leading and trailing empty entries and those with code fences", function()

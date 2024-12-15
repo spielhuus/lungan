@@ -1,4 +1,4 @@
-assert = require("luassert") -- luacheck: ignore
+local assert = require("luassert")
 describe("Test the markdown parser", function()
 	it("should pass the paragraphs", function()
 		local lines = {
