@@ -18,14 +18,6 @@ describe("Test the YAML parser", function()
 		local yaml = require("lungan.yaml"):new(nil, lines)
 		assert.same({ person = { name = "frank", age = 42 }, name = "Persons" }, yaml.tree)
 	end)
-	-- it("should parse null values", function() TODO
-	-- 	local lines = {
-	-- 		"name: frank",
-	-- 		"age:",
-	-- 	}
-	-- 	local yaml = require("lungan.yaml"):new(nil, lines)
-	-- 	assert.same({ name = "frank", age = nil }, yaml.tree)
-	-- end)
 	it("should parse numbers", function()
 		local lines = {
 			"count: 100",

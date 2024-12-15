@@ -102,7 +102,7 @@ str.params = function(tokens)
 	for _, item in ipairs(pairs) do
 		local key, val = item:match("^(.*=)(.*)$")
 		if key then
-			result[string.sub(key, 1, -2)] = assert(load("return " .. val))() -- TODO clever casting method!
+			result[string.sub(key, 1, -2)] = assert(load("return " .. val))()
 		else
 			error("can not parse " .. item)
 		end
