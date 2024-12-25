@@ -1,6 +1,8 @@
 local str = require("lungan.str")
 local tbl = require("lungan.tbl")
 
+---@class Markdown
+---@field tree table
 local Markdown = {}
 
 Markdown.types = {
@@ -127,18 +129,23 @@ function Markdown:_parse(lines)
 	return tree
 end
 
+---return integer number of items in the tree
 function Markdown:size()
 	return #self.tree
 end
 
+---@return table The frontmatter data
 function Markdown:frontmatter()
 	return self.fm.tree
 end
 
+---@return boolean
 function Markdown:has_frontmatter()
 	return self.fm ~= nil
 end
 
+---Get the entry at line number
+---@return table|nil the result or nil
 function Markdown:get(linenr)
 	for _, line in ipairs(self.tree) do
 		if linenr >= line.from and linenr <= line.to then

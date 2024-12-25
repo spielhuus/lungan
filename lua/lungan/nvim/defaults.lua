@@ -13,7 +13,6 @@ local M = {
 	providers = {
 		Ollama = require("lungan.providers.Ollama"):new(require("lungan.nvim.Http"):new(), {}),
 		Openrouter = require("lungan.providers.Openrouter"):new(require("lungan.nvim.Http"):new(), {}),
-		-- Replicate = require("lungan.providers.replicate").setup(),
 	},
 	picker = {
 		models = require("lungan.nvim.telescope.models"),
@@ -21,7 +20,7 @@ local M = {
 		notebooks = require("lungan.nvim.telescope.notebooks"),
 	},
 	prompts = {},
-
+	-- ignore files for the notebook lookup
 	ignore = {
 		".gitignore",
 		".git",
@@ -31,7 +30,9 @@ local M = {
 	},
 	linewidth = 80, -- the linewidth for the textwrapper
 	repl_show = true,
+	-- The loglevel. In meovim warn and error are handled as notifications  [trace, debug, info, warn, error]
 	loglevel = "trace",
+
 	theme = {
 		header_signs = { "󰬺", "󰬻", "󰬼", "󰬽", "󰬾", "󰬿", "󰭀", "󰭁", "󰭂", "󰿩" },
 		clear = function(_, _, buffer, from, to)

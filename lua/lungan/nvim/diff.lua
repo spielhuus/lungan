@@ -1,4 +1,5 @@
 local log = require("lungan.log")
+local str = require("lungan.str")
 local utils = require("lungan.utils")
 
 local M = {}
@@ -35,19 +36,23 @@ M.__clean_result = function(text)
 	if start > finish then
 		return {}
 	else
-		return vim.list_slice(text, start, finish)
+		local result = {}
+		for i = start, finish do
+			table.insert(result, str.rtrim(text[i]))
+		end
+		return result
 	end
 end
 
 M.namespace = vim.api.nvim_create_namespace("lungan.diff")
 
 ---Find the Longest Common Subsequence
----Given two stings:
---- Orignal: lorem ipsum
---- Modified: lorem kipsum
+---Given two strings:
+---Original: lorem ipsum
+---Modified: lorem kipsum
 ---
---- Find thee LCS:
----     LCS of lorem ipsum and lorem kipsum is lorem ipsm.
+---Find the LCS:
+---    LCS of lorem ipsum and lorem kipsum is lorem ipsum.
 ---@param left string the left string
 ---@param right string the right string
 ---@return string LCS

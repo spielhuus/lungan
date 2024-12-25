@@ -1,5 +1,6 @@
 ---@class Page
 ---@field path string
+---@field data Markdown
 ---@field options table
 local Page = {}
 
@@ -49,14 +50,16 @@ function Page:attach(win, buffer)
 			if mode == "i" then
 				local current_line = vim.fn.line(".")
 				local content = self:content_at_line(current_line)
-				require("lungan.nvim.renderer").clear(
-					self.options,
-					self.win,
-					self.buffer,
-					content["from"] - 1,
-					content["to"]
-				)
-				self.edit_content = content
+				if content then
+					require("lungan.nvim.renderer").clear(
+						self.options,
+						self.win,
+						self.buffer,
+						content["from"] - 1,
+						content["to"]
+					)
+					self.edit_content = content
+				end
 			elseif mode == "n" and self.edit_content then
 				self:refresh()
 				self.edit_content = nil
@@ -77,14 +80,16 @@ function Page:attach(win, buffer)
 			else
 				self:refresh()
 				local content = self:content_at_line(current_line)
-				require("lungan.nvim.renderer").clear(
-					self.options,
-					self.win,
-					self.buffer,
-					content["from"] - 1,
-					content["to"]
-				)
-				self.edit_content = content
+				if content then
+					require("lungan.nvim.renderer").clear(
+						self.options,
+						self.win,
+						self.buffer,
+						content["from"] - 1,
+						content["to"]
+					)
+					self.edit_content = content
+				end
 			end
 		end,
 	})
@@ -94,8 +99,9 @@ function Page:attach(win, buffer)
 		local row, _ = vim.api.nvim_win_get_cursor(0)
 		local cell = self:content_at_line(row[1])
 		if cell then
-			local repl, status
-			status, repl = self:get_repl(cell.lang, function(line, message, c)
+			local repl, mes
+			repl, mes = self:get_repl(cell.lang, function(line, message, c)
+				require("lungan.log").debug("receive: " .. require("str").to_string(message))
 				if not self.results then
 					self.results = {}
 				end
@@ -103,11 +109,13 @@ function Page:attach(win, buffer)
 				table.insert(self.results, message)
 				self:refresh()
 			end)
-			if not status then
-				require("lungan.log").error("lungan: unable to start IPython: " .. repl)
+			if not repl then
+				require("lungan.log").error("lungan: unable to start Repl(" .. cell.lang .. "): " .. mes)
 				return
 			end
-			cell.text = cell.text .. "\nlungan.plots()"
+			if cell.lang == "py" or cell.lang == "python" then
+				cell.text = cell.text .. "\nlungan.plots()"
+			end
 			assert(repl)
 			repl:send(cell)
 		end
@@ -121,6 +129,7 @@ function Page:attach(win, buffer)
 	self:refresh()
 end
 
+---@return table|nil
 function Page:content_at_line(line)
 	return self.data:get(line)
 end
@@ -136,23 +145,24 @@ function Page:get_repl(lang, callback)
 	end
 	if not self.repls[lang] then
 		if lang == "python" or lang == "py" then
-			local status, repl =
-				require("lungan.repl.IPython"):new(require("lungan.nvim.Term"):new(self.options), callback)
-			if not status then
-				return status, repl
+			local repl, mes =
+				require("lungan.repl.Python"):new(require("lungan.repl.NvimTerm"):new(self.options), callback)
+			if not repl then
+				return repl, mes
 			end
 			self.repls[lang] = repl
 		elseif lang == "lua" then
-			local repl = require("lungan.repl.lua"):new(nil, self.options, function(line, message)
-				table.insert(self.results[line], message)
-				self:refresh()
-			end)
+			local repl, mes =
+				require("lungan.repl.Lua"):new(require("lungan.repl.NvimTerm"):new(self.options), callback)
+			if not repl then
+				return repl, mes
+			end
 			self.repls[lang] = repl
 		else
 			require("lungan.log").warn("Unsupported language: " .. lang)
 		end
 	end
-	return true, self.repls[lang]
+	return self.repls[lang], nil
 end
 
 function Page:new(o, options, path)

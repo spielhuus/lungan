@@ -1,10 +1,11 @@
 local json = require("lungan.json")
 local str = require("lungan.str")
 
----@class Ollama
+---@class Ollama: Provider
 ---@field options table
 ---@field http Http
 local Ollama = {}
+Ollama.__index = Ollama
 
 local defaults = {
 	name = "Ollama",
@@ -17,17 +18,17 @@ local defaults = {
 ---@param opts table An optional table containing configuration options.
 ---@return Ollama A new instance of Ollama with the specified options.
 function Ollama:new(http, opts)
-	local o = {}
-	setmetatable(o, { __index = self })
-	o.__name = "ollama"
+	-- local o = {}
+	setmetatable(self, { __index = require("lungan.providers.Provider") })
+	self.__name = "ollama"
 	local in_opts = opts or {}
 	local options = defaults
 	for k, v in pairs(in_opts) do
 		options[k] = v
 	end
-	o.options = options
-	o.http = http
-	return o
+	self.options = options
+	self.http = http
+	return self
 end
 
 function Ollama:__parse_prompt(prompt)

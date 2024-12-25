@@ -3,10 +3,6 @@
 ---------------------------------------------------------------
 --- Configuration table
 ---------------------------------------------------------------
----
----@class request post request configuration
----@field url string the request url
----@field body string the post body
 
 --- HTTP client using curl
 --- Sends an HTTP GET or post request to the specified URL.

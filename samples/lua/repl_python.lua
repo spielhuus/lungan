@@ -1,18 +1,18 @@
-local Repl = require("lungan.repl.IPython")
+local Repl = require("lungan.repl.Python")
 local Term = require("lungan.lua.Term")
 
 local code = [[a = 44
 b = 25
 a + b]]
 
-local status, repl = Repl:new(Term:new(), function(_, message)
+local repl, mes = Repl:new(Term:new(), function(_, message)
 	if message["out"] then
 		print(message["out"][1])
 	end
 end)
 
-if not status then
-	error("[ERROR] Unable to load IPyton: " .. repl)
+if not repl then
+	error("[ERROR] Unable to load IPyton: " .. mes)
 end
 
 print(code)

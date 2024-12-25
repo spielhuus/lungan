@@ -6,7 +6,7 @@ local textwrap = require("lungan.textwrap")
 ---@field options table the llm options
 local LLM = {}
 
----Represents an instance of a large language model.
+--- Represents an instance of a large language model.
 ---@param opts table A table containing configuration options for the LLM.
 ---@return LLM A new instance of the LLM with the specified options.
 function LLM:new(opts)

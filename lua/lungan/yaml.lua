@@ -56,6 +56,7 @@ function Yaml:_parse(lines, indent, index)
 			subtree[list_key] = list_val
 			table.insert(tree, subtree)
 		elseif string.match(lines[index], "%s*-") then
+			print("Inkown: " .. lines[index])
 			log.warn("unknown: " .. require("lungan.str").to_string(lines[index]))
 			-- error("what to do here")
 		else

@@ -39,6 +39,7 @@ local get_win_opts = function()
 	}
 end
 
+---@params tokens table[list]
 function Chat:append(tokens)
 	local all_lines = vim.api.nvim_buf_get_lines(self.buffer, 0, -1, false)
 	local last_row = #all_lines
@@ -183,6 +184,7 @@ function Chat:refresh()
 end
 
 ---Returns the llm data frome the chat
+---@return table conversation history
 function Chat:get()
 	local output = self.data:frontmatter()
 	output.messages = {}

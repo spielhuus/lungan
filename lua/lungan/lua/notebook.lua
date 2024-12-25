@@ -1,4 +1,4 @@
-local IPython = require("lungan.repl.IPython")
+local Python = require("lungan.repl.Python")
 
 local notebook = {}
 
@@ -54,10 +54,10 @@ notebook.convert = function(md)
 			-- execute the code
 			if entry.lang == "py" or entry.lang == "python" then
 				if ipyrepl == nil then
-					local status
-					status, ipyrepl = IPython:new(require("lungan.lua.Term"):new(), callback)
-					if not status then
-						error("Unable to load IPython: " .. ipyrepl)
+					local mes
+					ipyrepl, mes = Python:new(require("lungan.repl.NvimTerm"):new(), callback)
+					if not ipyrepl then
+						error("Unable to load Python: " .. mes)
 					end
 				end
 				entry.text = entry.text .. "\nlungan.plots()"

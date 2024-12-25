@@ -4,7 +4,7 @@ local M = {}
 
 M.options = require("lungan.nvim.defaults")
 
-M.chats = {} -- TODO delete closed chats
+M.chats = {}
 M.sessions = {}
 
 M.get_chat = function(buffer)

@@ -1,8 +1,8 @@
 --- *Markdown Page*
 --- A markdown Notebook. Handles all the markdown pages in the project.
----
+
 ---@class Notebook
----@field options table:
+---@field options table
 ---@field pages Page the Pages
 local Notebook = {}
 

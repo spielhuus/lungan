@@ -110,6 +110,21 @@ get the code block under the cursor.
 print("hello from lua") 
 ```
 
+```lua
+a = 24
+b = 45
+c = a + b
+print(c)
+```
+
+```lua
+function add(a, b)
+  return a + b
+end
+print(add(24,45))
+```
+
+
 get the *visual* selection
 
 ```py

@@ -1,15 +1,16 @@
 local assert = require("luassert")
-describe("Test the IPython repl", function()
-	describe("IPython:receive", function()
-		local status, ipython, received
+describe("Test the Python repl", function()
+	describe("Python:receive", function()
+		local ipython, received
 		before_each(function()
-			status, ipython = require("lungan.repl.IPython"):new(
-				require("lungan.nvim.Term"):new({ repl_show = true }),
+			local mes
+			ipython, mes = require("lungan.repl.Python"):new(
+				require("lungan.repl.NvimTerm"):new({ repl_show = true }),
 				function(_, message)
 					received = message
 				end
 			)
-			assert.is.True(status)
+			assert(ipython, mes)
 		end)
 		it("should handle session in", function()
 			assert.are.equal(3, ipython.state)
@@ -33,16 +34,16 @@ describe("Test the IPython repl", function()
 			assert.are.equal(#ipython.response.out, 1)
 			assert.are.equal(ipython.response.out[1], "result")
 		end)
-		it("should handle stdout", function()
+		it("should handle stdout #stdout", function()
 			ipython:receive({ "0", "1" })
 			ipython:receive({ "2", "3", "4", "5", "6" })
 			assert.is.True(ipython.response.has_err == nil)
-			assert.are.equal(7, #ipython.response.stdout)
+			-- assert.are.equal(7, #ipython.response.stdout)
 			assert.Same({ "0", "1", "2", "3", "4", "5", "6" }, ipython.response.stdout)
 			ipython:receive({ "In [2]:" })
 			assert.are.equal(7, #received.stdout)
 		end)
-		it("should handle continuation", function()
+		it("should handle continuation #continuation", function()
 			local content = { "...:" }
 			ipython:receive(content)
 			assert.are.equal(4, ipython.state) -- state 4 is cont
@@ -86,16 +87,20 @@ describe("Test the IPython repl", function()
 			)
 		end)
 	end)
-	describe("IPython:send", function()
-		local status, ipython, received
+	describe("Python:send", function()
+		local ipython, received
 		before_each(function()
-			status, ipython = require("lungan.repl.IPython"):new(
-				require("lungan.nvim.Term"):new({ repl_show = true }),
+			local mes
+			ipython, mes = require("lungan.repl.Python"):new(
+				require("lungan.repl.NvimTerm"):new({ repl_show = true }),
 				function(_, message)
 					received = message
 				end
 			)
-			assert.is.True(status)
+			if ipython == nil then
+				print(mes)
+			end
+			assert.is.True(ipython ~= nil)
 		end)
 		it("should not echo the inputs", function()
 			local content = {

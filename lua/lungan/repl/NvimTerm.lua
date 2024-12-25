@@ -1,9 +1,12 @@
 local str = require("lungan.str")
 local log = require("lungan.log")
 
-local Repl = {}
+---@class NvimRepl: ITerm
+---@field sent table[string]
+---@field term table
+local NvimRepl = {}
 
-function Repl:__is_echo(value)
+function NvimRepl:__is_echo(value)
 	for i, v in ipairs(self.sent) do
 		if str.rtrim(v) == value then
 			table.remove(self.sent, i)
@@ -13,22 +16,22 @@ function Repl:__is_echo(value)
 	return false
 end
 
-function Repl:wait(timeout, fn)
+function NvimRepl:wait(timeout, fn)
 	return vim.wait(timeout, fn)
 end
 
 -- remove all \r and \n from the string
-function Repl:_clean_str(value)
+function NvimRepl:_clean_str(value)
 	return value:gsub("\r", ""):gsub("\n", "")
 end
 
-function Repl:callback(fn)
+function NvimRepl:callback(fn)
 	self.on_message = fn
 end
 
-function Repl:new(options, on_message)
+function NvimRepl:new(options, on_message)
 	local o = {}
-	setmetatable(o, { __index = self })
+	setmetatable(o, { __index = self, name = "NvimRepl" })
 	o.term = {}
 	o.messages = {}
 	o.on_message = on_message
@@ -43,10 +46,7 @@ function Repl:new(options, on_message)
 		vim.api.nvim_set_option_value("buftype", "nowrite", { buf = o.term.buffer })
 		vim.api.nvim_set_option_value("filetype", "markdown", { buf = o.term.buffer })
 
-		if not options.repl_show then
-			-- Ensure the buffer is hidden and not shown in any window
-			vim.api.nvim_buf_set_option(o.term.buffer, "bufhidden", "hide")
-		else
+		if options.repl_show then -- TODO: this does not work with termopen
 			-- creat the window
 			local win_width = vim.api.nvim_win_get_width(0)
 			local win_height = vim.api.nvim_win_get_height(0)
@@ -66,7 +66,7 @@ function Repl:new(options, on_message)
 	return o
 end
 
-function Repl:run(cmd)
+function NvimRepl:run(cmd)
 	-- initialize the repl
 	local status
 	status, self.term.chan = pcall(vim.fn.termopen, cmd, {
@@ -96,14 +96,14 @@ function Repl:run(cmd)
 	return status, self.term.chan
 end
 
-function Repl:stop()
+function NvimRepl:stop()
 	if self.job_id ~= nil then
 		vim.fn.jobstop(self.job_id)
 		self.job_id = nil
 	end
 end
 
-function Repl:send(message)
+function NvimRepl:send(message)
 	if type(message) == "table" then
 		for _, m in ipairs(message) do
 			table.insert(self.sent, m)
@@ -115,4 +115,4 @@ function Repl:send(message)
 	end
 end
 
-return Repl
+return NvimRepl

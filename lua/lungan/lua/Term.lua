@@ -1,9 +1,9 @@
 local uv = require("luv")
 local str = require("lungan.str")
 local log = require("lungan.log")
-local Repl = {}
+local LuvRepl = {}
 
-function Repl:__is_echo(value)
+function LuvRepl:__is_echo(value)
 	for i, v in ipairs(self.sent) do
 		if str.rtrim(v) == value then
 			table.remove(self.sent, i)
@@ -13,7 +13,7 @@ function Repl:__is_echo(value)
 	return false
 end
 
-function Repl:wait(timeout, fn)
+function LuvRepl:wait(timeout, fn)
 	local start_time = uv.hrtime()
 	while true do
 		if fn() then
@@ -28,15 +28,15 @@ function Repl:wait(timeout, fn)
 end
 
 -- remove all \r and \n from the string
-function Repl:_clean_str(value)
+function LuvRepl:_clean_str(value)
 	return value:gsub("\r", ""):gsub("\n", "")
 end
 
-function Repl:callback(fn)
+function LuvRepl:callback(fn)
 	self.on_message = fn
 end
 
-function Repl:new(options, on_message)
+function LuvRepl:new(options, on_message)
 	local o = {}
 	setmetatable(o, { __index = self })
 	o.term = {}
@@ -49,7 +49,7 @@ function Repl:new(options, on_message)
 	return o
 end
 
-function Repl:run(cmd)
+function LuvRepl:run(cmd)
 	self.stdin = uv.new_pipe()
 	self.stdout = uv.new_pipe()
 	self.stderr = uv.new_pipe()
@@ -85,14 +85,14 @@ function Repl:run(cmd)
 	return self.job_id
 end
 
-function Repl:stop()
+function LuvRepl:stop()
 	if self.job_id ~= nil then
 		vim.fn.jobstop(self.job_id)
 		self.job_id = nil
 	end
 end
 
-function Repl:send(message)
+function LuvRepl:send(message)
 	if type(message) == "table" then
 		for _, m in ipairs(message) do
 			table.insert(self.sent, m)
@@ -104,4 +104,4 @@ function Repl:send(message)
 	end
 end
 
-return Repl
+return LuvRepl

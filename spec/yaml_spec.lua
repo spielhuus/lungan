@@ -116,6 +116,23 @@ describe("Test the YAML parser", function()
 		local yaml = require("lungan.yaml"):new(nil, lines)
 		assert.same(expected, yaml.tree)
 	end)
+	-- TODO:
+	-- it("should parse multiline text, with comments", function()
+	-- 	local lines = {
+	-- 		"my_prompt: |",
+	-- 		"```lua",
+	-- 		"  ---here is the funny text",
+	-- 		"  --- that spawns over multiple lines",
+	-- 		"```",
+	-- 		"name: susi",
+	-- 	}
+	-- 	local expected = {
+	-- 		my_prompt = "```lua\n---here is the funny text\n--- that spawns over multiple lines\n```",
+	-- 		name = "susi",
+	-- 	}
+	-- 	local yaml = require("lungan.yaml"):new(nil, lines)
+	-- 	assert.same(expected, yaml.tree)
+	-- end)
 	it("should parse the tool prompt", function()
 		local lines = {
 			"provider:",

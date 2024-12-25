@@ -1,10 +1,10 @@
 local log = require("lungan.log")
 local str = require("lungan.str")
 
----@class IPython
+---@class IPython: IRepl
 ---@field prologue table
 ---@field on_message function
----@field repl table
+---@field term ITerm
 local IPython = {}
 
 local STARTUP_TIMEOUT = 5000
@@ -159,7 +159,7 @@ function IPython:receive(content)
 end
 
 function IPython:wait()
-	local w, wres = self.repl:wait(EXECUTE_TIMEOUT, function()
+	local w, wres = self.term:wait(EXECUTE_TIMEOUT, function()
 		return self.state == state.IDLE
 	end)
 	if not w then
@@ -167,10 +167,12 @@ function IPython:wait()
 	end
 end
 
+---@param cell table the cell
 function IPython:send(cell)
 	self.cell = cell
 	if self.state == state.START then
-		local w, wres = self.repl:wait(STARTUP_TIMEOUT, function()
+		assert(self.term)
+		local w, wres = self.term:wait(STARTUP_TIMEOUT, function()
 			if self.count ~= 0 then
 				self.state = state.IDLE
 				return true
@@ -182,7 +184,7 @@ function IPython:send(cell)
 		end
 	end
 	if self.state ~= state.IDLE then
-		local w, wres = self.repl:wait(EXECUTE_TIMEOUT, function()
+		local w, wres = self.term:wait(EXECUTE_TIMEOUT, function()
 			return self.state == state.IDLE
 		end)
 		if not w then
@@ -192,7 +194,7 @@ function IPython:send(cell)
 	local has_continue = false
 	for i, line in ipairs(str.lines(cell.text)) do
 		if str.trim(line) ~= "" then
-			local w, wres = self.repl:wait(EXECUTE_TIMEOUT, function()
+			local w, wres = self.term:wait(EXECUTE_TIMEOUT, function()
 				return self.state == state.IDLE or self.state == state.CONT
 			end)
 			if not w then
@@ -203,32 +205,37 @@ function IPython:send(cell)
 			end
 			self.state = state.WAIT
 			self.line = i
-			self.repl:send(line)
+			self.term:send(line)
 		end
 	end
 	if has_continue then
-		self.repl:send("\r")
+		self.term:send("\r")
 	end
 end
 
-function IPython:new(repl, on_message)
+---comment
+---@param term ITerm
+---@param on_message function
+---@return IPython|nil, string|nil
+function IPython:new(term, on_message)
 	local o = {}
-	setmetatable(o, { __index = self })
+	setmetatable(o, { __index = self, __name = "Python" })
+	setmetatable(IPython, { __index = require("lungan.repl.IRepl") })
 	o.on_message = on_message
 	o.count = 0
 	o.prologue = {}
 	o.response = {}
 	o.state = state.START
-	o.repl = repl
-	o.repl:callback(function(line, message)
+	o.term = term
+	o.term:callback(function(line, message)
 		o:receive(line, message)
 	end)
-	local status, mes = o.repl:run(ipython_cmd)
+	local status, mes = o.term:run(ipython_cmd)
 	if not status then
-		return status, mes
+		return nil, mes
 	end
 	o:send({ line = 1, text = "import lungan" })
-	return true, o
+	return o, nil
 end
 
 return IPython
