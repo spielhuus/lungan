@@ -31,8 +31,8 @@ describe("Test the notebook class", function()
 		it("should find the example notebooks", function()
 			local notebook = require("lungan.nvim.Notebook")
 			local expected_pages = {
-				{ path = "spec/notebook/logseq/pages/contents.md" },
-				{ path = "spec/notebook/logseq/pages/the page.md" },
+				{ path = "spec/notebook/logseq/pages/contents.md", results = {} },
+				{ path = "spec/notebook/logseq/pages/the page.md", results = {} },
 			}
 			local expected_journals = {
 				"spec/notebook/journals/2024_06_24.md",

@@ -1,7 +1,10 @@
+local log = require("lungan.log")
+
 ---@class Page
 ---@field path string
 ---@field data Markdown
 ---@field options table
+---@field results table
 local Page = {}
 
 function Page:open()
@@ -94,30 +97,73 @@ function Page:attach(win, buffer)
 		end,
 	})
 
+	-- clear all the results in the page
+	vim.keymap.set("n", "<leader>nc", function()
+		self.results = {}
+		self:refresh()
+	end, {
+		nowait = true,
+		noremap = true,
+		silent = true,
+		buffer = buffer,
+	})
+
+	local function send_cell(cell)
+		-- get the repl
+		local repl, mes
+		repl, mes = self:get_repl(cell.lang, function(line, message, c)
+			log.trace("RECEIVE: ", line, message, c)
+			message.line = line + c.from
+			table.insert(self.results, message)
+			self:refresh()
+		end)
+		if not repl then
+			require("lungan.log").error(
+				"lungan: unable to start Repl(" .. (cell.lang or "unknown") .. "): " .. (mes or "nil")
+			)
+			return
+		end
+		-- get the image when we are using a python repl
+		if cell.lang == "py" or cell.lang == "python" then
+			cell.text = cell.text .. "\nlungan.plots()"
+		end
+		assert(repl)
+		log.trace("SEND:", cell)
+		repl:send(cell)
+	end
+
+	vim.keymap.set("n", "<leader>na", function()
+		self.results = {}
+		for cell in self.data:iter() do
+			if cell.type == "code" then
+				send_cell(cell)
+			end
+		end
+
+		self:refresh()
+	end, {
+		nowait = true,
+		noremap = true,
+		silent = true,
+		buffer = buffer,
+	})
+
 	-- create the keymaps for this page
-	vim.keymap.set("n", "<leader>r", function()
+	vim.keymap.set("n", "<leader>nr", function()
 		local row, _ = vim.api.nvim_win_get_cursor(0)
 		local cell = self:content_at_line(row[1])
+		assert(cell)
 		if cell then
-			local repl, mes
-			repl, mes = self:get_repl(cell.lang, function(line, message, c)
-				require("lungan.log").debug("receive: " .. require("str").to_string(message))
-				if not self.results then
-					self.results = {}
+			-- remove the old entry for this cell
+			local new_results = {}
+			for _, res in ipairs(self.results) do
+				if res.line < cell.from or res.line > cell.to then
+					table.insert(new_results, res)
 				end
-				message.line = line + c.from
-				table.insert(self.results, message)
-				self:refresh()
-			end)
-			if not repl then
-				require("lungan.log").error("lungan: unable to start Repl(" .. cell.lang .. "): " .. mes)
-				return
+				self.results = new_results
 			end
-			if cell.lang == "py" or cell.lang == "python" then
-				cell.text = cell.text .. "\nlungan.plots()"
-			end
-			assert(repl)
-			repl:send(cell)
+			-- get the repl
+			send_cell(cell)
 		end
 	end, {
 		nowait = true,
@@ -159,7 +205,7 @@ function Page:get_repl(lang, callback)
 			end
 			self.repls[lang] = repl
 		else
-			require("lungan.log").warn("Unsupported language: " .. lang)
+			return nil, "Unsupported language: " .. lang
 		end
 	end
 	return self.repls[lang], nil
@@ -172,7 +218,7 @@ function Page:new(o, options, path)
 	o.path = path
 	o.win = nil
 	o.buffer = nil
-	o.results = nil
+	o.results = {}
 	o.repls = nil
 	return o
 end

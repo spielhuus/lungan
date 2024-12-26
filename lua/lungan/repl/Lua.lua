@@ -30,79 +30,31 @@ function Lua:_result_clean(line)
 	end
 end
 
-function Lua:run(cell)
-	local handle = io.popen("lua -e '" .. vim.fn.shellescape(vim.json.encode(cell.text)) .. "'")
-	if not handle then
-		error("io.popen returned nil, is it supported on your system?")
-	end
-	local result = handle:read("*a")
-	if not self.response.stdout then
-		self.response.stdout = {}
-	end
-	for _, l in ipairs(vim.split(result, "\n")) do
-		table.insert(self.response.stdout, l)
-	end
-	handle:close()
-
-	local response = {
-		line = cell.to,
-		stdout = self.response.stdout,
-		stderr = self.response.stderr,
-		out = self.response.out,
-	}
-	self:_result_clean(cell.to)
-	table.insert(self.messages, response)
-	self.response = {}
-	-- local env = setmetatable({}, { __index = _G })
-	-- local func, errmsg = load(cell.text, "=(execute)", "t", env)
-	-- if func then
-	--     local old_stdout = io.stdout
-	--     local t = {}
-	--     io.stdout = {
-	--         write = function(_, ...)
-	--             for _, v in ipairs({ ... }) do
-	--                 print("STDOUT:" .. v)
-	--                 table.insert(t, tostring(v))
-	--             end
-	--         end,
-	--     }
-	--     func()
-	--     io.stdout = old_stdout
-	--     local stdout = table.concat(t, "")
-	--     print("RES_OUT" .. vim.inspect(stdout))
-	--     print("RES_DATA" .. vim.inspect(env))
-	-- else
-	--     error(errmsg)
-	-- end
-end
-
 ---Receive content from the Repl
 ---@param content any -- TODO: what is the type
 function Lua:receive(content)
-	log.debug("receive content: " .. self.state .. " " .. require("str").to_string(content))
 	for _, entry in ipairs(content) do
 		if entry == ">" then
 			self.state = state.IDLE
 		elseif entry == ">>" then
 			self.state = state.CONT
 		elseif self.state ~= state.START then
-			log.trace("stdout: " .. entry .. ", cell:" .. str.to_string(self.cell))
-			local message = {
-				self.line,
-				out = nil,
-				stdout = { entry },
-				line = self.line,
-			}
-			-- if self.response.has_err == true then
-			-- 	local err, mes = self:__parse_error(self.response.stdout)
-			-- 	if err then
-			-- 		message.error = err
-			-- 	else
-			-- 		log.error("Error in parse error: " .. mes)
-			-- 	end
-			-- end
-			self.on_message(self.line, message, self.cell)
-			-- table.insert(self.messages, entry)
+			if str.trim(entry) ~= "" then
+				local message = {
+					stdout = { entry },
+				}
+				-- TODO: handle errors
+				-- if self.response.has_err == true then
+				-- 	local err, mes = self:__parse_error(self.response.stdout)
+				-- 	if err then
+				-- 		message.error = err
+				-- 	else
+				-- 		log.error("Error in parse error: " .. mes)
+				-- 	end
+				-- end
+				self.on_message(self.line, message, self.cell)
+				-- table.insert(self.messages, entry)
+			end
 		else
 			log.debug("skip: " .. entry)
 		end
@@ -117,9 +69,6 @@ end
 ---Send a command to the Repl
 ---@param cell table the cell
 function Lua:send(cell)
-	self.cell = cell
-	log.debug("send:" .. require("str").to_string(cell))
-
 	if self.state == state.START then
 		assert(self.term)
 		local w, wres = self.term:wait(STARTUP_TIMEOUT, function()
@@ -139,7 +88,7 @@ function Lua:send(cell)
 		end
 	end
 
-	local has_continue = false
+	self.cell = cell
 	for i, line in ipairs(str.lines(cell.text)) do
 		if str.trim(line) ~= "" then
 			local w, wres = self.term:wait(EXECUTE_TIMEOUT, function()
@@ -148,21 +97,11 @@ function Lua:send(cell)
 			if not w then
 				error("EXECUTE_TIMEOUT:" .. wres)
 			end
-			if self.state == state.CONT then
-				has_continue = true
-			end
 			self.state = state.WAIT
 			self.line = i
 			self.term:send(line)
 		end
 	end
-	if has_continue then
-		self.term:send("\r")
-	end
-	-- for _, line in ipairs(cell) do
-	-- log.debug(">send: " .. cell.text)
-	-- self.term:send(cell.text)
-	-- end
 end
 
 function Lua:new(term, on_message)

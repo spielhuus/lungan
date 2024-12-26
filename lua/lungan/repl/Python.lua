@@ -110,25 +110,24 @@ function IPython:receive(content)
 				end
 				table.insert(self.prologue, entry)
 			elseif tonumber(session_in) > self.count then
-				local message = {
-					self.line,
-					out = self.response.out,
-					stdout = self.response.stdout,
-					line = self.line,
-				}
-				if self.response.has_err == true then
-					local err, mes = self:__parse_error(self.response.stdout)
-					if err then
-						message.error = err
-					else
-						log.error("Error in parse error: " .. mes)
+				if self.response.out or self.response.stdout then
+					local message = {
+						out = self.response.out,
+						stdout = self.response.stdout,
+					}
+					if self.response.has_err == true then
+						local err, mes = self:__parse_error(self.response.stdout)
+						if err then
+							message.error = err
+						else
+							log.error("Error in parse error: " .. mes)
+						end
 					end
+					message = self:__parse_image(message)
+					self.on_message(self.line, message, self.cell)
 				end
-				message = self:__parse_image(message)
-				self.on_message(self.line, message, self.cell)
 				-- cleanup for next receive
 				self.count = tonumber(session_in)
-				self.state = state.IDLE
 				self.response = {}
 				self.state = state.IDLE
 			end
@@ -169,7 +168,6 @@ end
 
 ---@param cell table the cell
 function IPython:send(cell)
-	self.cell = cell
 	if self.state == state.START then
 		assert(self.term)
 		local w, wres = self.term:wait(STARTUP_TIMEOUT, function()
@@ -191,6 +189,7 @@ function IPython:send(cell)
 			error("EXECUTE_TIMEOUT:" .. wres)
 		end
 	end
+	self.cell = cell
 	local has_continue = false
 	for i, line in ipairs(str.lines(cell.text)) do
 		if str.trim(line) ~= "" then

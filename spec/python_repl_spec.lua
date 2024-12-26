@@ -112,7 +112,7 @@ describe("Test the Python repl", function()
 				ipython:send(c)
 			end
 			ipython:wait()
-			assert.Same({ [1] = 1, line = 1, out = { "69" } }, received)
+			assert.Same({ out = { "69" } }, received)
 		end)
 		it("should return return 69", function()
 			local content = {
@@ -124,7 +124,7 @@ describe("Test the Python repl", function()
 				ipython:send(c)
 			end
 			ipython:wait()
-			assert.Same({ [1] = 1, line = 1, out = { "69" } }, received)
+			assert.Same({ out = { "69" } }, received)
 		end)
 		it("should return plot the image", function()
 			local content = [[import matplotlib

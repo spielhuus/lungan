@@ -54,6 +54,17 @@ commands:
 | :Lg Attach | attach the current buffer |
 
 
+### Run the notebook code
+
+When you are in an attached notbeook you can use the following keys:
+
+
+| command    | description                       |
+|------------|-----------------------------------|
+| <leader>nr | run the cell under the cursor     |
+| <leader>na | run all the cells in the notebook |
+| <leader>nc | clear all the results             |
+
 ### Chat with LLM
 
 When you are in a chat buffer you can use the following keys:

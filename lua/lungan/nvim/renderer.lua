@@ -10,7 +10,7 @@ function M.render(options, win, buffer, data, results)
 	for line in data:iter() do
 		local res, mes = pcall(options.theme[line.type], options, win, buffer, line)
 		if not res and line.type ~= "paragraph" then
-			log.info("Markdown type '" .. line.type .. "' not found. (" .. mes .. ")")
+			-- TODO: log.info("Markdown type '" .. line.type .. "' not found. (" .. mes .. ")")
 		end
 	end
 	if results then
