@@ -23,7 +23,7 @@ local function local_and_encode_image(path)
 	return b64.encode(content)
 end
 
-print("analyze circuit image")
+print("redraw this diagram with ascii characters")
 ollama:generate({
 	provider = {
 		model = "llama3.2-vision:11b",
@@ -31,7 +31,7 @@ ollama:generate({
 	},
 	stream = false,
 	images = { local_and_encode_image(image) },
-	prompt = "analyse this image and create a python script that draws the schema.",
+	prompt = "redraw this image with ascii characters",
 }, function(out)
 	io.write(out["response"])
 	io.flush()

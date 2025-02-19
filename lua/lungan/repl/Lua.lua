@@ -14,34 +14,18 @@ local EXECUTE_TIMEOUT = 10000
 ---@class Lua: IRepl
 ---@field prologue table
 ---@field on_message function
----@field messages table[string]
 ---@field repl ITerm
 local Lua = {}
-
-function Lua:_result_clean(line)
-	local indexes = {}
-	for i, v in ipairs(self.messages) do
-		if v.line == line then
-			table.insert(indexes, i)
-		end
-	end
-	for _, del in ipairs(indexes) do
-		table.remove(self.messages, del)
-	end
-end
 
 ---Receive content from the Repl
 ---@param content any -- TODO: what is the type
 function Lua:receive(content)
+	local result = {}
 	for _, entry in ipairs(content) do
 		if entry == ">" then
-			self.state = state.IDLE
-		elseif entry == ">>" then
-			self.state = state.CONT
-		elseif self.state ~= state.START then
-			if str.trim(entry) ~= "" then
+			if #result > 0 then
 				local message = {
-					stdout = { entry },
+					stdout = result,
 				}
 				-- TODO: handle errors
 				-- if self.response.has_err == true then
@@ -53,7 +37,13 @@ function Lua:receive(content)
 				-- 	end
 				-- end
 				self.on_message(self.line, message, self.cell)
-				-- table.insert(self.messages, entry)
+			end
+			self.state = state.IDLE
+		elseif entry == ">>" then
+			self.state = state.CONT
+		elseif self.state ~= state.START then
+			if str.trim(entry) ~= "" then
+				table.insert(result, entry)
 			end
 		else
 			log.debug("skip: " .. entry)
@@ -63,7 +53,12 @@ end
 
 ---Wait for the current command
 function Lua:wait()
-	error("`Lua:wait` not implemented")
+	local w, wres = self.term:wait(EXECUTE_TIMEOUT, function()
+		return self.state == state.IDLE
+	end)
+	if not w then
+		error("WAIT_TIMEOUT: " .. require("str").to_string(wres))
+	end
 end
 
 ---Send a command to the Repl
@@ -104,7 +99,7 @@ function Lua:send(cell)
 	end
 end
 
-function Lua:new(term, on_message)
+function Lua:new(term, on_message, on_close)
 	local o = {}
 	setmetatable(o, { __index = self, __name = "Lua" })
 	setmetatable(Lua, { __index = require("lungan.repl.IRepl") })
@@ -113,12 +108,12 @@ function Lua:new(term, on_message)
 	o.term:callback(function(line, message)
 		o:receive(line, message)
 	end)
+	o.term.on_close = on_close
 	o.state = state.START
 	local status, mes = o.term:run({ "luajit" })
 	if not status then
 		return nil, mes
 	end
-	o.messages = {}
 	o.count = 1
 	o.response = {}
 	o.sent = {}

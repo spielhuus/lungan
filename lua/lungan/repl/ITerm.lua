@@ -20,6 +20,10 @@ function ITerm:callback(fn)
 	self.on_message = fn
 end
 
+function ITerm:on_close(fn)
+	self.on_close = fn
+end
+
 -- ---Create a new Repl
 -- ---@param options table
 -- ---@param on_message fun()

@@ -10,7 +10,8 @@ if dir_exists(path .. "/lazy/lungan") then
 elseif dir_exists(path .. "/lazy-rocks/lungan/lib/luarocks/rocks-5.1/lungan/scm-1") then
 	plugindir = path .. "/lazy-rocks/lungan/lib/luarocks/rocks-5.1/lungan/scm-1"
 else
-	error("plugin dir not found")
+	plugindir = "/home/etienne/github/lungan"
+	-- TODO error("plugin dir not found in " .. path)
 end
 pythonpath = (pythonpath and (pythonpath .. ":") or "") .. plugindir .. "/python3"
 vim.env.PYTHONPATH = pythonpath

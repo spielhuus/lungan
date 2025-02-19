@@ -35,7 +35,15 @@ function Page:attach(win, buffer)
 	self.win = win
 	self.buffer = buffer
 	local group = vim.api.nvim_create_augroup("LunganRedraw", { clear = true })
-	-- TODO add close
+	vim.api.nvim_create_autocmd({ "BufDelete" }, {
+		buffer = buffer,
+		group = group,
+		callback = function()
+			self.repls = nil
+			self.results = {}
+			self:refresh()
+		end,
+	})
 	vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "WinScrolled" }, {
 		buffer = buffer,
 		group = group,
@@ -191,15 +199,30 @@ function Page:get_repl(lang, callback)
 	end
 	if not self.repls[lang] then
 		if lang == "python" or lang == "py" then
-			local repl, mes =
-				require("lungan.repl.Python"):new(require("lungan.repl.NvimTerm"):new(self.options), callback)
+			local repl, mes = require("lungan.repl.Python"):new(
+				require("lungan.repl.NvimTerm"):new(self.options),
+				callback,
+				function()
+					print("close repl: " .. lang)
+					self.results = {}
+					self.repls[lang] = nil
+					self:refresh()
+				end
+			)
 			if not repl then
 				return repl, mes
 			end
 			self.repls[lang] = repl
 		elseif lang == "lua" then
-			local repl, mes =
-				require("lungan.repl.Lua"):new(require("lungan.repl.NvimTerm"):new(self.options), callback)
+			local repl, mes = require("lungan.repl.Lua"):new(
+				require("lungan.repl.NvimTerm"):new(self.options),
+				callback,
+				function()
+					self.results = {}
+					self.repls[lang] = nil
+					self:refresh()
+				end
+			)
 			if not repl then
 				return repl, mes
 			end

@@ -13,11 +13,12 @@ local M = {
 	providers = {
 		Ollama = require("lungan.providers.Ollama"):new(require("lungan.nvim.Http"):new(), {}),
 		Openrouter = require("lungan.providers.Openrouter"):new(require("lungan.nvim.Http"):new(), {}),
+		AiStudio = require("lungan.providers.AiStudio"):new(require("lungan.nvim.Http"):new(), {}),
 	},
 	picker = {
-		models = require("lungan.nvim.telescope.models"),
-		prompts = require("lungan.nvim.telescope.prompts"),
-		notebooks = require("lungan.nvim.telescope.notebooks"),
+		-- models = require("lungan.nvim.telescope.models"),
+		prompts = require("lungan.nvim.pickers.snacks.prompts"),
+		-- notebooks = require("lungan.nvim.telescope.notebooks"),
 	},
 	prompts = {},
 	-- ignore files for the notebook lookup

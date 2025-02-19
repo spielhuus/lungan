@@ -29,12 +29,17 @@ function NvimRepl:callback(fn)
 	self.on_message = fn
 end
 
-function NvimRepl:new(options, on_message)
+function NvimRepl:on_close(fn)
+	self.on_close = fn
+end
+
+function NvimRepl:new(options, on_message, on_close)
 	local o = {}
 	setmetatable(o, { __index = self, name = "NvimRepl" })
 	o.term = {}
 	o.messages = {}
 	o.on_message = on_message
+	o.on_close = on_close
 	o.count = 1
 	o.response = {}
 	o.sent = {}
@@ -61,6 +66,16 @@ function NvimRepl:new(options, on_message)
 				border = "shadow",
 			})
 			vim.api.nvim_set_option_value("cursorline", false, { win = o.term.win })
+			local group = vim.api.nvim_create_augroup("LunganTerm", { clear = true })
+			vim.api.nvim_create_autocmd({ "BufWinLeave" }, {
+				buffer = o.term.buffer,
+				group = group,
+				callback = function()
+					if o.on_close then
+						o.on_close()
+					end
+				end,
+			})
 		end
 	end
 	return o

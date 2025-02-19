@@ -216,11 +216,12 @@ end
 ---@param term ITerm
 ---@param on_message function
 ---@return IPython|nil, string|nil
-function IPython:new(term, on_message)
+function IPython:new(term, on_message, on_close)
 	local o = {}
 	setmetatable(o, { __index = self, __name = "Python" })
 	setmetatable(IPython, { __index = require("lungan.repl.IRepl") })
 	o.on_message = on_message
+	o.on_close = on_close
 	o.count = 0
 	o.prologue = {}
 	o.response = {}
@@ -228,6 +229,9 @@ function IPython:new(term, on_message)
 	o.term = term
 	o.term:callback(function(line, message)
 		o:receive(line, message)
+	end)
+	o.term:on_close(function()
+		o:on_close()
 	end)
 	local status, mes = o.term:run(ipython_cmd)
 	if not status then

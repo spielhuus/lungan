@@ -57,7 +57,7 @@ end
 function Chat:open()
 	self.buffer = vim.api.nvim_create_buf(true, false)
 	-- create the autogroups for this buf
-	vim.api.nvim_buf_set_name(self.buffer, "Lungan Chat: #" .. self.buffer)
+	vim.api.nvim_buf_set_name(self.buffer, "Lungan Chat: #" .. self.buffer .. ".md")
 	vim.api.nvim_set_option_value("buftype", "nowrite", { buf = self.buffer })
 	vim.api.nvim_set_option_value("filetype", "markdown", { buf = self.buffer })
 	if self.prompt.data:frontmatter()["context"] then
