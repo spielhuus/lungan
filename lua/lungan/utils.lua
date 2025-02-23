@@ -82,7 +82,7 @@ M.TemplateVars = function(dict, text)
 			-- Replace each occurrence with the corresponding value from the dictionary
 			local substitude = dict[var]
 			if substitude and type(substitude) == "table" then
-				return table.concat(substitude, "\n")
+				return vim.inspect(substitude)
 			else
 				return substitude
 			end
