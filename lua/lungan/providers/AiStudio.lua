@@ -5,7 +5,7 @@ local AISTUDIO_API_TOKEN = os.getenv("AISTUDIO_API_TOKEN") or ""
 ---@class AiStudio
 ---@field options table
 ---@field http Http
-local Openrouter = {}
+local AiStudio = {}
 
 local defaults = {
 	name = "AiStudio",
@@ -15,8 +15,8 @@ local defaults = {
 ---Creates a new instance of the AiStudio object.
 ---@param http table The Http implementation to use
 ---@param opts table An optional table containing configuration options.
----@return Openrouter A new instance of Openrouter with the specified options.
-function Openrouter:new(http, opts)
+---@return AiStudio A new instance of AiStudio with the specified options.
+function AiStudio:new(http, opts)
 	local o = {}
 	setmetatable(o, { __index = self })
 	o.__name = "aistudio"
@@ -27,10 +27,11 @@ function Openrouter:new(http, opts)
 	end
 	o.options = options
 	o.http = http
+	o.content = {}
 	return o
 end
 
-function Openrouter:__parse_prompt(prompt)
+function AiStudio:__parse_prompt(prompt)
 	local output = {
 		system_instruction = { parts = { text = prompt.system_prompt } },
 		contents = {},
@@ -57,7 +58,7 @@ function Openrouter:__parse_prompt(prompt)
 	return output
 end
 
-function Openrouter:__parse_response(data)
+function AiStudio:__parse_response(data)
 	assert(#data["candidates"] == 1, "AiStudion returned more then one candidate")
 	local finish = false
 	if data["candidates"][1]["finishReason"] == "STOP" then
@@ -87,12 +88,12 @@ function Openrouter:__parse_response(data)
 end
 
 ---Stop a running request
-function Openrouter:stop()
+function AiStudio:stop()
 	self.http:cancel()
 end
 
--- Fetches a list of models from the Openrouter API.
--- @param self (Openrouter) The Openrouter instance on which this method is called.
+-- Fetches a list of models from the AiStudio API.
+-- @param self (AiStudio) The AiStudio instance on which this method is called.
 -- @param callback (function) A function that will be called with two arguments:
 --                           1. `status` (number): The HTTP status code of the response.
 --                           2. `result` (table): A table containing details about each model, including:
@@ -103,10 +104,11 @@ end
 --                              - `pricing` (table): Pricing information for the model.
 --
 -- @return nil
-function Openrouter:models(callback)
+function AiStudio:models(callback)
 	local status, response = self.http:get("'" .. self.options.url .. "/models?key=" .. AISTUDIO_API_TOKEN .. "'")
 	assert(callback ~= nil)
 	if response then
+		log.info(response)
 		local t_result = vim.json.decode(response)
 		local result = {}
 		for _, model in ipairs(t_result.models) do
@@ -141,13 +143,13 @@ end
 --       "topK": 40
 --     },
 
---- Sends a chat request to the Openrouter API
---- @param self table The Openrouter instance.
+--- Sends a chat request to the AiStudio API
+--- @param self table The AiStudio instance.
 --- @param session Chat The session object containing the chat context. -- TODO: posibble wrong type
 --- @param stdout function Function to handle standard output messages.
 --- @param stderr function  Function to handle error messages.
 --- @param exit function Function to handle process exit status.
-function Openrouter:chat(session, stdout, stderr, exit)
+function AiStudio:chat(session, stdout, stderr, exit)
 	local request = {
 		url = self.options.url .. "/" .. session.provider.model .. ":generateContent?key=" .. AISTUDIO_API_TOKEN,
 		headers = {
@@ -155,6 +157,7 @@ function Openrouter:chat(session, stdout, stderr, exit)
 		},
 		body = vim.json.encode(self:__parse_prompt(session)),
 	}
+	local collected_doc = ""
 	local status, err = self.http:post(request, function(_, b)
 		if b ~= 0 then
 			log.trace("Exit: " .. b)
@@ -164,12 +167,20 @@ function Openrouter:chat(session, stdout, stderr, exit)
 		end
 	end, function(_, data, _)
 		if data then
-			log.trace(">>>", table.concat(data))
+			log.trace(">>>", #data, " ", table.concat(data))
 			local datas = table.concat(data, "")
 			if #datas > 0 then
-				local mes = vim.json.decode(datas)
+				log.info("recieved data: " .. #datas)
+				collected_doc = collected_doc .. datas
+			else
+				log.info("empty data received, decode json.")
+				log.info(collected_doc)
+				local mes = vim.json.decode(collected_doc)
 				stdout(self:__parse_response(mes))
+				collected_doc = ""
 			end
+		else
+			log.info("no data received.")
 		end
 	end, function(_, data, _)
 		if stderr then
@@ -179,4 +190,4 @@ function Openrouter:chat(session, stdout, stderr, exit)
 	return status, err
 end
 
-return Openrouter
+return AiStudio

@@ -47,7 +47,7 @@ end
 -- @param start integer: The starting line index (1-based) of the block.
 -- @param last integer: The ending line index (1-based) of the block, or nil for until EOF.
 M.GetBlock = function(buf_nr, start, last)
-	return code_fence(buf_nr, start, last)
+	return table.concat(code_fence(buf_nr, start, last), "\n")
 end
 
 --- Get a code snippet from a buffer.
@@ -66,7 +66,7 @@ M.GetCodeBlock = function(buf, line)
 
 	for item in root:iter_children() do
 		if item:start() <= line and item:end_() >= line then
-			return code_fence(buf, item:start() + 1, item:end_() + 1)
+			return table.concat(code_fence(buf, item:start() + 1, item:end_() + 1), "\n")
 		end
 	end
 	return {}
