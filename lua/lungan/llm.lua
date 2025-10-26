@@ -96,10 +96,10 @@ function LLM:chat(chat)
 				    if not func then
 				        error(err)
 				    end
-				    if type(token) == "table" then
-				        func()(self.options, session, table.concat(token, ""))
+				    if type(data) == "table" then
+				        func()(self.options, session, table.concat(data, ""))
 				    else
-				        func()(self.options, session, token)
+				        func()(self.options, session, data)
 				    end
 				end
 			elseif data["message"]["tool_calls"] then

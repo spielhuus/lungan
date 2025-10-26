@@ -9,7 +9,7 @@ end
 
 _G.vino_callbacks = {}
 
-_G.vino = function(payload) 
+_G.vino = function(payload)
   local data_table = vim.json.decode(payload)
   if data_table['error'] then
     _G.vino_callbacks[data_table['dispatcher']].on_stderr(data_table)

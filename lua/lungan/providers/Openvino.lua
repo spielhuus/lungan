@@ -62,7 +62,7 @@ function Openvino:__parse_gen_prompt(prompt)
 	return output
 end
 
----Stop a running request TODO: implement
+---Stop a running request
 function Openvino:stop()
   vim.fn.OpenvinoStop()
 end
@@ -77,8 +77,9 @@ function Openvino:models(callback)
 				name = folder,
 			})
   end
-	assert(callback ~= nil)
-  callback(status, models)
+  if callback ~= nil then
+    callback(1, models)
+  end
 end
 
 function Openvino:chat(prompt, stdout, stderr, exit)
@@ -91,43 +92,11 @@ function Openvino:chat(prompt, stdout, stderr, exit)
 		  stdout(content)
     end,
     on_stderr = function(content)
-      print(content)
+      print(vim.inspect(content))
 		  stderr(content)
     end
   }
   vim.fn.OpenvinoChat(vim.api.nvim_get_current_buf(), self.id, prompt)
-
-  -- TODO
-	-- local request = {
-	-- 	url = self.options.url .. "/api/chat",
-	-- 	body = json.encode(self:__parse_prompt(prompt)),
-	-- }
-	--
-	-- local on_exit
-	-- if exit ~= nil then
-	-- 	on_exit = function(_, b)
-	-- 		if b ~= 0 then
-	-- 			exit(b)
-	-- 		end
-	-- 	end
-	-- end
-	-- local status, err = self.http:post(request, on_exit, function(_, data, _)
-	-- 	if data then
-	-- 		if type(data) == "string" then
-	-- 			stdout(json.decode(data))
-	-- 		else
-	-- 			local clean_table = str.clean_table(data)
-	-- 			if #clean_table > 0 then
-	-- 				stdout(json.decode(table.concat(data, "")))
-	-- 			end
-	-- 		end
-	-- 	end
-	-- end, function(_, data, _)
-	-- 	if stderr then
-	-- 		stderr(data)
-	-- 	end
-	-- end)
-	-- return status, err
 end
 
 function Openvino:generate(prompt, stdout, stderr, exit)

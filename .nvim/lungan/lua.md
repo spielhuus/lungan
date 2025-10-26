@@ -1,7 +1,7 @@
 ---
 provider:
-  model: qwen2.5-coder:7b-instruct-q8_0
-  name: Ollama
+  model: Qwen2.5-Coder-1.5B-Instruct-int4-ov
+  name: Openvino
 stream: true
 name: Lua
 icon:
