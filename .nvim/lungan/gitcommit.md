@@ -1,7 +1,7 @@
 ---
 provider:
-  model: llama3.2:3b-instruct-q4_K_M
-  name: Ollama
+  model: Phi-4-mini-instruct-int8-ov
+  name: Openvino
 name: GitCommit
 stream: true
 icon:
@@ -32,6 +32,7 @@ context: |
   end
 process: |
   return function(opts, session, token)
+    print(vim.inspect(token))
     local last_col = session.last_col or 0
     local line_tokens = vim.split(token, "\n")
     vim.api.nvim_buf_set_text(session.source_buf, session.line1 - 1, last_col, - 1, -1, line_tokens)

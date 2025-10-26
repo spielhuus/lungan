@@ -11,7 +11,7 @@ function Provider:stop()
 end
 
 ---Get the available models from the provider
-function Provider:models(callback) end
+function Provider:models(_callback) end
 
 ---Chat with the LLM
 ---@param prompt any

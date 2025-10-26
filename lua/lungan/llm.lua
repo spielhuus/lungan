@@ -92,14 +92,15 @@ function LLM:chat(chat)
 				end
 				-- call the process function if available
 				if chat.data:frontmatter()["process"] then
+				    local token = data["message"]["content"]
 				    local func, err = load(chat.data:frontmatter()["process"])
 				    if not func then
 				        error(err)
 				    end
-				    if type(data) == "table" then
-				        func()(self.options, session, table.concat(data, ""))
+				    if type(token) == "table" then
+				        func()(self.options, chat.args, table.concat(token, ""))
 				    else
-				        func()(self.options, session, data)
+				        func()(self.options, chat.args, token)
 				    end
 				end
 			elseif data["message"]["tool_calls"] then
@@ -108,22 +109,15 @@ function LLM:chat(chat)
 			elseif data["done"] then
 				wrap:push({ "\n", "==>", "\n" })
 				wrap:flush()
-
-        print(vim.inspect(chat.data:frontmatter()))
 				if chat.data:frontmatter()["preview"] then
-				    -- refresh the data
-				    local res, new_data = pcall(require("workbench.parser").parse, M.options, buffer)
-				    if res then
-				        session.data = new_data
-				    else
-				        print("Error:" .. new_data)
-				    end
-				    -- call preview function
-				    local func, err = load(chat.data:frontmatter()["preview"])
-				    if not func then
-				        error(err)
-				    end
-				    func()(opts, session)
+          -- refresh the data
+          chat:refresh()
+          -- call preview function
+          local func, err = load(chat.data:frontmatter()["preview"])
+          if not func then
+              error(err)
+          end
+          func()(chat.args, chat.data)
 				end
 			else
 				log.warn("unknown message format: " .. vim.inspect(data))

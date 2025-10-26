@@ -1,8 +1,5 @@
 local json = require("lungan.json")
 local str = require("lungan.str")
-local log = require("lungan.log")
-
-local dispatchers = {}
 
 ---@class Openvino: Provider
 ---@field options table
@@ -17,10 +14,9 @@ local defaults = {
 }
 
 ---Creates a new instance of the Openvino object.
----@param http table The Http implementation to use
 ---@param opts table An optional table containing configuration options.
 ---@return Openvino A new instance of Openvino with the specified options.
-function Openvino:new(http, opts)
+function Openvino:new(opts)
 	-- local o = {}
 	setmetatable(self, { __index = require("lungan.providers.Provider") })
 	self.__name = "ollama"
@@ -30,7 +26,6 @@ function Openvino:new(http, opts)
 		options[k] = v
 	end
 	self.options = options
-	self.http = http -- TODO remove
   self.id = math.random(1, 100000)
 	return self
 end
@@ -87,6 +82,7 @@ function Openvino:chat(prompt, stdout, stderr, exit)
   _G.vino_callbacks[self.id] = {
     on_exit = function(content)
       print(vim.inspect(content))
+      exit(content)
     end,
     on_stdout = function(content)
 		  stdout(content)

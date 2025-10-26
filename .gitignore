@@ -8,3 +8,4 @@ test/xdg
 .ci
 chroma_data/
 chroma.log
+__pycache__

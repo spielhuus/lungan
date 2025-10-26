@@ -19,14 +19,12 @@ function Source:complete(params, callback)
 	local items = {}
 	-- handle the models
 	if before_line:match("^%s*model:%s*(.-)%s*$") then
-		local name = before_line:match("^%s*model:%s*(.-)%s*$")
 		local session = require("lungan.nvim").get_chat(buffer)
 		if session then
-			local provider = session.data:frontmatter().provider
 			local opts = require("lungan.nvim").options
 			local llm = require("lungan.llm"):new(opts)
 			-- opts.providers[provider.name]:models(opts, name, function(content)
-			llm:models(session, function(status, content)
+			llm:models(session, function(_, content)
 				for _, model in ipairs(content) do
 					table.insert(items, {
 						label = model.name,
