@@ -66,6 +66,7 @@ textwrap: false
 ---
 ```
 
+
 ### Key Reference
 
 | Key | Type | Required | Description |
@@ -81,8 +82,6 @@ textwrap: false
 | `commit` | String (Lua) | No | A Lua function string executed with `<C-a>` (apply). Used to apply the LLM's suggestion to the source buffer. |
 | `clear` | String (Lua) | No | A Lua function string executed with `<C-l>` (clear). Used to remove any preview highlights or virtual text. |
 | `textwrap` | Boolean | No | If `false`, long lines in the chat buffer will not be wrapped. Defaults to `true`. |
-
----
 
 ## 2. The Chat History Format
 
@@ -130,7 +129,8 @@ Bonjour, le monde !
 
 Now translate this to French: "Where is the library?"
 
-==>```
+==>
+```
 
 ---
 
