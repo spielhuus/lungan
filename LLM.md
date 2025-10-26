@@ -15,7 +15,7 @@ The frontmatter is a YAML block enclosed by `---` at the very beginning of the f
 
 Here is a comprehensive example showcasing many available options:
 
-```yaml
+````yaml
 ---
 # A unique name for this prompt, shown in the Telescope picker.
 name: "Refactor Python Code"
@@ -64,7 +64,7 @@ clear: |
 # Controls automatic text wrapping in the chat buffer.
 textwrap: false
 ---
-```
+````
 
 
 ### Key Reference
