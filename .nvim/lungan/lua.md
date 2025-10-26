@@ -21,9 +21,8 @@ context: |
             code = code
     }
   end
-preview: return function(args, data) require("lungan.nvim.diff").preview(args, data) end
 options:
-  temperature: 0.01
+  temperature: 0.1
   num_ctx: 4096
 ---
 

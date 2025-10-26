@@ -33,7 +33,7 @@ end
 function LLM:chat(chat)
 	local provider = chat.data:frontmatter().provider
 	local role = ""
-	local wrap = textwrap:new(nil, self.options, chat)
+	local wrap = textwrap:new(nil, self.options, chat, chat.data:frontmatter().textwrap)
 
 	local prompt = chat:get()
 
@@ -57,6 +57,11 @@ function LLM:chat(chat)
 	end
 
 	self.JobId = self.options.providers[provider.name]:chat(prompt, function(data)
+    log.trace("LLM::stdout(" .. vim.inspect(data) .. ")")
+	-- 	if data then
+	-- 		print("LLM:ERR: " .. str.to_string(data))
+	-- 	end
+	-- end, function(data)
 		if data["error"] then
 			log.error(data["error"], vim.log.levels.ERROR, { title = provider.name .. " Error" })
 		elseif data["message"] then
@@ -78,19 +83,30 @@ function LLM:chat(chat)
 				if data["done"] then
 					wrap:push({ "\n", "==>", "\n" })
 					wrap:flush()
+
+          if chat.data:frontmatter()["preview"] then
+              -- refresh the data
+              chat:refresh()
+              -- call preview function
+              local func, err = load(chat.data:frontmatter()["preview"])
+              if not func then
+                  error(err)
+              end
+              func()(chat.args, chat.data)
+          end
 				end
 				-- call the process function if available
-				-- if session.data:frontmatter()["process"] then
-				--     local func, err = load(session.data:frontmatter()["process"])
-				--     if not func then
-				--         error(err)
-				--     end
-				--     if type(token) == "table" then
-				--         func()(self.options, session, table.concat(token, ""))
-				--     else
-				--         func()(self.options, session, token)
-				--     end
-				-- end
+				if chat.data:frontmatter()["process"] then
+				    local func, err = load(chat.data:frontmatter()["process"])
+				    if not func then
+				        error(err)
+				    end
+				    if type(token) == "table" then
+				        func()(self.options, session, table.concat(token, ""))
+				    else
+				        func()(self.options, session, token)
+				    end
+				end
 			elseif data["message"]["tool_calls"] then
 				-- draw the tool call
 				chat:append({ str.to_string(data["message"]["tool_calls"]) })
@@ -98,30 +114,27 @@ function LLM:chat(chat)
 				wrap:push({ "\n", "==>", "\n" })
 				wrap:flush()
 
-				-- if session.data:frontmatter()["preview"] then
-				--     -- refresh the data
-				--     local res, new_data = pcall(require("workbench.parser").parse, M.options, buffer)
-				--     if res then
-				--         session.data = new_data
-				--     else
-				--         print("Error:" .. new_data)
-				--     end
-				--     -- call preview function
-				--     local func, err = load(session["data"][1]["content"]["preview"])
-				--     if not func then
-				--         error(err)
-				--     end
-				--     func()(opts, session)
-				-- end
+        print(vim.inspect(chat.data:frontmatter()))
+				if chat.data:frontmatter()["preview"] then
+				    -- refresh the data
+				    local res, new_data = pcall(require("workbench.parser").parse, M.options, buffer)
+				    if res then
+				        session.data = new_data
+				    else
+				        print("Error:" .. new_data)
+				    end
+				    -- call preview function
+				    local func, err = load(chat.data:frontmatter()["preview"])
+				    if not func then
+				        error(err)
+				    end
+				    func()(opts, session)
+				end
 			else
 				log.warn("unknown message format: " .. vim.inspect(data))
 			end
 		else
 			log.warn("Unknown response: " .. vim.inspect(data))
-		end
-	end, function(_, data, _)
-		if data then
-			print("LLM:ERR: " .. str.to_string(data))
 		end
 	end, function(_, data, _)
 		if data then

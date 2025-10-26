@@ -1,0 +1,519 @@
+==============================================================================
+------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+
+Configuration table
+
+------------------------------------------------------------------------------
+HTTP client using curl
+Sends an HTTP GET or post request to the specified URL.
+
+Example usage:
+```lua
+
+```
+If `on_exit` is `nil`, the method will not wait for the job to
+complete before returning; instead, it will return immediately with
+an exit status indicating the job's completion.
+
+When on_stdout and on_stderr are not set the responses will be collected
+and can then be accessed with Http:response()
+
+Implementations:
+[NvimHttp type](lua://NvimHttp) using the nvim uv package
+[LuvHttp type](lua://LuvHttp) using the luv package
+Class ~
+{Http}
+Fields ~
+{new} `(fun())` create a new HTTP object.
+{get} fun(self, url: `(string,)`
+        on_exit: fun(job_id: integer, exit_code: integer)|nil,
+        on_stdout: fun(chan-id: integer, data: table, name: string)|nil,
+        on_stderr: fun(chan-id: integer, data: table, name: string)|nil)
+{post} fun(self, request: `(table,)`
+        on_exit: fun(job_id: integer, exit_code: integer),
+        on_stdout: fun(chan-id: integer, data: table, name: string)|nil,
+        on_stderr: fun(chan-id: integer, data: table, name: string)|nil)
+{cancel} `(function())`
+
+------------------------------------------------------------------------------
+Repl
+
+Implementations:
+[NvimHttp type](lua://NvimHttp) using the nvim uv package
+[LuvHttp type](lua://LuvHttp) using the luv package
+Class ~
+{Repl}
+Fields ~
+{new} `(fun())` create a new Repl object.
+{callback} `(fun(self, callback: fun(line: integer, message: string)))`
+{run} `(fun(self, cmd: table))`
+{send} `(fun(self, cmd: string): boolean)`
+{wait} `(fun(self, timeout: integer, cond: fun(): boolean): boolean)`
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                           *LLM*
+                                     `LLM`
+Class ~
+{LLM}
+Fields ~
+{options} `(table)` the llm options
+
+------------------------------------------------------------------------------
+                                                                     *LLM:new()*
+                               `LLM:new`({opts})
+an instance of a large language model.
+Parameters ~
+{opts} `(table)` A table containing configuration options for the LLM.
+Return ~
+LLM A new instance of the LLM with the specified options.
+
+------------------------------------------------------------------------------
+                                                                    *LLM:stop()*
+                             `LLM:stop`({session})
+a language model provider session.
+Parameters ~
+{session} Chat The session object
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                *Markdown:new()*
+                          `Markdown:new`({o}, {lines})
+parser
+Parameters ~
+{o} `(any)`
+{lines} `(string[])` the markdown as array of lines.
+Return ~
+`(any)`
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                             *str.clean_table()*
+                           `str.clean_table`({data})
+a table by removing empty strings and whitespace-only strings.
+Parameters ~
+{data} `(table)` The table containing string elements to be cleaned.
+Return ~
+`(table)` A new table with only non-empty, non-whitespace strings from the original table.
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                               *textwrap:push()*
+                            `textwrap:push`({token})
+a token into the text wrapping context.
+Parameters ~
+{token} `(table[string])` A list of strings to be processed and wrapped.
+
+------------------------------------------------------------------------------
+                                                              *textwrap:flush()*
+                               `textwrap:flush`()
+the buffer
+
+------------------------------------------------------------------------------
+                                                                *textwrap:new()*
+                     `textwrap:new`({o}, {options}, {chat})
+a new textwrap instance.
+Parameters ~
+{o} `(table|nil)` The object to initialize. If nil, a new table is created.
+{options} `(table)` Configuration options for the text wrap.
+{chat} Chat Chat buffer to write the text to
+Return ~
+`(table)` A new textwrap instance with initialized properties and methods.
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                            *M.get_code_fence()*
+                           `M.get_code_fence`({code})
+fenced code
+Parameters ~
+{code} `(table[string])` text lines.
+
+------------------------------------------------------------------------------
+Generate a formatted code fence for the specified range in the buffer.
+
+------------------------------------------------------------------------------
+Get a block of text from a buffer.
+
+------------------------------------------------------------------------------
+Get a code snippet from a buffer.
+
+------------------------------------------------------------------------------
+method takes a string as a template.
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                          *Yaml*
+                                     `Yaml`
+Yaml
+
+------------------------------------------------------------------------------
+                                                                    *Yaml:new()*
+                            `Yaml:new`({o}, {lines})
+Parse YAML content from an array of lines
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                        *Chroma*
+                                    `Chroma`
+Class ~
+{Chroma}
+Fields ~
+{options} `(table)`
+{http} Http
+
+------------------------------------------------------------------------------
+                                                                  *Chroma:new()*
+                          `Chroma:new`({http}, {opts})
+a new instance of the Chroma object.
+Parameters ~
+{http} `(table)` The Http implementation to use
+{opts} `(table)` An optional table containing configuration options.
+Return ~
+Chroma A new instance of Chroma with the specified options.
+
+------------------------------------------------------------------------------
+                                                *Chroma:get_collections_count()*
+                  `Chroma:get_collections_count`({collection})
+the collection count
+string the uuid of the collection
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                       *LuvHttp*
+                                   `LuvHttp`
+Class ~
+{LuvHttp}
+Http
+
+------------------------------------------------------------------------------
+                                                                 *LuvHttp:new()*
+                                `LuvHttp:new`()
+client using curl
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                   *M.prompts()*
+                                 `M.prompts`()
+the prompts
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                      *NvimHttp*
+                                   `NvimHttp`
+Class ~
+{NvimHttp}
+Http
+
+------------------------------------------------------------------------------
+                                                                *NvimHttp:new()*
+                                `NvimHttp:new`()
+Http:new
+
+------------------------------------------------------------------------------
+                                                                *NvimHttp:get()*
+           `NvimHttp:get`({url}, {on_exit}, {on_stdout}, {on_stderr})
+an HTTP GET request to the specified URL.
+
+`on_exit` is `nil`, the method will not wait for the job to
+before returning; instead, it will return immediately with
+exit status indicating the job's completion.
+
+on_stdout and on_stderr are not set the responses will be collected
+can then be accessed with Http:response()
+
+@param url string The URL to send the GET request to.
+@param on_exit function|nil An optional callback function to be called when the job exits.
+@param on_stdout function|nil An optional callback function to handle standard output data.
+@param on_stderr function|nil An optional callback function to handle standard error data.
+@return nil If an exit callback is provided, returns immediately. Otherwise,
+               waits for job completion and returns the response.
+
+------------------------------------------------------------------------------
+Sends a POST request using `curl`.
+
+------------------------------------------------------------------------------
+`on_exit` is `nil`, the method will not wait for the job to
+before returning; instead, it will return immediately with
+exit status indicating the job's completion.
+
+on_stdout and on_stderr are not set the responses will be collected
+can then be accessed with Http:response()
+
+------------------------------------------------------------------------------
+                                                               *NvimHttp:post()*
+        `NvimHttp:post`({request}, {on_exit}, {on_stdout}, {on_stderr})
+@param on_exit function|nil An optional callback function to be called when the job exits.
+@param on_stdout function|nil An optional callback function to handle standard output data.
+@param on_stderr function|nil An optional callback function to handle standard error data.
+@return nil If an exit callback is provided, returns immediately. Otherwise,
+               waits for job completion and returns the response.
+
+------------------------------------------------------------------------------
+                                                             *NvimHttp:cancel()*
+                              `NvimHttp:cancel`()
+Cancels the current HTTP request by stopping the associated job.
+@return integer|nil, string Returns the job id and an error message if cancelling fails
+
+------------------------------------------------------------------------------
+                                                           *NvimHttp:response()*
+                             `NvimHttp:response`()
+the retrieved body
+Return ~
+`(string)` the body
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                      *Notebook*
+                                   `Notebook`
+*Markdown Page*
+A markdown Notebook. Handles all the markdown pages in the project.
+
+Class ~
+{Notebook}
+Fields ~
+{options} `(table:)`
+{pages} Page the Pages
+
+------------------------------------------------------------------------------
+                                                         *Notebook:_gitignore()*
+                         `Notebook:_gitignore`({path})
+Retrieves the .gitignore file and extracts its contents.
+@param path string: Path to the directory where the .gitignore file is expected to be located.
+@return string[]: A table containing the contents of the .gitignore file,
+                  or an empty table if the file is not found.
+
+------------------------------------------------------------------------------
+                                                         *Notebook:_is_ignore()*
+                    `Notebook:_is_ignore`({path}, {ignore})
+Checks whether a given path matches any of the ignore patterns.
+
+------------------------------------------------------------------------------
+                                                              *Notebook:_load()*
+                       `Notebook:_load`({path}, {ignore})
+a notebook from a path
+all the markdown pages from the path and
+the filename and all the regerences in the
+the references are marked like this: [link]
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                        *Prompt*
+                                    `Prompt`
+Class ~
+{Prompt}
+Fields ~
+{path} `(string)`
+{options} `(table)`
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                      *NvimRepl*
+                                   `NvimRepl`
+Class ~
+{NvimRepl}
+Fields ~
+{sent} `(table[string])`
+{term} `(table)`
+Repl
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                          *Chat*
+                                     `Chat`
+Class ~
+{Chat}
+Fields ~
+{options} `(table)` options
+{args} `(table)` the session args
+{data} `(table)` the parsed Markdown data
+{prompt} Prompt the chat prompt
+{llm} LLM the chat prompt
+
+------------------------------------------------------------------------------
+                                                                    *Chat:get()*
+                                  `Chat:get`()
+the llm data frome the chat
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                            *M.__clean_result()*
+                           `M.__clean_result`({text})
+result table
+a buffer line with strings.
+buffer looks like this:
+"", "```", "content", "```", "" }
+function shall remove all leading and trailing empty entries ("") and fences ("```").
+fence can also contain a language, like this: "```markdown"
+
+Parameters ~
+{text} `(string[])` The input string.
+Return ~
+`(string[])`
+
+------------------------------------------------------------------------------
+                                                                       *M.lcs()*
+                            `M.lcs`({left}, {right})
+the Longest Common Subsequence
+two stings:
+Orignal: lorem ipsum
+Modified: lorem kipsum
+
+Find thee LCS:
+    LCS of lorem ipsum and lorem kipsum is lorem ipsm.
+Parameters ~
+{left} `(string)` the left string
+{right} `(string)` the right string
+Return ~
+`(string)` LCS
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                      *chunks()*
+                                `chunks`({data})
+split the input into chunks of 4096 bytes
+@param data string the input string
+
+------------------------------------------------------------------------------
+                                                                  *image.size()*
+                              `image.size`({img})
+Return ~
+`(integer,)` integer the cols and rows
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                          *Page*
+                                     `Page`
+Class ~
+{Page}
+Fields ~
+{path} `(string)`
+{options} `(table)`
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                        *Ollama*
+                                    `Ollama`
+Class ~
+{Ollama}
+Fields ~
+{options} `(table)`
+{http} Http
+
+------------------------------------------------------------------------------
+                                                                  *Ollama:new()*
+                          `Ollama:new`({http}, {opts})
+a new instance of the Ollama object.
+Parameters ~
+{http} `(table)` The Http implementation to use
+{opts} `(table)` An optional table containing configuration options.
+Return ~
+Ollama A new instance of Ollama with the specified options.
+
+------------------------------------------------------------------------------
+                                                                 *Ollama:stop()*
+                                `Ollama:stop`()
+a running request
+
+------------------------------------------------------------------------------
+                                                           *Ollama:embeddings()*
+           `Ollama:embeddings`({request}, {stdout}, {stderr}, {exit})
+embeddings for a given prompt using the specified model.
+request
+
+ "model": "nomic-embed-text",
+ "prompt": "The sky is blue because of Rayleigh scattering"
+
+Parameters ~
+{request} `(table)` The request to be sent, containing:
+ - model: The name of the model to use for generating embeddings.
+ - prompt: The input text for which embeddings are to be generated.
+{stdout} `(fun(data: table))` A callback function to handle standard output data.
+{stderr} `(fun(data: table))` A callback function to handle standard error data.
+{exit} `(fun(code: number)|nil)` A callback function to handle the exit status code.
+Return ~
+`(integer)` return code
+Return ~
+`(string)` error message
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                    *Openrouter*
+                                  `Openrouter`
+Class ~
+{Openrouter}
+Fields ~
+{options} `(table)`
+{http} Http
+
+------------------------------------------------------------------------------
+                                                              *Openrouter:new()*
+                        `Openrouter:new`({http}, {opts})
+a new instance of the Ollama object.
+Parameters ~
+{http} `(table)` The Http implementation to use
+{opts} `(table)` An optional table containing configuration options.
+Return ~
+Openrouter A new instance of Openrouter with the specified options.
+
+------------------------------------------------------------------------------
+                                                             *Openrouter:stop()*
+                              `Openrouter:stop`()
+a running request
+
+------------------------------------------------------------------------------
+                                                             *Openrouter:chat()*
+            `Openrouter:chat`({session}, {stdout}, {stderr}, {exit})
+Sends a chat request to the Openrouter API
+@param self table The Openrouter instance.
+@param session Chat The session object containing the chat context.
+@param stdout function Function to handle standard output messages.
+@param stderr function  Function to handle error messages.
+@param exit function Function to handle process exit status.
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                       *IPython*
+                                   `IPython`
+Class ~
+{IPython}
+Fields ~
+{prologue} `(table)`
+{on_message} `(function)`
+{repl} Repl
+
+------------------------------------------------------------------------------
+                                                                 *IPython:new()*
+                      `IPython:new`({repl}, {on_message})
+
+Parameters ~
+{repl} Repl
+{on_message} `(function)`
+Return ~
+`(boolean)`
+Return ~
+IPython
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:

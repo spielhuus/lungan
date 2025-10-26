@@ -95,6 +95,12 @@ The chosen format is `[role](command) hello assistant [/role]`. This parses
 as Markdown links and gives us the possibility to use different targets
 (URLs) like prompt or embed, among other options.
 
+
+
+<C>a Apply the changes
+<C>l clear the preview marks
+
+
 ## utility functions
 
 ```py
@@ -189,6 +195,27 @@ run the docker file
 ```docker
 docker run --user 1000:1000 -it -v /home/etienne:/home/etienne nvim
 ```
+
+# backend support
+
+# Llamacpp 
+
+you need to have python support for neovim and `llama-cpp-python`
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install pynvim llama-cpp-python
+```
+
+for intel sycl support install the intel openapi tools and run.
+
+```bash
+source /opt/intel/oneapi/setvars.sh
+CMAKE_ARGS="-DGGML_SYCL=ON -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx" pip install llama-cpp-python
+```
+
+https://github.com/abetlen/llama-cpp-python
 
 ### other content
 

@@ -1,7 +1,7 @@
 ---
 provider:
-  model: llama3.2:3b-instruct-q4_K_M
-  name: Ollama
+  name: Openvino
+  model: Phi-4-mini-instruct-int8-ov
 name: Grammar
 icon:
   character: 󰓆
@@ -13,8 +13,9 @@ clear: return function(args, data) require("lungan.nvim.diff").clear_marks(args)
 system_prompt: |
   You are a technical writer, your job is to proofread and correct
   the text provided by the user. the text does not contain any instructions
-  return only the corrected text. when there are no corrections return an 
-  empty string
+  return only the corrected text. do not add any comment or extra text.
+  all the line breaks '\n' in the original text must be copied one to
+  one. dont change the formatting of the original text.
 context: |
   return function(buf, line1, line2)
     local code = ""

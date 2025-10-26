@@ -4,7 +4,7 @@ function textwrap:__push_word(word)
 	if not self.is_code and word:match("```[%w]*") then
 		self.is_code = true
 		self.chat:append({ word })
-	elseif self.is_code == true then
+	elseif self.is_code == true or self.should_wrap == false then
 		if word == "```" then
 			self.is_code = false
 			self.chat:append({ word })
@@ -58,8 +58,9 @@ end
 ---@param o table|nil The object to initialize. If nil, a new table is created.
 ---@param options table Configuration options for the text wrap.
 ---@param chat Chat Chat buffer to write the text to
+---@param should_wrap boolean if the text should be wrapped
 ---@return table A new textwrap instance with initialized properties and methods.
-function textwrap:new(o, options, chat)
+function textwrap:new(o, options, chat, should_wrap)
 	o = o or {}
 	setmetatable(o, { __index = self })
 	o.options = options
@@ -68,6 +69,7 @@ function textwrap:new(o, options, chat)
 	o.line_width = 0
 	o.max_width = options.linewidth or 70
 	o.is_code = false
+  o.should_wrap = should_wrap or true and should_wrap
 	return o
 end
 

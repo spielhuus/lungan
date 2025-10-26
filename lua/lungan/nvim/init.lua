@@ -2,6 +2,22 @@
 
 local M = {}
 
+
+_G.debug_callback = function(str)
+  require('lungan.log').debug(str)
+end
+
+_G.vino_callbacks = {}
+
+_G.vino = function(payload) 
+  local data_table = vim.json.decode(payload)
+  if data_table['error'] then
+    _G.vino_callbacks[data_table['dispatcher']].on_stderr(data_table)
+  else
+    _G.vino_callbacks[data_table['dispatcher']].on_stdout(data_table)
+  end
+end
+
 M.options = require("lungan.nvim.defaults")
 
 M.chats = {}
@@ -57,6 +73,7 @@ M.setup = function(opts)
 		if arg.args == "Attach" then
 			M.attach()
 		elseif arg.args == "Chat" then
+      print("Lungan chat")
 			M.options.picker.prompts({}, M.prompts(), function(prompt)
 				local chat = require("lungan.nvim.chat"):new(M.options, arg, prompt)
 				chat:open()

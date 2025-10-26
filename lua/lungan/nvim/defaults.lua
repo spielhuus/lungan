@@ -11,9 +11,10 @@ local M = {
 	},
 	provider = "Ollama",
 	providers = {
-		Ollama = require("lungan.providers.Ollama"):new(require("lungan.nvim.Http"):new(), {}),
+    -- Ollama = require("lungan.providers.Ollama"):new(require("lungan.nvim.Http"):new(), {}),
 		Openrouter = require("lungan.providers.Openrouter"):new(require("lungan.nvim.Http"):new(), {}),
 		AiStudio = require("lungan.providers.AiStudio"):new(require("lungan.nvim.Http"):new(), {}),
+		Openvino = require("lungan.providers.Openvino"):new(require("lungan.nvim.Http"):new(), {}),
 	},
 	picker = {
 		-- models = require("lungan.nvim.telescope.models"),
