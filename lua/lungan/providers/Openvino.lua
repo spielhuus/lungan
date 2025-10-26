@@ -64,7 +64,7 @@ end
 
 ---Stop a running request TODO: implement
 function Openvino:stop()
-	self.http:cancel()
+  vim.fn.OpenvinoStop()
 end
 
 function Openvino:models(callback)

@@ -1,239 +1,185 @@
-# lungan
+# lungan.nvim
 
-| <!-- -->     | <!-- -->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Build Status | [![unittests](https://img.shields.io/github/actions/workflow/status/spielhuus/lungan/busted.yml?branch=main&style=for-the-badge&label=Unittests)](https://github.com/spielhuus/lungan/actions/workflows/test.yml)  [![documentation](https://img.shields.io/github/actions/workflow/status/spielhuus/lungan/documentation.yml?branch=main&style=for-the-badge&label=Documentation)](https://github.com/spielhuus/lungan/actions/workflows/documentation.yml)  [![luacheck](https://img.shields.io/github/actions/workflow/status/spielhuus/lungan/luacheck.yml?branch=main&style=for-the-badge&label=Luacheck)](https://github.com/spielhuus/lungan/actions/workflows/luacheck.yml) [![llscheck](https://img.shields.io/github/actions/workflow/status/spielhuus/lungan/llscheck.yml?branch=main&style=for-the-badge&label=llscheck)](https://github.com/spielhuus/lungan/actions/workflows/llscheck.yml) |
-| License      | [![License-MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](https://github.com/spielhuus/lungan/blob/main/LICENSE)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Social       | [![RSS](https://img.shields.io/badge/rss-F88900?style=for-the-badge&logo=rss&logoColor=white)](https://github.com/spielhuus/lungan/commits/main/doc/news.txt.atom)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+[![Build Status](https://img.shields.io/github/actions/workflow/status/spielhuus/lungan/busted.yml?branch=main&style=for-the-badge&label=Tests)](https://github.com/spielhuus/lungan/actions/workflows/test.yml)
+[![Neovim v0.10+](https://img.shields.io/badge/Neovim-v0.10+-blueviolet?style=for-the-badge&logo=neovim)](https://neovim.io/)
+[![License-MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](https://github.com/spielhuus/lungan/blob/main/LICENSE)
 
-# title 1
+**lungan.nvim** is a powerful Neovim plugin that transforms your editor into an interactive development environment. It seamlessly integrates notebook-style file management, REPL-driven code execution, and powerful Large Language Model (LLM) integration, allowing you to organize, document, and develop your projects all within markdown files.
 
-create me a README.md template for a neovim plugin project on github.
-it shall contain all the usual features.
-the plugin name is 'lungan.nvim'
+Chat with local and remote LLMs, execute code blocks on the fly, and maintain a rich, interactive logbook of your project's lifecycle.
 
-the goals are:
-- orgnanize your work wirh notebok files
-- chat with various LLMs about your project and notebook files
-- maintain a history of the chat sessions
-- use project sources code as context
-- create predefined tasks for the project and snippets
-- markdown files as project logbook and documentation
-- executable markdown files, use markdown to develop and document your project
+## Goals
 
-the features are:
-- create runnable notebooks with markdown files
-- the files can contain executable code blocks using lua and python 
-- parse all the mardown files in the project directory as one notebook
-- navigate the notebook using links
-- full obsidian markdown support
-- integration of local and remote llms
-- work togheter with the llm on your file
-- create intelligent prompts in markdown that supports RAG und function calling
-- preview of your notebook
+*   **Organize** your work with interactive notebook files.
+*   **Chat** with various LLMs about your project and files.
+*   **Maintain** a persistent history of your chat sessions.
+*   **Use** your project's source code as context for LLMs.
+*   **Create** predefined tasks and snippets to streamline your workflow.
+*   **Develop and document** your project simultaneously with executable markdown.
 
-the plugin home is: https://github.com/spielhuus/lungan/
-the supported neovim version is 0.10
-descibe the installation process with lazy and packer
+## Features
 
-create banners for the version, release, neovim  version and github action test run
+*   **Executable Notebooks**: Create runnable notebooks using standard markdown files.
+*   **Multi-Language REPL**: Execute code blocks in both **Lua** and **Python** directly from your notebook.
+*   **Unified Project View**: Parse all markdown files in your project directory as a single, navigable notebook.
+*   **Local & Remote LLM Integration**: Connect to a wide range of LLMs, including local instances via Ollama and remote services like OpenRouter and Google AI Studio.
+*   **Optimized Local Inference**: Supports Intel hardware acceleration through **OpenVINO**.
+*   **Intelligent AI Prompts**: Craft sophisticated prompts in markdown that support RAG (Retrieval-Augmented Generation) and function calling.
+*   **Interactive Chat**: Work collaboratively with an LLM on your files in a dedicated chat window.
+*   **Live Preview**: Instantly preview and apply changes suggested by the LLM.
 
-dependencies are: 
-- https://github.com/nvim-telescope/telescope.nvim
+## Dependencies
 
+*   [Neovim v0.10+](https://github.com/neovim/neovim)
+*   [nvim-telescope/telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) (for prompt picking)
+*   Python 3 environment for Neovim (`pynvim` package).
 
+## Installation
+
+You can install `lungan.nvim` using your favorite plugin manager.
+
+### [lazy.nvim](https://github.com/folke/lazy.nvim)
+
+```lua
+-- lua/plugins/lungan.lua
+return {
+  "spielhuus/lungan",
+  dependencies = { "nvim-telescope/telescope.nvim" },
+  config = function()
+    require("lungan.nvim").setup({
+      -- Backend configuration goes here. See the "Supported LLM Backends" section below.
+    })
+  end,
+}
+```
+
+### [packer.nvim](https://github.com/wbthomason/packer.nvim)
+
+```lua
+-- init.lua
+use {
+  "spielhuus/lungan",
+  requires = { "nvim-telescope/telescope.nvim" },
+  config = function()
+    require("lungan.nvim").setup({
+      -- Backend configuration goes here.
+    })
+  end,
+}
+```
+
+## Supported LLM Backends
+
+Lungan supports a variety of local and remote LLM backends. You can enable and configure them in the `setup()` function.
+
+### Ollama
+
+Connect to a local Ollama server for fast, private inference.
+
+*   **Prerequisites**: [Ollama](https://ollama.com/) must be installed and running.
+*   **Configuration**:
+    ```lua
+    require("lungan.nvim").setup({
+      providers = {
+        Ollama = require("lungan.providers.Ollama"):new(require("lungan.nvim.Http"):new(), {
+          url = "http://127.0.0.1:11434", -- Default Ollama URL
+        }),
+      },
+    })
+    ```
+
+### OpenVINO
+
+Run GGUF and native OpenVINO models optimized for Intel hardware (including integrated GPUs). This backend uses the `openvino-genai` Python library via Neovim's remote plugin host.
+
+*   **Prerequisites**:
+    1.  The `pynvim` Python package must be installed (`pip install pynvim`).
+    2.  Install the required OpenVINO packages: `pip install -r openvino-requirements.txt`.
+    3.  Download your OpenVINO models to the directory specified in the `url` option.
+*   **Configuration**:
+    ```lua
+    require("lungan.nvim").setup({
+      providers = {
+        Openvino = require("lungan.providers.Openvino"):new(nil, {
+          url = vim.fn.expand("~") .. "/.models/OpenVINO/", -- Path to your models
+        }),
+      },
+    })
+    ```
+
+### OpenRouter
+
+Access a wide variety of models from different providers through the OpenRouter API.
+
+*   **Prerequisites**: You must set your API key as an environment variable: `export OPENROUTER_API_TOKEN="your_api_key"`.
+*   **Configuration**:
+    ```lua
+    require("lungan.nvim").setup({
+      providers = {
+        Openrouter = require("lungan.providers.Openrouter"):new(require("lungan.nvim.Http"):new(), {}),
+      },
+    })
+    ```
+
+### Google AI Studio
+
+Use Google's Gemini family of models via the AI Studio API.
+
+*   **Prerequisites**: You must set your API key as an environment variable: `export AISTUDIO_API_TOKEN="your_api_key"`.
+*   **Configuration**:
+    ```lua
+    require("lungan.nvim").setup({
+      providers = {
+        AiStudio = require("lungan.providers.AiStudio"):new(require("lungan.nvim.Http"):new(), {}),
+      },
+    })
+    ```
 
 ## Usage
 
+Lungan provides two primary modes of operation: interactive notebooks (REPL) and chatting with an LLM.
 
-commands:
+### Commands
 
-| command    | description               |
-|------------|---------------------------|
-| :Lg Chat   | open a chat window        |
-| :Lg Attach | attach the current buffer |
+| Command | Description |
+|---|---|
+| `:Lg Chat` | Open a Telescope picker to select and start a chat with an LLM. |
+| `:Lg Attach`| Attach lungan's REPL and rendering capabilities to the current markdown buffer. |
+| `:Lg Notebooks`| Open a Telescope picker to browse and open notebook files in your project. |
 
+### 1. Interactive Notebooks (REPL)
 
-### Run the notebook code
-
-When you are in an attached notbeook you can use the following keys:
-
-
-| command    | description                       |
-|------------|-----------------------------------|
-| <leader>nr | run the cell under the cursor     |
-| <leader>na | run all the cells in the notebook |
-| <leader>nc | clear all the results             |
-
-### Chat with LLM
-
-When you are in a chat buffer you can use the following keys:
-
-
-| command    | description                     |
-|------------|---------------------------------|
-| <C>r       | run the chat                    |
-| <C>c       | stop a running chat request     |
-| <C>y       | preview the result in the bufer |
-| <C>a       | Apply the result                |
-| <C>l       | clear the preview               |
-
-
-# lungan
-
-Lungan is a neovim plugin for ollama and llamacpp integration into neovim. 
-with llamacode you can create your own prompts and content receiver. 
-
-
-
-## Markdown Format
-
-To display LLM expressions in Markdown, a rather unusual syntax is used.
-The requirements are that the syntax must be parseable with Tree-sitter
-and that syntax highlighting for Markdown and code in fences still works.
-The chosen format is `[role](command) hello assistant [/role]`. This parses
-as Markdown links and gives us the possibility to use different targets
-(URLs) like prompt or embed, among other options.
-
-
-
-<C>a Apply the changes
-<C>l clear the preview marks
-
-
-## utility functions
-
-```py
-import matplotlib
-import sys
-matplotlib.use('module://lungan')
-import lungan
+Turn any markdown file into an executable notebook. First, open a markdown file and attach Lungan to it.
 
 ```
-
-
-There are util function to receive content:
-
-get the entire buffer:
-
-```py
-for i in range(10):
-    print(i)
+:Lg Attach
 ```
 
-get the code block under the cursor.
+Once attached, you can execute code blocks directly within the buffer.
 
-```lua
-print("hello from lua") 
-```
+| Keybinding | Description |
+|---|---|
+| `<leader>nr` | Run the code cell currently under the cursor. |
+| `<leader>na` | Run all code cells in the current notebook from top to bottom. |
+| `<leader>nc` | Clear all execution results from the notebook view. |
 
-```lua
-a = 24
-b = 45
-c = a + b
-print(c)
-```
+The output, including plots from libraries like `matplotlib`, will be rendered directly below the code cell.
 
-```lua
-function add(a, b)
-  return a + b
-end
-print(add(24,45))
-```
+### 2. Chat with an LLM
 
+Start a conversation with an AI assistant to get help with your code, generate documentation, or refactor a selection.
 
-get the *visual* selection
+1.  **(Optional)** Select a region of code in visual mode or place your cursor on a code block.
+2.  Run the `:Lg Chat` command.
+3.  Choose a prompt from the Telescope picker.
 
-```py
-a = 44
-b = 25
-a + b
-```
-aaa
+This will open a dedicated chat window. The frontmatter of the chat buffer allows you to configure the provider, model, and other parameters for the session.
 
-```py
-a = 44
-a/0
-```
-
-```py
-import matplotlib
-matplotlib.use('module://lungan')
-
-import matplotlib.pyplot as plt
-import numpy as np
-
-xpoints = np.array([1, 8])
-ypoints = np.array([3, 10])
-
-plt.plot(xpoints, ypoints)
-plt.show()
-```
-
-
-```py
-a = "hello mom"
-```
-
-```py
-print(a)
-```
-
-## chat templates
-
-### methods
-
-- preview(args, data)
-
-## test with busted
-
-[https://mrcjkb.dev/posts/2023-06-06-luarocks-test.html](Test your Neovim plugins with luarocks & busted)
-[https://hiphish.github.io/blog/2024/01/29/testing-neovim-plugins-with-busted/](Testing Neovim plugins with Busted)
-
-run the docker file
-
-```docker
-docker run --user 1000:1000 -it -v /home/etienne:/home/etienne nvim
-```
-
-# backend support
-
-# Llamacpp 
-
-you need to have python support for neovim and `llama-cpp-python`
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install pynvim llama-cpp-python
-```
-
-for intel sycl support install the intel openapi tools and run.
-
-```bash
-source /opt/intel/oneapi/setvars.sh
-CMAKE_ARGS="-DGGML_SYCL=ON -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx" pip install llama-cpp-python
-```
-
-https://github.com/abetlen/llama-cpp-python
-
-### other content
-
-# Credits
-
-- [neovim plugin template](https://github.com/ColinKennedy/nvim-best-practices-plugin-template/tree/main)
-
-
-- [A tiny logging module for Lua](https://github.com/rxi/log.lua)
-
-
-
-# TODO
-
-- dont execute luarocks when in neovim
-- add openrouter prices to cmp description
-- create api doc
-
-# other notes
-
-reso
+| Keybinding (in Chat Buffer) | Description |
+|---|---|
+| `<C-r>` | Run the chat and send the prompt to the LLM. |
+| `<C-c>` | Stop a currently running LLM request. |
+| `<C-y>` | **Preview** the changes suggested by the LLM as a diff in the original buffer. |
+| `<C-a>` | **Apply** the suggested changes to your original buffer. |
+| `<C-l>` | Clear the preview diff marks from the original buffer. |
+| `<C-n>` | Insert a new user message template to continue the conversation. |

@@ -11,10 +11,7 @@ class LLamacpp:
 
     @pynvim.function('LlamaCppChat', sync=False)
     def openvino_chat(self, args):
-        # model_path = "/home/etienne/.cache/huggingface/hub/models--ulkaa--Hermes-2-Pro-Mistral-7B-OpenVINO-asym-int8/snapshots/fe7054218b2480c7ffbefa4fbe67fdef4ebf38db"
-        # model_path = "/home/etienne/.cache/huggingface/hub/models--OpenVINO--Qwen3-8B-int4-ov/snapshots/4b9e271cdb8a2da17bdd658ca5329ebb8651f3e3"
-        # model_path = "/home/etienne/opt/chat/models/Qwen2.5-Coder-1.5B-Instruct-int4-ov"
-        model_path = "/home/etienne/.models"
+        model_path = "~/.models"
         buffer_id = args[0]
         dispatcher_id = args[1]
         prompt_table = args[2]

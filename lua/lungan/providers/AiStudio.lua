@@ -145,7 +145,7 @@ end
 
 --- Sends a chat request to the AiStudio API
 --- @param self table The AiStudio instance.
---- @param session Chat The session object containing the chat context. -- TODO: posibble wrong type
+--- @param session Chat The session object containing the chat context.
 --- @param stdout function Function to handle standard output messages.
 --- @param stderr function  Function to handle error messages.
 --- @param exit function Function to handle process exit status.

@@ -57,11 +57,6 @@ function LLM:chat(chat)
 	end
 
 	self.JobId = self.options.providers[provider.name]:chat(prompt, function(data)
-    log.trace("LLM::stdout(" .. vim.inspect(data) .. ")")
-	-- 	if data then
-	-- 		print("LLM:ERR: " .. str.to_string(data))
-	-- 	end
-	-- end, function(data)
 		if data["error"] then
 			log.error(data["error"], vim.log.levels.ERROR, { title = provider.name .. " Error" })
 		elseif data["message"] then
