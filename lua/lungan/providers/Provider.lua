@@ -11,7 +11,8 @@ function Provider:stop()
 end
 
 ---Get the available models from the provider
-function Provider:models(_callback) end
+--luacheck: no unused args
+function Provider:models(callback) end
 
 ---Chat with the LLM
 ---@param prompt any
@@ -19,6 +20,8 @@ function Provider:models(_callback) end
 ---@param stderr fun()
 ---@param exit fun()
 ---@return string|nil, string|nil
+
+--luacheck: no unused args
 function Provider:chat(prompt, stdout, stderr, exit)
 	return nil, "provider:chat is not implemented"
 end
@@ -36,6 +39,7 @@ end
 ---@param stderr fun(data: table) A callback function to handle standard error data.
 ---@param exit fun(code: number)|nil A callback function to handle the exit status code.
 ---@return string|nil, string|nil error message
+--luacheck: no unused args
 function Provider:embeddings(request, stdout, stderr, exit)
 	return nil, "Provider:embeddings is not implemented"
 end

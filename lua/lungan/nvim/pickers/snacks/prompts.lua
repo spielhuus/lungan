@@ -1,5 +1,4 @@
-local M = function(opts, prompts, cb)
-	opts = opts or {}
+local M = function(_, prompts, cb)
 	local Snacks = require("snacks")
 	Snacks.picker({
 		finder = function()

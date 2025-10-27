@@ -1,5 +1,3 @@
-local json = require("lungan.json")
-local str = require("lungan.str")
 
 ---@class Openvino: Provider
 ---@field options table
@@ -68,11 +66,11 @@ function Openvino:chat(prompt, stdout, stderr, exit)
   vim.fn.OpenvinoChat(vim.api.nvim_get_current_buf(), self.id, prompt)
 end
 
-function Openvino:generate(prompt, stdout, stderr, exit)
-  print(vim.inspect(prompt))
-	-- local request = {
-	-- 	url = self.options.url .. "/api/generate",
-	-- 	body = json.encode(self:__parse_gen_prompt(prompt)),
+-- function Openvino:embeddings(request, stdout, stderr, exit)
+  -- TODO
+	-- local parsed_request = {
+	-- 	url = self.options.url .. "/api/embeddings",
+	-- 	body = json.encode(request),
 	-- }
 	--
 	-- local on_exit
@@ -83,11 +81,16 @@ function Openvino:generate(prompt, stdout, stderr, exit)
 	-- 		end
 	-- 	end
 	-- end
-	-- local status, err = self.http:post(request, on_exit, function(_, data, _)
-	-- 	if data then
-	-- 		local clean_table = str.clean_table(data)
-	-- 		if #clean_table > 0 then
-	-- 			stdout(json.decode(table.concat(data, "")))
+	--
+	-- local status, err = self.http:post(parsed_request, on_exit, function(_, data, _)
+	-- 	if data then -- TODO this should return a lua table
+	-- 		if type(data) == "string" then
+	-- 			stdout({ data })
+	-- 		else
+	-- 			local clean_table = str.clean_table(data)
+	-- 			if #clean_table > 0 then
+	-- 				stdout(clean_table)
+	-- 			end
 	-- 		end
 	-- 	end
 	-- end, function(_, data, _)
@@ -96,55 +99,6 @@ function Openvino:generate(prompt, stdout, stderr, exit)
 	-- 	end
 	-- end)
 	-- return status, err
-end
-
----Creates embeddings for a given prompt using the specified model.
----example request
----{
----  "model": "nomic-embed-text",
----  "prompt": "The sky is blue because of Rayleigh scattering"
----}'
----@param request table The request to be sent, containing:
----  - model: The name of the model to use for generating embeddings.
----  - prompt: The input text for which embeddings are to be generated.
----@param stdout fun(data: table) A callback function to handle standard output data.
----@param stderr fun(data: table) A callback function to handle standard error data.
----@param exit fun(code: number)|nil A callback function to handle the exit status code.
----@return integer return code
----@return string error message
-function Openvino:embeddings(request, stdout, stderr, exit)
-  -- TODO
-	local parsed_request = {
-		url = self.options.url .. "/api/embeddings",
-		body = json.encode(request),
-	}
-
-	local on_exit
-	if exit ~= nil then
-		on_exit = function(_, b)
-			if b ~= 0 then
-				exit(b)
-			end
-		end
-	end
-
-	local status, err = self.http:post(parsed_request, on_exit, function(_, data, _)
-		if data then -- TODO this should return a lua table
-			if type(data) == "string" then
-				stdout({ data })
-			else
-				local clean_table = str.clean_table(data)
-				if #clean_table > 0 then
-					stdout(clean_table)
-				end
-			end
-		end
-	end, function(_, data, _)
-		if stderr then
-			stderr(data)
-		end
-	end)
-	return status, err
-end
+-- end
 
 return Openvino

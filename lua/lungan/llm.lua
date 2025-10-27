@@ -35,7 +35,13 @@ end
 function LLM:chat(chat)
 	local provider = chat.data:frontmatter().provider
 	local role = ""
-	local wrap = textwrap:new(nil, self.options, chat, chat.data:frontmatter().textwrap, chat.data:frontmatter().hide_think)
+	local wrap = textwrap:new(
+    nil,
+    self.options,
+    chat,
+    chat.data:frontmatter().textwrap,
+    chat.data:frontmatter().hide_thin
+  )
 
 	local prompt = chat:get()
 
