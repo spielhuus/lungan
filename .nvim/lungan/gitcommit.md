@@ -1,6 +1,6 @@
 ---
 provider:
-  model: Phi-4-mini-instruct-int8-ov
+  model: Qwen3-8B-int4-cw-ov
   name: Openvino
 name: GitCommit
 stream: true
@@ -35,12 +35,18 @@ process: |
     print(vim.inspect(token))
     local last_col = session.last_col or 0
     local line_tokens = vim.split(token, "\n")
-    vim.api.nvim_buf_set_text(session.source_buf, session.line1 - 1, last_col, - 1, -1, line_tokens)
-    if #line_tokens > 1 then
-        session.line1 = session.line1 + #line_tokens - 1
-        session.last_col = #line_tokens[#line_tokens]
-    else
-      session.last_col = last_col + #line_tokens[#line_tokens]
+    if token:match("<think>") then
+        session.hide_think = true
+    elseif token:match("</think>") then
+        session.hide_think = false
+    elseif not session.hide_think then
+        vim.api.nvim_buf_set_text(session.source_buf, session.line1 - 1, last_col, - 1, -1, line_tokens)
+        if #line_tokens > 1 then
+            session.line1 = session.line1 + #line_tokens - 1
+            session.last_col = #line_tokens[#line_tokens]
+        else
+          session.last_col = last_col + #line_tokens[#line_tokens]
+        end
     end
   end
 options:

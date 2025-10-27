@@ -3,7 +3,7 @@ local textwrap = {}
 function textwrap:__push_word(word)
 	if word:match("<think>") and self.hide_think then
 		self.is_think = true
-  elseif word:match("</think>") then
+  elseif word:match("</think>") and self.hide_think then
 		self.is_think = false
   elseif self.is_think then
     return
