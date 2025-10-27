@@ -1,7 +1,13 @@
 local textwrap = {}
 
 function textwrap:__push_word(word)
-	if not self.is_code and word:match("```[%w]*") then
+	if word:match("<think>") and self.hide_think then
+		self.is_think = true
+  elseif word:match("</think>") then
+		self.is_think = false
+  elseif self.is_think then
+    return
+  elseif not self.is_code and word:match("```[%w]*") then
 		self.is_code = true
 		self.chat:append({ word })
 	elseif self.is_code == true or self.should_wrap == false then
@@ -59,8 +65,9 @@ end
 ---@param options table Configuration options for the text wrap.
 ---@param chat Chat Chat buffer to write the text to
 ---@param should_wrap boolean if the text should be wrapped
+---@param hide_think boolean if the thikning output should be hidden
 ---@return table A new textwrap instance with initialized properties and methods.
-function textwrap:new(o, options, chat, should_wrap)
+function textwrap:new(o, options, chat, should_wrap, hide_think)
 	o = o or {}
 	setmetatable(o, { __index = self })
 	o.options = options
@@ -70,6 +77,7 @@ function textwrap:new(o, options, chat, should_wrap)
 	o.max_width = options.linewidth or 70
 	o.is_code = false
   o.should_wrap = should_wrap or true and should_wrap
+  o.hide_think = hide_think or false and hide_think
 	return o
 end
 
