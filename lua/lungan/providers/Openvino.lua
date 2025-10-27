@@ -30,33 +30,6 @@ function Openvino:new(opts)
 	return self
 end
 
-function Openvino:__parse_prompt(prompt)
-	local output = {
-		model = prompt.provider.model,
-		messages = { { role = "system", content = prompt.system_prompt } },
-		options = prompt.options,
-		stream = prompt.stream,
-		tools = prompt.tools,
-		images = prompt.images,
-	}
-	for _, line in ipairs(prompt.messages) do
-		table.insert(output.messages, { role = line.role, content = line.content })
-	end
-	return output
-end
-
-function Openvino:__parse_gen_prompt(prompt)
-	local output = {
-		model = prompt.provider.model,
-		prompt = prompt.prompt,
-		options = prompt.options,
-		stream = prompt.stream,
-		tools = prompt.tools,
-		images = prompt.images,
-	}
-	return output
-end
-
 ---Stop a running request
 function Openvino:stop()
   vim.fn.OpenvinoStop()

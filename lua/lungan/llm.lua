@@ -19,7 +19,9 @@ end
 ---Stops a language model provider session.
 ---@param session Chat The session object
 function LLM:stop(session)
-	self.options.providers[session.data:frontmatter().provider.name]:stop()
+  if self.options.providers[session.data:frontmatter().provider.name] then
+    self.options.providers[session.data:frontmatter().provider.name]:stop()
+  end
 end
 
 function LLM:context_size(session)
