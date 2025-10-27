@@ -1,23 +1,12 @@
 name: Luacheck
-
-on:
-  pull_request: {}
-  push:
-    branches:
-      - main
-
+on: [push, pull_request]
 jobs:
   luacheck:
-    name: Luacheck
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Prepare
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y luarocks
-          sudo luarocks install luacheck
-
-      - name: Lint
-        run: make luacheck
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Luacheck linter
+        uses: lunarmodules/luacheck@v1
+        with:
+          args: lua
