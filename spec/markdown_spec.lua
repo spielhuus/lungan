@@ -191,8 +191,8 @@ describe("Test the markdown parser", function()
 
 		assert.is.True(markdown:has_frontmatter())
 		assert.is.Equal(1, markdown:get(1).from)
-		assert.is.Equal(28, markdown:get(1).to)
-		assert.is.Equal("Ollama", markdown:frontmatter().provider.name)
+		assert.is.Equal(27, markdown:get(1).to)
+		assert.is.Equal("Openvino", markdown:frontmatter().provider.name)
 	end)
 
 	it("it should parse the full example file", function()

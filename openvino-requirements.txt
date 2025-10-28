@@ -8,3 +8,5 @@ transformers==4.57.1
 huggingface_hub[hf_xet]
 tokenizers==0.22.1
 gguf>=0.17.1
+
+pynvim
