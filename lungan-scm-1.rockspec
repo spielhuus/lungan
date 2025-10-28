@@ -31,6 +31,6 @@ build = {
 		},
 	},
 	copy_directories = {
-		"python3",
+		"rplugins",
 	},
 }
