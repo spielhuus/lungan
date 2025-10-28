@@ -1,8 +1,12 @@
 # lungan.nvim
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/spielhuus/lungan/busted.yml?branch=main&style=for-the-badge&label=Tests)](https://github.com/spielhuus/lungan/actions/workflows/test.yml)
+[![tests](https://img.shields.io/github/actions/workflow/status/spielhuus/lungan/busted.yml?branch=main&style=for-the-badge&label=Tests)](https://github.com/spielhuus/lungan/actions/workflows/test.yml)
+[![luacheck](https://img.shields.io/github/actions/workflow/status/spielhuus/lungan/luacheck.yml?branch=main&style=for-the-badge&label=Luacheck)](https://github.com/spielhuus/lungan/actions/workflows/luacheck.yml) 
+[![llscheck](https://img.shields.io/github/actions/workflow/status/spielhuus/lungan/llscheck.yml?branch=main&style=for-the-badge&label=llscheck)](https://github.com/spielhuus/lungan/actions/workflows/llscheck.yml) |
 [![Neovim v0.10+](https://img.shields.io/badge/Neovim-v0.10+-blueviolet?style=for-the-badge&logo=neovim)](https://neovim.io/)
 [![License-MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](https://github.com/spielhuus/lungan/blob/main/LICENSE)
+
+
 
 **lungan.nvim** is a Neovim plugin that transforms your editor into an interactive development environment. It seamlessly integrates notebook-style file management, REPL-driven code execution, and powerful Large Language Model (LLM) integration, allowing you to organize, document, and develop your projects all within markdown files.
  
