@@ -12,6 +12,7 @@ end
 
 ---Get the available models from the provider
 --luacheck: no unused args
+---@diagnostic disable: unused-local
 function Provider:models(callback) end
 
 ---Chat with the LLM
@@ -20,8 +21,8 @@ function Provider:models(callback) end
 ---@param stderr fun()
 ---@param exit fun()
 ---@return string|nil, string|nil
-
 --luacheck: no unused args
+---@diagnostic disable: unused-local
 function Provider:chat(prompt, stdout, stderr, exit)
 	return nil, "provider:chat is not implemented"
 end

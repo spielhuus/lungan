@@ -37,12 +37,6 @@ function AiStudio:__parse_prompt(prompt)
 		contents = {},
 	}
 
-	-- if prompt.options then
-	-- 	for key, val in pairs(prompt.options) do
-	-- 		output[key] = val
-	-- 	end
-	-- end
-
 	for _, line in ipairs(prompt.messages) do
 		local role
 		if line.role == "user" then
@@ -129,19 +123,6 @@ function AiStudio:models(callback)
 		callback(status, result)
 	end
 end
--- {
---   "models": [
---     {
---       "inputTokenLimit": 4096,
---       "outputTokenLimit": 1024,
---       "supportedGenerationMethods": [
---         "generateMessage",
---         "countMessageTokens"
---       ],
---       "temperature": 0.25,
---       "topP": 0.95,
---       "topK": 40
---     },
 
 --- Sends a chat request to the AiStudio API
 --- @param self table The AiStudio instance.
@@ -151,7 +132,7 @@ end
 --- @param exit function Function to handle process exit status.
 function AiStudio:chat(session, stdout, stderr, exit)
 	local request = {
-		url = self.options.url .. "/" .. session.provider.model .. ":generateContent?key=" .. AISTUDIO_API_TOKEN,
+		url = self.options.url .. "/" .. session['provider']['model'] .. ":generateContent?key=" .. AISTUDIO_API_TOKEN,
 		headers = {
 			' -H "Content-Type: application/json"',
 		},

@@ -57,6 +57,14 @@ return {
 }
 ```
 
+If you do not have Luarocks installed, you should disable it in LazyVim.
+
+```lua
+rocks = { 
+  enabled = false, 
+}, 
+```
+
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
 ```lua

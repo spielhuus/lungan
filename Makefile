@@ -1,4 +1,4 @@
-SOURCEDIR=lua
+SOURCEDIR=luajit
 SPECDIR=spec
 SOURCES := $(shell find $(SOURCEDIR) -name '*.lua')
 SPEC_FILES := $(shell find $(SPECDIR) -name '*_spec.lua')
