@@ -1,18 +1,12 @@
 name: Type Check Code Base
-on:
-  pull_request: ~
-  push:
-    branches:
-      - master
-
+on: [push, pull_request]
 jobs:
-  build:
+  llscheck:
     name: Type Check Code Base
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Type Check Code Base
         uses: mrcjkb/lua-typecheck-action@v0
