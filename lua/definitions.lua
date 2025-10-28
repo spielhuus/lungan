@@ -25,10 +25,10 @@
 ---@field new fun() create a new HTTP object.
 ---@field get fun(self: Http, url: string,
 ---         on_exit: fun(job_id: integer, exit_code: integer)|nil,
----         on_stdout: fun(chan-id: integer, data: table, name: string)|nil,
----         on_stderr: fun(chan-id: integer, data: table, name: string)|nil)
+---         on_stdout: fun(chan_id: integer, data: table, name: string)|nil,
+---         on_stderr: fun(chan_id: integer, data: table, name: string)|nil)
 ---@field post fun(self: Http, request: table,
 ---         on_exit: fun(job_id: integer, exit_code: integer),
----         on_stdout: fun(chan-id: integer, data: table, name: string)|nil,
----         on_stderr: fun(chan-id: integer, data: table, name: string)|nil)
+---         on_stdout: fun(chan_id: integer, data: table, name: string)|nil,
+---         on_stderr: fun(chan_id: integer, data: table, name: string)|nil)
 ---@field cancel function()
