@@ -51,7 +51,7 @@ function Source:complete(params, callback)
 				insertText = k,
 				detail = "Provider",
 				kind = cmp.lsp.CompletionItemKind.Folder,
-				description = v.description or "",
+				description = v["description"] or "",
 				data = {
 					path = "meta",
 				},
