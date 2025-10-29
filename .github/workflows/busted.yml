@@ -26,7 +26,9 @@ jobs:
 
       - name Install luajit
       - run: |
-          apt-get install luajit luarocks
+          sudo apt-get -y update &&
+          sudo apt-get -y upgrade &&            
+          sudo apt-get -y install luajit luarocks
 
       - name: Set up Python
         uses: actions/setup-python@v5
