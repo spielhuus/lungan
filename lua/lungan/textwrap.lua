@@ -32,8 +32,10 @@ function textwrap:__push_word(word)
 end
 
 function textwrap:__push_nl()
-	self.chat:append({ "\n" })
-	self.line_width = 0
+  if self.is_think ~= true then
+    self.chat:append({ "\n" })
+    self.line_width = 0
+  end
 end
 
 ---Pushes a token into the text wrapping context.

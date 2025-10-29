@@ -4,15 +4,43 @@ local utils = require("lungan.utils")
 
 local M = {}
 
+--- Extracts chat messages from a data iterator, splitting each message into lines. 
+-- @param data Iterator object with 'iter' method, yielding messages with 'type', 'role', and 'text' fields. 
+-- @return Table of strings, where each string is a line from assistant chat messages. 
 local function extract_chat(data)
-	local user_chat = {}
-	for message in data:iter() do
-		if message.type == "chat" and message.role == "assistant" then
-			log.trace("chatData: " .. vim.inspect(message.text))
-			table.insert(user_chat, vim.split(message.text, "\n"))
-		end
-	end
-	return user_chat
+	local message = {}
+  -- extract the last assistant message
+	for m in data:iter() do
+		if m.type == "chat" and m.role == "assistant" then
+			message = M.__clean_result(vim.split(m.text, "\n"))
+    end
+  end
+
+  log.debug("userChat: " .. vim.inspect(message))
+  local begin_line = -1
+  local end_line = 0
+
+ -- search the first and last code fence marker
+  for i, line in ipairs(message) do
+    log.debug("line '" .. line .. "'")
+    if begin_line == -1 and line == "```markdown" then
+      begin_line = i
+    elseif line == "```" then
+      end_line = i
+    end
+  end
+  log.debug("begin: " .. begin_line .. ", end: " .. end_line)
+
+  local result = {}
+  for i, line in ipairs(message) do
+    if i > begin_line and i < end_line then
+      -- result.append(line)
+			table.insert(result, line)
+    end
+  end
+
+  log.debug("userChat: " .. vim.inspect(result))
+	return result
 end
 
 ---Clean result table
@@ -136,15 +164,9 @@ M.clear_marks = function(args)
 end
 
 M.preview = function(args, data)
-	local user_chat = {}
-	for message in data:iter() do
-		if message.type == "chat" and message.role == "assistant" then
-			table.insert(user_chat, M.__clean_result(vim.split(message.text, "\n")))
-		end
-	end
-	-- preview the lines
+	local user_chat = extract_chat(data)
 	local line_nr = args.line1 - 1
-	for _, left in ipairs(user_chat[#user_chat]) do
+	for _, left in ipairs(user_chat) do
 		local right = vim.api.nvim_buf_get_lines(args.source_buf, line_nr, line_nr + 1, true)
 		if left == right[1] then
 			vim.api.nvim_buf_set_extmark(args.source_buf, M.namespace, line_nr, 0, {
@@ -170,12 +192,13 @@ M.preview = function(args, data)
 end
 
 M.replace = function(args, data)
-	local user_chat = {}
-	for message in data:iter() do
-		if message.type == "chat" and message.role == "assistant" then
-			user_chat = M.__clean_result(vim.split(message.text, "\n"))
-		end
-	end
+	local user_chat = extract_chat(data)
+	-- local user_chat = {}
+	-- for message in data:iter() do
+	-- 	if message.type == "chat" and message.role == "assistant" then
+	-- 		user_chat = M.__clean_result(vim.split(message.text, "\n"))
+	-- 	end
+	-- end
 	M.clear_marks(args)
 	vim.api.nvim_buf_set_lines(args.source_buf, args.line1 - 1, args.line2, true, user_chat)
 end

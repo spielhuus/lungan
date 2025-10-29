@@ -1,7 +1,7 @@
 ---
 provider:
   name: Openvino
-  model: Phi-4-mini-instruct-int8-ov
+  model: Qwen3-4B-int4-ov
 name: Grammar
 icon:
   character: 󰓆
@@ -16,6 +16,9 @@ system_prompt: |
   return only the corrected text. do not add any comment or extra text.
   all the line breaks '\n' in the original text must be copied one to
   one. dont change the formatting of the original text.
+  keep the code fences ```` around the response and dont add blank lines at
+  the end. 
+  when there are no changes reponde with 'OK'
 context: |
   return function(buf, line1, line2)
     local code = ""
@@ -40,9 +43,12 @@ post: |
   end
 options:
   temperature: 0.01
+textwrap: false
+hide_think: true
 ---
 
 <== user
 proofread this text:
 {{code}}
 ==>
+

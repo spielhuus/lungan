@@ -67,8 +67,58 @@ class OpenvinoPlugin:
             self.nvim.async_call(self.nvim.lua.debug_callback, f'Openvino request: {json.dumps(request)}')
 
             config = openvino_genai.GenerationConfig()
-            config.max_new_tokens = 10000
-            # TODO: set the rest of the parameters
+            if 'echo' in args[2]['options']:
+                config.echo = args[2]['options']['echo']
+            if 'eos_token_id' in args[2]['options']:
+                config.eos_token_id = args[2]['options']['eos_token_id']
+            if 'frequency_penalty' in args[2]['options']:
+                config.frequency_penalty = args[2]['options']['frequency_penalty']
+            if 'ignore_eos' in args[2]['options']:
+                config.ignore_eos = args[2]['options']['ignore_eos']
+            if 'include_stop_str_in_output' in args[2]['options']:
+                config.include_stop_str_in_output = args[2]['options']['include_stop_str_in_output']
+            if 'length_penalty' in args[2]['options']:
+                config.length_penalty = args[2]['options']['length_penalty']
+            if 'logprobs' in args[2]['options']:
+                config.logprobs = args[2]['options']['logprobs']
+            if 'max_length' in args[2]['options']:
+                config.max_length = args[2]['options']['max_length']
+            if 'max_new_tokens' in args[2]['options']:
+                config.max_new_tokens = args[2]['options']['max_new_tokens']
+            if 'max_ngram_size' in args[2]['options']:
+                config.max_ngram_size = args[2]['options']['max_ngram_size']
+            if 'min_new_tokens' in args[2]['options']:
+                config.min_new_tokens = args[2]['options']['min_new_tokens']
+            if 'no_repeat_ngram_size' in args[2]['options']:
+                config.no_repeat_ngram_size = args[2]['options']['no_repeat_ngram_size']
+            if 'num_assistant_tokens' in args[2]['options']:
+                config.num_assistant_tokens = args[2]['options']['num_assistant_tokens']
+            if 'num_beam_groups' in args[2]['options']:
+                config.num_beam_groups = args[2]['options']['num_beam_groups']
+            if 'num_beams' in args[2]['options']:
+                config.num_beams = args[2]['options']['num_beams']
+            if 'num_return_sequences' in args[2]['options']:
+                config.num_return_sequences = args[2]['options']['num_return_sequences']
+            if 'presence_penalty' in args[2]['options']:
+                config.presence_penalty = args[2]['options']['presence_penalty']
+            if 'repetition_penalty' in args[2]['options']:
+                config.repetition_penalty = args[2]['options']['repetition_penalty']
+            if 'rng_seed' in args[2]['options']:
+                config.rng_seed = args[2]['options']['rng_seed']
+            if 'stop_criteria' in args[2]['options']:
+                config.stop_criteria = args[2]['options']['stop_criteria']
+            if 'stop_strings' in args[2]['options']:
+                config.stop_strings = args[2]['options']['stop_strings']
+            if 'stop_token_ids' in args[2]['options']:
+                config.stop_token_ids = args[2]['options']['stop_token_ids']
+            if 'structured_output_config' in args[2]['options']:
+                config.structured_output_config = args[2]['options']['structured_output_config']
+            if 'temperature' in args[2]['options']:
+                config.temperature = args[2]['options']['temperature']
+            if 'top_k' in args[2]['options']:
+                config.top_k = args[2]['options']['top_k']
+            if 'top_p' in args[2]['options']:
+                config.top_p = args[2]['options']['top_p']
 
             worker_thread = threading.Thread(
                 target=self.do_long_work, 

@@ -40,7 +40,7 @@ function LLM:chat(chat)
     self.options,
     chat,
     chat.data:frontmatter().textwrap,
-    chat.data:frontmatter().hide_thin
+    chat.data:frontmatter().hide_think
   )
 
 	local prompt = chat:get()
@@ -70,7 +70,7 @@ function LLM:chat(chat)
 		elseif data["message"] then
 			local token_role = data["message"]["role"]
 			if token_role ~= role then
-				wrap:push({ "\n\n", "<== " .. token_role, "\n" })
+				wrap:push({ "\n\n\n", "<== " .. token_role, "\n" })
 				role = token_role
 			end
 			if data["message"]["content"] then
