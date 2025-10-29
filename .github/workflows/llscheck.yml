@@ -8,6 +8,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Luals version
+        run: |
+          lua-language-server --version
+
       - name: Type Check Code Base
         uses: mrcjkb/lua-typecheck-action@v0
         with:
