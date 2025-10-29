@@ -24,7 +24,7 @@ jobs:
       #   with:
       #     luarocksVersion: "3.11.1"
 
-      - name Install luajit
+      - name: Install luajit
       - run: |
           sudo apt-get -y update &&
           sudo apt-get -y upgrade &&            
