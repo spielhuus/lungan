@@ -8,15 +8,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Luals version
+      - name: Check with Lua Language Server
         run: |
           wget https://github.com/LuaLS/lua-language-server/releases/download/3.15.0/lua-language-server-3.15.0-linux-x64.tar.gz
           tar xfz lua-language-server-3.15.0-linux-x64.tar.gz
           bin/lua-language-server --configpath $(pwd)/.luarc.json --check ./lua --checklevel=Hint
 
-      # - name: Type Check Code Base
-      #   uses: mrcjkb/lua-typecheck-action@v0
-      #   with:
-      #       configpath: ".luarc.json"
-      #       directories: |
-      #        lua
