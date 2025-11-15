@@ -1,9 +1,9 @@
 --extra-index-url https://download.pytorch.org/whl/cpu
 torch==2.6.0+cpu
 --extra-index-url https://storage.openvinotoolkit.org/simple/wheels/nightly
-openvino==openvino-2025.4.0.dev20251022-20264 #  2025.2.0.dev20250514
-openvino-genai==openvino-2025.4.0.dev20251022-20264 #2025.2.0.dev20250514
-openvino-tokenizers==openvino-2025.4.0.dev20251022-20264 #2025.2.0.dev20250514
+openvino==openvino-2026.0.0.dev20251114-20456 #  2025.2.0.dev20250514
+openvino-genai==openvino-2026.0.0.dev20251114-20456 #2025.2.0.dev20250514
+openvino-tokenizers==openvino-2026.0.0.dev20251114-20456 #2025.2.0.dev20250514
 transformers==4.46.3
 huggingface_hub[hf_xet]
 tokenizers==0.20.3

@@ -231,7 +231,9 @@ function IPython:new(term, on_message, on_close)
 		o:receive(line, message)
 	end)
 	o.term:on_close(function()
-		o:on_close()
+    if o.onclose ~= nil then
+      o:on_close()
+    end
 	end)
 	local status, mes = o.term:run(ipython_cmd)
 	if not status then

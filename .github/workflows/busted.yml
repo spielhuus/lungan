@@ -1,5 +1,5 @@
 ---
-name: luarocks test
+name: busted
 on: [push, pull_request]
 
 jobs:

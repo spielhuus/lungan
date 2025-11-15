@@ -7,7 +7,6 @@
 [![License-MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](https://github.com/spielhuus/lungan/blob/main/LICENSE)
 
 
-
 **lungan.nvim** is a Neovim plugin that transforms your editor into an interactive development environment. It seamlessly integrates notebook-style file management, REPL-driven code execution, and powerful Large Language Model (LLM) integration, allowing you to organize, document, and develop your projects all within markdown files.
  
 Chat with local and remote LLMs, execute code blocks on the fly, and maintain a rich, interactive logbook of your project's lifecycle.

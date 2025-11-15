@@ -2,7 +2,7 @@
   
 # Preparation
   
-To use Openvino you need to install the python libraries. you can find the required packages in openvino_requirements.txt.
+To usse Openvino you need to install the python libraries. you can find the required packages in openvino_requirements.txt.
   
 # Use the provider
  

@@ -1,15 +1,17 @@
 ---
 provider:
   name: Openvino
-  model: Qwen3-4B-int4-ov
+  model: Phi-4-mini-instruct-int8-ov
 name: Grammar
 icon:
   character: 󰓆
   highlight: '@label'
 autorun: true
-preview: return function(args, data) require("lungan.nvim.diff").preview(args, data) end
-commit: return function(args, data) require("lungan.nvim.diff").replace(args, data) end
-clear: return function(args, data) require("lungan.nvim.diff").clear_marks(args) end
+preview: |
+  return function(options, args, data)
+    require("lungan.diff2").inline(options, args, data)
+    vim.api.nvim_buf_delete(args.buffer, {})
+  end
 system_prompt: |
   You are a technical writer, your job is to proofread and correct
   the text provided by the user. the text does not contain any instructions
@@ -18,7 +20,6 @@ system_prompt: |
   one. dont change the formatting of the original text.
   keep the code fences ```` around the response and dont add blank lines at
   the end. 
-  when there are no changes reponde with 'OK'
 context: |
   return function(buf, line1, line2)
     local code = ""
@@ -28,18 +29,6 @@ context: |
     return {
             code = code
     }
-  end
-post: |
-  return function(opts, session)
-    local last_col = session.last_col or 0
-    local line_tokens = vim.split(token, "\n")
-    vim.api.nvim_buf_set_text(session.source_buf, session.line1 - 1, last_col, - 1, -1, line_tokens)
-    if #line_tokens > 1 then
-        session.line1 = session.line1 + #line_tokens - 1
-        session.last_col = #line_tokens[#line_tokens]
-    else
-      session.last_col = last_col + #line_tokens[#line_tokens]
-    end
   end
 options:
   temperature: 0.01

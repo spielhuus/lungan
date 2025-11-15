@@ -1,7 +1,7 @@
 ---
 provider:
-  model: Qwen2.5-Coder-1.5B-Instruct-int4-ov
   name: Openvino
+  model: Qwen3-8B-int4-cw-ov
 stream: true
 name: Lua
 icon:
@@ -22,8 +22,9 @@ context: |
     }
   end
 options:
-  temperature: 0.1
-  num_ctx: 4096
+  temperature: 0.8
+  top_k: 4
+  top_p: 0
 ---
 
 <== user
