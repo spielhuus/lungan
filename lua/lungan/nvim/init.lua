@@ -73,6 +73,12 @@ M.setup = function(opts)
 
     if arg.args == "Attach" then
       M.attach()
+    elseif arg.args == "Open" then
+      M.options.picker.open(M.options, function(prompt)
+        local chat = require("lungan.nvim.chat"):new(M.options, arg, prompt)
+        chat:open(prompt.path);
+        table.insert(M.chats, chat)
+      end)
     elseif arg.args == "Chat" then
       M.options.picker.prompts({}, M.prompts(), function(prompt)
         local chat = require("lungan.nvim.chat"):new(M.options, arg, prompt)
@@ -94,7 +100,7 @@ M.setup = function(opts)
     range = true,
     nargs = "?",
     complete = function()
-      return { "Attach", "Notebooks", "Chat", "Run", "Toggle" }
+      return { "Attach", "Notebooks", "Chat", "Run", "Toggle", "Open" }
     end,
   })
 

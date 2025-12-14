@@ -63,7 +63,6 @@ function Openrouter:__parse_response(data)
         role = data["choices"][1]["delta"]["role"],
       },
     }
-    print("response:" .. vim.inspect(output))
     return output
   else
     local output = {

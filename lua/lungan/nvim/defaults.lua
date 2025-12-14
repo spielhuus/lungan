@@ -45,6 +45,7 @@ M.providers = {
 M.picker = {
   -- models = require("lungan.nvim.telescope.models"),
   prompts = require("lungan.nvim.pickers.snacks.prompts"),
+  open = require("lungan.nvim.pickers.snacks.open"),
   -- notebooks = require("lungan.nvim.telescope.notebooks"),
 }
 M.prompts = {}
@@ -60,6 +61,10 @@ M.linewidth = 80 -- the linewidth for the textwrapper
 M.repl_show = true
 -- The loglevel. In meovim warn and error are handled as notifications  [trace, debug, info, warn, error]
 M.loglevel = "trace"
+
+M.data_path = function()
+  return vim.fn.stdpath('data') .. "/lungan";
+end
 
 M.theme = {
   header_signs = { "󰬺", "󰬻", "󰬼", "󰬽", "󰬾", "󰬿", "󰭀", "󰭁", "󰭂", "󰿩" },

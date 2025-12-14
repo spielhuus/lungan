@@ -121,22 +121,23 @@ end
 --
 -- @return nil
 function LlamaCPP:models(callback)
-  -- local status, response = self.http:get(self.options.url .. "/api/v1/models")
-  -- assert(callback ~= nil)
-  -- if response then
-  --   local t_result = vim.json.decode(response)
-  --   local result = {}
-  --   for _, model in ipairs(t_result.data) do
-  --     table.insert(result, {
-  --       description = model.description,
-  --       model = model.id,
-  --       name = model.name,
-  --       context_length = model.context_length,
-  --       pricing = model.pricing,
-  --     })
-  --   end
-  local result = {}
-  callback(0, result)
+  local status, response = self.http:get(self.options.url .. "/models")
+  assert(callback ~= nil)
+  if response then
+    local t_result = vim.json.decode(response)
+    local result = {}
+    for _, model in ipairs(t_result.data) do
+      table.insert(result, {
+        description = model.id,
+        model = model.id,
+        name = model.id,
+        context_length = model['status']['args']['--context_size'], --TODO parse args
+        pricing = model.pricing,
+      })
+    end
+    log.debug("Models:" .. vim.inspect(result))
+    callback(0, result)
+  end
 end
 
 --- Sends a chat request to the LlamaCPP API

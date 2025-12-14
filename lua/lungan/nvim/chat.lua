@@ -54,10 +54,15 @@ function Chat:append(tokens)
   end
 end
 
-function Chat:open()
+function Chat:open(filename)
   self.buffer = vim.api.nvim_create_buf(true, false)
   -- create the autogroups for this buf
-  vim.api.nvim_buf_set_name(self.buffer, "Lungan Chat: #" .. self.buffer .. ".md")
+  if filename then
+    vim.api.nvim_buf_set_name(self.buffer, filename)
+  else
+    vim.api.nvim_buf_set_name(self.buffer, self.options.data_path() ..
+      "/" .. os.date("%Y-%m-%d") .. "-" .. self.prompt.data:frontmatter()["name"])
+  end
   vim.api.nvim_set_option_value("buftype", "nowrite", { buf = self.buffer })
   vim.api.nvim_set_option_value("filetype", "markdown", { buf = self.buffer })
   if self.prompt.data:frontmatter()["context"] then
@@ -90,9 +95,19 @@ function Chat:open()
     callback = function()
       -- TODO delete autogroup
       vim.api.nvim_del_augroup_by_id(self._group)
-      -- require("lungan.diff").clear_marks(M.options, M.sessions[self.buffer])
-      -- M.sessions[args.buffer] = nil
+      -- Write the buffer to a file
+      require("lungan.utils").ensure_directory_exists(self.options.data_path());
+      local buffer_lines = vim.api.nvim_buf_get_lines(self.buffer, 0, -1, false)
+      local buffer_content = table.concat(buffer_lines, "\n")
+      local file, err = io.open(vim.api.nvim_buf_get_name(self.buffer), "w")
+      if not file then
+        print("Error opening file: " .. err)
+        return
+      end
+      file:write(buffer_content)
+      file:close()
       self.llm:stop(self)
+      vim.api.nvim_buf_delete(self.buffer, { force = true });
     end,
   })
   vim.api.nvim_create_autocmd({ "BufWinEnter", "TextChanged", "TextChangedI" }, {

@@ -43,15 +43,49 @@ function LLM:chat(chat)
     chat.data:frontmatter().hide_think
   )
 
-  local prompt = chat:get()
+  local prompt = vim.fn.deepcopy(chat:get())
 
   -- get the last user message
+  local max_tokens = (chat.data:frontmatter().options.num_ctx and (chat.data:frontmatter().options.num_ctx * 0.9) or (1024 * 0.9)); -- TODO make default configurable
+  local token_length = 4                                                                                                            -- TODO make this configurable
+  local current_token_count = 0
+  local system_message = nil
   local messages = {}
-  for _, line in ipairs(prompt.messages) do
-    table.insert(messages, { role = line.role, content = line.content })
+  if #prompt.messages > 0 and prompt.messages[1].role == "system" then
+    local sys_msg = prompt.messages[1]
+    local sys_tokens = (#sys_msg.role + #sys_msg.content) / token_length + 3
+    if sys_tokens < max_tokens then
+      system_message = sys_msg
+      current_token_count = sys_tokens
+    else
+      print("Warning: System message is larger than the entire context limit.")
+    end
+  end
+  local start_index = #prompt.messages;
+  local end_index = (system_message and 2 or 1);
+  for i = start_index, end_index, -1 do
+    local line = prompt.messages[i]
+    local message_tokens = (#line.content + #line.role) / token_length + 3
+
+    if current_token_count + message_tokens >= max_tokens then
+      log.info("truncate the context, length: " .. current_token_count + message_tokens);
+      print("truncate the context, length: " .. current_token_count + message_tokens);
+      break
+    end
+
+    current_token_count = current_token_count + message_tokens
+    table.insert(messages, 1, { role = line.role, content = line.content })
   end
 
+  if system_message then
+    table.insert(messages, 1, { role = system_message.role, content = system_message.content })
+  end
+
+  prompt.messages = messages;
+  print("context length: " .. current_token_count)
+
   -- execute te RAG chain
+  -- TODO
   if chat:get()["system_context"] then
     local system_context = chat:get()["system_context"]
     local func, err = load(system_context)
