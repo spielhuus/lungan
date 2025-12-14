@@ -148,10 +148,6 @@ end
 function LlamaCPP:chat(session, stdout, stderr, exit)
   local request = {
     url = self.options.url .. "/v1/chat/completions",
-    -- headers = {
-    --   ' -H "Authorization: Bearer ' .. OPENROUTER_API_TOKEN .. '"',
-    --   ' -H "Content-Type: application/json"',
-    -- },
     body = vim.json.encode(self:__parse_prompt(session)),
   }
   local status, err = self.http:post(request, function(_, b)
