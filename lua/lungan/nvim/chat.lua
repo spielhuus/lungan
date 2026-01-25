@@ -28,39 +28,45 @@ function Chat:new(options, args, prompt)
 	o.llm = LLM:new(options)
 
 	o.awaiting_tools = 0
-
-	o.mcp = require("lungan.mcp.FastMcp"):new(require("lungan.repl.NvimJob"):new({}), function(_, message, _)
-		if message["result"] and message["result"]["tools"] ~= nil then
-			o.prompt["tools"] = message
-		elseif message["result"] and message["result"]["content"] then
-			local output_text = ""
-			for _, item in ipairs(message["result"]["content"]) do
-				if item.type == "text" then
-					output_text = output_text .. item.text
-				end
-			end
-
-			local tool_id = message.id or ""
-
-			-- Schedule the append to the main loop
-			vim.schedule(function()
-				o:append({ "", "<== tool " .. tool_id, output_text, "==>", "" })
-				if o.awaiting_tools > 0 then
-					o.awaiting_tools = o.awaiting_tools - 1
-					if o.awaiting_tools == 0 then
-						log.debug("All tools finished. Resuming LLM...")
-						o:refresh()
-						o.llm:chat(o)
+	if prompt.data:frontmatter().mcp ~= nil then
+		o.mcp = require("lungan.mcp.FastMcp"):new(
+			require("lungan.repl.NvimJob"):new({}),
+			prompt.data:frontmatter().mcp,
+			function(_, message, _)
+				if message["result"] and message["result"]["tools"] ~= nil then
+					o.prompt["tools"] = message
+				elseif message["result"] and message["result"]["content"] then
+					local output_text = ""
+					for _, item in ipairs(message["result"]["content"]) do
+						if item.type == "text" then
+							output_text = output_text .. item.text
+						end
 					end
+
+					local tool_id = message.id or ""
+
+					-- Schedule the append to the main loop
+					vim.schedule(function()
+						o:append({ "", "<== tool " .. tool_id, output_text, "==>", "" })
+						if o.awaiting_tools > 0 then
+							o.awaiting_tools = o.awaiting_tools - 1
+							if o.awaiting_tools == 0 then
+								log.debug("All tools finished. Resuming LLM...")
+								o:refresh()
+								o.llm:chat(o)
+							end
+						end
+					end)
+				else
+					log.info("MCP: " .. vim.inspect(message))
 				end
-			end)
-		else
-			log.info("MCP: " .. vim.inspect(message))
-		end
-	end, function()
-		log.debug("mcp close")
-	end)
-	o.mcp:wait()
+			end,
+			function()
+				log.debug("mcp close")
+			end
+		)
+		o.mcp:wait()
+	end
 	o._tool_accumulator = {}
 	return o
 end

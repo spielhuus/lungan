@@ -18,7 +18,7 @@ context: |
             lang = vim.bo.filetype
     }
   end
-mcp: true
+mcp: .nvim/lungan/mcp-server.py
 options:
   temperature: 0.8
   top_p: 1

@@ -143,7 +143,40 @@ function FastMcp:send(cell)
 	end
 end
 
-function FastMcp:new(term, on_message, on_close)
+---Resolve the path to the mcp server script
+---@param path string -- path to the mcp server script
+---@return string|nil -- resolved path or nil if not found
+function FastMcp:resolve_path(path)
+	local script_path = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h:h:h:h")
+
+	-- Check if path is already absolute and exists
+	if vim.fn.isdirectory(vim.fn.fnamemodify(path, ":h")) ~= 0 then
+		return path
+	end
+
+	local cwd = vim.fs.normalize(vim.fn.getcwd())
+	local plugin_root_path = script_path:match("^(.*/rplugin)/")
+
+	-- Check in current working directory first (relative to CWD)
+	if not string.find(path, "/") and #path > 0 then
+		local path_cwd = vim.fs.normalize(cwd .. "/" .. path)
+		if vim.fn.filereadable(path_cwd) == 1 then
+			return path_cwd
+		end
+	end
+
+	-- Check in plugin root directory (relative to script location)
+	for _, base_dir in ipairs({ cwd, plugin_root_path }) do
+		local full_path = vim.fs.normalize(base_dir .. "/" .. path)
+		if vim.fn.filereadable(full_path) == 1 then
+			return full_path
+		end
+	end
+
+	return nil
+end
+
+function FastMcp:new(term, server, on_message, on_close)
 	local o = {}
 	setmetatable(o, { __index = self, __name = "FastMcp" })
 	setmetatable(FastMcp, { __index = require("lungan.repl.IRepl") })
@@ -154,9 +187,15 @@ function FastMcp:new(term, on_message, on_close)
 	end)
 	o.term.on_close = on_close
 	o.state = state.START
-	local plugin_root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h:h:h:h")
-	local script_path = plugin_root .. "/rplugin/python3/mcp-server.py"
-	local status, mes = o.term:run({ "python", script_path })
+
+	-- local plugin_root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h:h:h:h")
+	-- local script_path = plugin_root .. "/rplugin/python3/mcp-server.py"
+	local path = self:resolve_path(server)
+	if path == nil then
+		log.error("server file not found: " .. server)
+		return
+	end
+	local status, mes = o.term:run({ "python", path })
 	if not status then
 		return nil, mes
 	end
