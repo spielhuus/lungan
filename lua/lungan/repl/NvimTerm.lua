@@ -93,7 +93,7 @@ function NvimRepl:run(cmd)
 			self.term.buffer = nil
 		end,
 		on_stderr = function(_, data, _)
-			log.error("ERROR: " .. vim.inspect(data))
+			log.error("ERROR: term: " .. vim.inspect(data))
 		end,
 		on_stdout = function(_, data, _)
 			local clean_in = str.clean_table(data)

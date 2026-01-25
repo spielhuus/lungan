@@ -1,56 +1,46 @@
 ---
 provider:
-  name: Ollama
-  model: qwen2.5-coder:14b-instruct-q5_K_M
-name: LuaDocumentation
+  model: Qwen2.5-Coder-1.5B-Instruct-int4-ov
+  name: LlamaCPP
+stream: true
+name: Code Documentation 
+command: Doc
+autorun: true
 icon:
-  character: 󱂛
-  highlight: DevIconLua
+  character: 󰢱
+  highlight: DevIconBlueprint
 system_prompt: |
-  You are a senior lua and neovim plugin programmer. 
+  You are a code completion assistant in lua 
   Your Task is it to create LuaCATS annotations for the given code.
   Just output the documentation and do not echo the provided code.
   Analyze the code and its functionality. Use the information for 
   creating the documentation. Do not make up things that can not
   be taken from the code information.
-
-  Here is the example code:
-  
-  user input: 
-  ```lua
-  function manif.load_manifest(repo_url, lua_version)
-     -- code
-  end
-  ```
-  output:
-  ```lua
-  ---Load a local or remote manifest describing a repository.
-  ---All functions that use manifest tables assume they were obtained
-  ---through either this function or load_local_manifest.
-  ---@param repo_url string: URL or pathname for the repository.
-  ---@param lua_version string: Lua version in "5.x" format, defaults to installed version.
-  ---@return table or (nil, string, [string]): A table representing the manifest,
-  ---or nil followed by an error message and an optional error code.
-  '''
+  when documenting a lua class, also document all fields created in the constructor
 context: |
   return function(buf, line1, line2)
-    if line2 > line1 then
-      return { 
-          code = require("lungan.utils").GetBlock(buf, line1, line2)
-      }
-    else
-      return {
-        code = require("lungan.utils").GetCodeBlock(buf, line1),
-      }
-    end
+    local lines_before = vim.api.nvim_buf_get_lines(buf, 0, line1, false)
+    local lines_after = vim.api.nvim_buf_get_lines(buf, line1, -1, false)
+    return {
+            lines_before = table.concat(lines_before, "\n"),
+            lines_after = table.concat(lines_after, "\n"),
+            lang = vim.bo.filetype
+    }
   end
+preview: |
+  return function(...)
+    require("lungan.phantom").preview(...)
+  end
+options:
+  temperature: 0.1
+  num_ctx: 100000
 ---
 
 <== user
-
-document the following code.
-
-{{code}}
-
+Complete this code:
+<|fim_prefix|>
+{{lines_before}}
+<|fim_suffix|>
+{{lines_after}}
+<|fim_middle|>
 ==>
-

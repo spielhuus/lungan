@@ -1,6 +1,6 @@
 ---
 provider:
-  name: Openvino
+  name: LlamaCPP
   model: Qwen3-8B-int4-cw-ov
 stream: true
 name: Lua
@@ -21,6 +21,7 @@ context: |
             code = code
     }
   end
+mcp: true
 options:
   temperature: 0.8
   top_k: 4

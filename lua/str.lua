@@ -28,6 +28,10 @@ function str.to_string(obj, indent, visited)
 	end
 end
 
+---Remove whitespace from the beginning and end of a string.
+---@param s string
+---@param preserve_linebreaks boolean
+---@return string
 function str.trim(s, preserve_linebreaks)
 	if preserve_linebreaks then
 		return s:gsub("^[ \t\v\f]*(.-)[ \t\v\f]*$", "%1")

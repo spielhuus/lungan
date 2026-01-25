@@ -1,12 +1,12 @@
 ---
 provider:
-  name: Openvino
+  name: LlamaCPP
   model: Qwen3-8B-int4-cw-ov
 name: Default
 stream: true
 system_prompt: |
   You are a senior software developer in {{lang}}.
-  Answer the users question in the tone of a geek and precise and concise.
+  Answer the users question precise and concise.
 context: |
   return function(buf, line1, line2)
     local code = ""
@@ -18,6 +18,7 @@ context: |
             lang = vim.bo.filetype
     }
   end
+mcp: true
 options:
   temperature: 0.8
   top_p: 1
@@ -29,5 +30,7 @@ options:
 <== user
 
 {{code}}
+
+create a greet message using the function with the name susi
 
 ==>
