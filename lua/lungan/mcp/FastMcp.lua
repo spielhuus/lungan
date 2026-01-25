@@ -154,8 +154,9 @@ function FastMcp:new(term, on_message, on_close)
 	end)
 	o.term.on_close = on_close
 	o.state = state.START
-
-	local status, mes = o.term:run({ "python", "/home/etienne/github/lungan/rplugin/python3/mcp-server.py" })
+	local plugin_root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h:h:h:h")
+	local script_path = plugin_root .. "/rplugin/python3/mcp-server.py"
+	local status, mes = o.term:run({ "python", script_path })
 	if not status then
 		return nil, mes
 	end

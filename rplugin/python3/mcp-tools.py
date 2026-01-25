@@ -7,7 +7,7 @@ from fastmcp import Client, FastMCP
 # client = Client(server)
 
 # Local Python script
-client = Client("/home/etienne/github/lungan/rplugin/python3/mcp-server.py")
+client = Client("./rplugin/python3/mcp-server.py")
 
 
 async def main():
