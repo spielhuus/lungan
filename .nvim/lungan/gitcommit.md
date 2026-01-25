@@ -1,7 +1,7 @@
 ---
 provider:
   model: Qwen3-8B-int4-cw-ov
-  name: Openvino
+  name: LlamaCPP
 name: GitCommit
 stream: true
 icon:
@@ -21,15 +21,23 @@ system_prompt: |
   Summary of changes
   - changes
   - changes
-context: |
-  return function(_, _, _)
-    local handle = io.popen("git diff -p --staged")
-    local result = handle:read("*all")
-    handle:close()
-    return {
-            gitdiff = vim.split(result, '\n')
-    }
-  end
+
+  do this step using the git function call
+  - check if there are staged files
+  - when there are no staged files, tell it to the user and end processing
+  - otherwise get the diff for the staged files
+  - create the commit text for these files
+
+mcp: .nvim/lungan/mcp-server.py
+# context: |
+#   return function(_, _, _)
+#     local handle = io.popen("git diff -p --staged")
+#     local result = handle:read("*all")
+#     handle:close()
+#     return {
+#             gitdiff = vim.split(result, '\n')
+#     }
+#   end
 process: |
   return function(opts, session, token)
     print(vim.inspect(token))
@@ -57,9 +65,6 @@ options:
 <== user
 write the commit message from this diff:
 
-```diff
-{{gitdiff}}
-```
 
 ==>
 
