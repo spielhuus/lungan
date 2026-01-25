@@ -65,5 +65,31 @@ def filelist(
         return {"content": f"Error: {str(e)}", "type": "text"}
 
 
+@mcp.tool
+def git(
+    args: Annotated[
+        str,
+        Field(description="the git arguments"),
+    ] = ".",
+) -> Dict[str, Any]:
+    """
+    call git with arguments
+
+    Args:
+        args: the arguements passed to git
+    """
+    try:
+
+        import subprocess
+
+        # Execute git with the provided arguments
+        result = subprocess.run(["git"] + args.split(), capture_output=True, text=True)
+
+        return {"content": result.stdout or "No output", "type": "text"}
+
+    except Exception as e:
+        return {"content": f"Error: {str(e)}", "type": "text"}
+
+
 if __name__ == "__main__":
     mcp.run(show_banner=False)

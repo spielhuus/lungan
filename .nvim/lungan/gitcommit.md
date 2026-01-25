@@ -28,43 +28,18 @@ system_prompt: |
   - otherwise get the diff for the staged files
   - create the commit text for these files
 
-mcp: .nvim/lungan/mcp-server.py
-# context: |
-#   return function(_, _, _)
-#     local handle = io.popen("git diff -p --staged")
-#     local result = handle:read("*all")
-#     handle:close()
-#     return {
-#             gitdiff = vim.split(result, '\n')
-#     }
-#   end
-process: |
-  return function(opts, session, token)
-    print(vim.inspect(token))
-    local last_col = session.last_col or 0
-    local line_tokens = vim.split(token, "\n")
-    if token:match("<think>") then
-        session.hide_think = true
-    elseif token:match("</think>") then
-        session.hide_think = false
-    elseif not session.hide_think then
-        vim.api.nvim_buf_set_text(session.source_buf, session.line1 - 1, last_col, - 1, -1, line_tokens)
-        if #line_tokens > 1 then
-            session.line1 = session.line1 + #line_tokens - 1
-            session.last_col = #line_tokens[#line_tokens]
-        else
-          session.last_col = last_col + #line_tokens[#line_tokens]
-        end
-    end
+  do not add additional text, only the absolute neccesary content
+preview: |
+  return function(...)
+    require("lungan.phantom").preview(...)
   end
+mcp: .nvim/lungan/mcp-server.py
 options:
-  temperature: 0.01
+  temperature: 1
   num_ctx: 4096
 ---
 
 <== user
-write the commit message from this diff:
-
-
+write the commit message
 ==>
 
