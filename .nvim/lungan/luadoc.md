@@ -1,6 +1,6 @@
 ---
 provider:
-  model: Qwen2.5-Coder-1.5B-Instruct-int4-ov
+  model: Qwen3-Coder-30B-A3B-Instruct-Q8_0 
   name: LlamaCPP
 stream: true
 name: Code Documentation 
@@ -10,8 +10,8 @@ icon:
   character: 󰢱
   highlight: DevIconBlueprint
 system_prompt: |
-  You are a code completion assistant in lua 
-  Your Task is it to create LuaCATS annotations for the given code.
+  You are a code completion assistant in {{lang}}
+  Your Task is it to create code annotations for the given code.
   Just output the documentation and do not echo the provided code.
   Analyze the code and its functionality. Use the information for 
   creating the documentation. Do not make up things that can not
@@ -32,15 +32,19 @@ preview: |
     require("lungan.phantom").preview(...)
   end
 options:
-  temperature: 0.1
-  num_ctx: 100000
+  temperature: 0.7
+  top_k: 20
+  min_p: 0.01
+  top_p: 0.8
+  repeat_penalty: 1.05
+  num_ctx: 65536
 ---
 
 <== user
 Complete this code:
-<|fim_prefix|>
+<|im_prefix|>
 {{lines_before}}
-<|fim_suffix|>
+<|im_suffix|>
 {{lines_after}}
-<|fim_middle|>
+<|im_middle|>
 ==>

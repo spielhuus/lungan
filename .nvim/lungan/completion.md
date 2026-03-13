@@ -10,7 +10,7 @@ icon:
   character: 󰢱
   highlight: DevIconBlueprint
 system_prompt: |
-  You are a code completion assistant in lua
+  You are a code completion assistant in {{lang}}
 context: |
   return function(buf, line1, line2)
     local lines_before = vim.api.nvim_buf_get_lines(buf, 0, line1, false)

@@ -49,7 +49,6 @@ function Markdown:_parse(lines)
 				print(mes)
 			end
 		elseif chat then
-			-- CHANGED: Added meta field to the node
 			local node = { type = Markdown.types.CHAT, role = chat, meta = meta, from = i }
 			local chat_text = {}
 			i = i + 1

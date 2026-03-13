@@ -24,9 +24,12 @@ context: |
     }
   end
 options:
-  temperature: 0.8
-  top_k: 4
-  top_p: 0
+  temperature: 0.7
+  top_k: 20
+  min_p: 0.01
+  top_p: 0.8
+  repeat_penalty: 1.05
+  num_ctx: 65536
 ---
 
 <== user

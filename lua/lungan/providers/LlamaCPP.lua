@@ -74,7 +74,7 @@ function LlamaCPP:__parse_prompt(prompt)
 			content = message.content,
 		}
 		if message.tool_calls then
-			msg.tool_calls = message.tool_calls
+			msg.tool_calls = vim.inspect(message.tool_calls, "\n")
 		end
 		if message.tool_call_id then
 			msg.tool_call_id = message.tool_call_id

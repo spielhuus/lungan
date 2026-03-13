@@ -37,61 +37,6 @@ function FastMcp:receive(content)
 		end
 		self.state = state.IDLE
 	end
-	-- print("------------->" .. vim.inspect(content))
-	-- check if the input is json and parse it, print the json
-	-- check if the string starts with { and ends with }
-	-- if type(content) == "table" then
-	-- 	content = string.gsub(table.concat(content, ""), "\n", "")
-	-- 	print("reveived '''" .. vim.inspect(content) .. "'''")
-	-- 	if content:sub(1, 1) == "{" and content:sub(-1) == "}" then
-	-- 		print('parsing json:"' .. content .. '"')
-	-- 		content = vim.json.decode(content)
-	-- 		print(vim.inspect(content))
-	-- 	else
-	-- 		print("LOG:" .. vim.inspect(content))
-	-- 	end
-	-- else
-	-- 	print("other type:" .. vim.inspect(content))
-	-- end
-	--
-	--
-	-- if type(content) == "table" then
-	-- 	print("reveived '''" .. vim.inspect(table.concat(content, "")) .. "'''")
-	-- 	content = vim.json.decode(vim.fn.shellescape(table.concat(content, "")))
-	-- 	print(vim.inspect(content))
-	-- else
-	-- 	print("ERROR: content is: " .. type(content) .. " " .. vim.inspect(content))
-	-- end
-
-	-- local result = {}
-	-- for _, entry in ipairs(content) do
-	-- 	if entry == ">" then
-	-- 		if #result > 0 then
-	-- 			local message = {
-	-- 				stdout = result,
-	-- 			}
-	-- 			-- TODO: handle errors
-	-- 			-- if self.response.has_err == true then
-	-- 			-- 	local err, mes = self:__parse_error(self.response.stdout)
-	-- 			-- 	if err then
-	-- 			-- 		message.error = err
-	-- 			-- 	else
-	-- 			-- 		log.error("Error in parse error: " .. mes)
-	-- 			-- 	end
-	-- 			-- end
-	-- 			self.on_message(self.line, message, self.cell)
-	-- 		end
-	-- 		self.state = state.IDLE
-	-- 	elseif entry == ">>" then
-	-- 		self.state = state.CONT
-	-- 	elseif self.state ~= state.START then
-	-- 		if str.trim(entry) ~= "" then
-	-- 			table.insert(result, entry)
-	-- 		end
-	-- 	else
-	-- 		log.debug("skip: " .. entry)
-	-- 	end
-	-- end
 end
 
 ---Wait for the current command
@@ -155,7 +100,7 @@ function FastMcp:resolve_path(path)
 	end
 
 	local cwd = vim.fs.normalize(vim.fn.getcwd())
-	local plugin_root_path = script_path:match("^(.*/rplugin)/")
+	-- local plugin_root_path = script_path:match("^(.*/rplugin)/")
 
 	-- Check in current working directory first (relative to CWD)
 	if not string.find(path, "/") and #path > 0 then
@@ -166,7 +111,7 @@ function FastMcp:resolve_path(path)
 	end
 
 	-- Check in plugin root directory (relative to script location)
-	for _, base_dir in ipairs({ cwd, plugin_root_path }) do
+	for _, base_dir in ipairs({ cwd, script_path }) do
 		local full_path = vim.fs.normalize(base_dir .. "/" .. path)
 		if vim.fn.filereadable(full_path) == 1 then
 			return full_path
@@ -188,8 +133,6 @@ function FastMcp:new(term, server, on_message, on_close)
 	o.term.on_close = on_close
 	o.state = state.START
 
-	-- local plugin_root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h:h:h:h")
-	-- local script_path = plugin_root .. "/rplugin/python3/mcp-server.py"
 	local path = self:resolve_path(server)
 	if path == nil then
 		log.error("server file not found: " .. server)

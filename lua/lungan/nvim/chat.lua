@@ -36,9 +36,12 @@ function Chat:new(options, args, prompt)
 				if message["result"] and message["result"]["tools"] ~= nil then
 					o.prompt["tools"] = message
 				elseif message["result"] and message["result"]["content"] then
+					log.info("mcp reponse: " .. vim.inspect(message))
 					local output_text = ""
 					for _, item in ipairs(message["result"]["content"]) do
 						if item.type == "text" then
+							-- remove the escaping from the response string
+							item.text = item.text:gsub("\\\\", "\\"):gsub('\\"', '"')
 							output_text = output_text .. item.text
 						end
 					end
@@ -65,7 +68,11 @@ function Chat:new(options, args, prompt)
 				log.debug("mcp close")
 			end
 		)
-		o.mcp:wait()
+		if o.mcp == nil then
+			log.error("Failed to load mcp server!")
+		else
+			o.mcp:wait()
+		end
 	end
 	o._tool_accumulator = {}
 	return o
@@ -214,7 +221,7 @@ function Chat:open(filename)
 	vim.api.nvim_set_option_value("buftype", "nowrite", { buf = self.buffer })
 	vim.api.nvim_set_option_value("filetype", "markdown", { buf = self.buffer })
 
-	if self.prompt.data:frontmatter()["mcp"] then
+	if self.prompt.data:frontmatter()["mcp"] and self.mcp then
 		local request = '{ "jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {} }\r\n'
 		self.mcp:send(request)
 		self.mcp:wait()

@@ -18,7 +18,7 @@ context: |
             lang = vim.bo.filetype
     }
   end
-mcp: .nvim/lungan/mcp-server.py
+#mcp: .nvim/lungan/mcp-server.py
 options:
   temperature: 0.8
   top_p: 1
@@ -30,7 +30,5 @@ options:
 <== user
 
 {{code}}
-
-create a greet message using the function with the name susi
 
 ==>
