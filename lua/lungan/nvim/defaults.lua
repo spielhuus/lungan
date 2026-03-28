@@ -26,7 +26,7 @@ M.prompt_path = function()
     ".nvim/lungan",
   }
   if M.default_prompts then
-    table.insert(path, get_plugin_path("lungan") .. "/.nvim/lungan")
+    table.insert(path, get_plugin_path("lungan.nvim") .. "/.nvim/lungan")
   end
   return (path)
 end
