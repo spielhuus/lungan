@@ -3,7 +3,7 @@ provider:
   model: Qwen3-Coder-30B-A3B-Instruct-Q8_0 
   name: LlamaCPP
 stream: true
-name: Code Documentation 
+name: Document Code
 command: Doc
 autorun: true
 icon:
@@ -17,6 +17,9 @@ system_prompt: |
   creating the documentation. Do not make up things that can not
   be taken from the code information.
   when documenting a lua class, also document all fields created in the constructor
+  just create a documentation for the section after the cursor. dont document 
+  anything else. analyze what the section after the cursor is, what  
+  the functionality is and carefully create a documentation.
 context: |
   return function(buf, line1, line2)
     local lines_before = vim.api.nvim_buf_get_lines(buf, 0, line1, false)
@@ -42,9 +45,9 @@ options:
 
 <== user
 Complete this code:
-<|im_prefix|>
+<|fim_prefix|>
 {{lines_before}}
-<|im_suffix|>
+<|fim_suffix|>
 {{lines_after}}
-<|im_middle|>
+<|fim_middle|>
 ==>
